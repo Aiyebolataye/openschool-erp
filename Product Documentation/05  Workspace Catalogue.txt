@@ -1,0 +1,7142 @@
+06 — Workspace Catalogue
+Workspace 1 — Platform Super Administrator
+1. Overview
+Purpose
+
+The Platform Super Administrator manages the Educational Institution ERP Platform itself.
+
+This role is responsible for platform operations, customer onboarding, subscriptions, licensing, support, platform monitoring, security, and global configuration.
+
+Platform Super Administrators do not manage the daily operations of institutions and cannot access institution data unless granted temporary support access through a controlled and audited process.
+
+2. Dashboard
+
+The Platform Dashboard provides a real-time overview of platform health and business operations.
+
+KPI Cards
+Total Organizations
+Total Institutions
+Active Institutions
+Trial Institutions
+Suspended Institutions
+Total Students
+Total Staff
+Total Parents
+Total Active Users
+Monthly Active Users
+Revenue
+Outstanding Payments
+Support Tickets
+System Health
+API Status
+Charts
+Institution Growth
+Subscription Growth
+Revenue Trends
+User Growth
+Platform Usage
+Feature Adoption
+Module Usage
+Support Trends
+Widgets
+Pending Institution Approvals
+New Signups
+Subscription Renewals
+Failed Payments
+Recent Support Requests
+Platform Announcements
+Recent Audit Events
+Scheduled Maintenance
+3. Main Navigation
+Dashboard
+
+Organizations
+
+Institutions
+
+Subscriptions
+
+Modules
+
+Institution Templates
+
+Users
+
+Roles & Permissions
+
+Platform Configuration
+
+Billing
+
+Support Center
+
+Communication
+
+Surveys
+
+Reports
+
+Analytics
+
+Audit Logs
+
+Developer
+
+System Health
+
+Settings
+4. Organizations
+
+Manage organizations that own or operate multiple institutions.
+
+Features:
+
+Create Organization
+Edit Organization
+Suspend Organization
+Archive Organization
+Organization Branding
+Organization Administrators
+Organization Reports
+Institution Assignment
+5. Institutions
+
+Manage every institution on the platform.
+
+Features:
+
+Create Institution
+Suspend Institution
+Delete Institution
+Change Subscription
+Assign Organization
+View Configuration
+View Module Usage
+View Storage Usage
+View Activity
+Domain Management
+Branding
+Institution Health
+Institution Profile
+
+Contains:
+
+Basic Information
+Contact Details
+Subscription
+Enabled Modules
+Branding
+Storage
+API Keys
+Usage Statistics
+Audit History
+6. Subscription Management
+
+Manage platform subscriptions.
+
+Supports:
+
+Free Trial
+Monthly Plans
+Annual Plans
+Enterprise Plans
+Custom Plans
+
+Features:
+
+Upgrade
+Downgrade
+Renew
+Cancel
+Pause
+Billing History
+Payment Status
+Invoices
+7. Module Management
+
+Manage modules available across the platform.
+
+For each module:
+
+Enable/Disable globally
+Version
+Dependencies
+Licensing
+Beta Status
+Feature Flags
+Release Notes
+
+Institutions may only enable modules included in their subscription.
+
+8. Institution Templates
+
+Manage default institution templates.
+
+Examples:
+
+Nigerian Primary School
+Nigerian Secondary School
+British Curriculum
+Montessori
+International School
+
+Templates include:
+
+Academic structure
+Grading system
+Fee categories
+Staff roles
+Departments
+Report card layouts
+Admission workflows
+9. User Management
+
+Manage platform-level users.
+
+Includes:
+
+Platform Administrators
+Support Staff
+Developers
+Billing Staff
+
+Institution users are managed by their institutions.
+
+10. Roles & Permissions
+
+Manage platform roles.
+
+Supports:
+
+Create Role
+Edit Role
+Delete Role
+Permission Groups
+Audit Permissions
+
+Institution roles remain institution-specific.
+
+11. Platform Configuration
+
+Configure platform-wide settings.
+
+Includes:
+
+Authentication Policies
+Password Policies
+MFA Requirements
+Session Limits
+Branding Defaults
+Email Templates
+Notification Templates
+Regional Settings
+Time Zones
+Default Languages
+API Limits
+12. Billing
+
+Manage:
+
+Payments
+Invoices
+Refunds
+Credits
+Coupons
+Discounts
+Tax Configuration
+13. Support Center
+
+Manage customer support.
+
+Features:
+
+Support Tickets
+Live Chat (Future)
+Institution Support Access
+Knowledge Base
+Bug Reports
+Feature Requests
+Support Analytics
+Secure Institution Support Access
+
+Platform administrators may request temporary access to an institution for troubleshooting.
+
+Requirements:
+
+Institution approval (configurable)
+Time-limited session
+Full audit logging
+Read-only or elevated access based on approval
+Automatic session termination
+Institution notified before and after access
+14. Communication
+
+Platform-wide communication.
+
+Supports:
+
+Announcements
+Maintenance Notices
+Email Campaigns
+WhatsApp Broadcasts
+Push Notifications
+SMS Notifications
+
+Recipients:
+
+Organizations
+Institutions
+Institution Administrators
+15. Surveys
+
+Platform-generated surveys.
+
+Examples:
+
+Customer Satisfaction (CSAT)
+Net Promoter Score (NPS)
+Feature Requests
+Beta Feedback
+Product Research
+
+Survey audiences:
+
+Organization Administrators
+Institution Administrators
+Selected Staff
+16. Reports
+
+Platform-wide reporting.
+
+Examples:
+
+Institution Growth
+Revenue
+Churn
+Subscription Usage
+Active Users
+Feature Adoption
+Storage Consumption
+API Usage
+Support Metrics
+17. Analytics
+
+Business intelligence dashboards.
+
+Examples:
+
+Geographic Distribution
+Institution Types
+Revenue Forecast
+Growth Trends
+User Engagement
+Platform Performance
+Module Adoption
+18. Audit Logs
+
+Every platform action is logged.
+
+Includes:
+
+User
+Timestamp
+Module
+Action
+Previous Value
+New Value
+Device
+IP Address
+
+Audit records cannot be modified.
+
+19. Developer Center
+
+Administrative tools for platform operations.
+
+Includes:
+
+API Management
+API Keys
+Webhooks
+Event Logs
+Integration Monitoring
+Feature Flags
+Background Jobs
+Queue Monitoring
+Scheduled Tasks
+
+Access is restricted to authorized platform personnel.
+
+20. System Health
+
+Monitor platform infrastructure.
+
+Displays:
+
+Server Status
+Database Health
+API Availability
+Storage Usage
+Queue Health
+Email Delivery
+WhatsApp Delivery
+SMS Delivery
+Background Jobs
+Scheduled Tasks
+Error Logs
+21. Settings
+
+Platform-level configuration.
+
+Includes:
+
+Branding Defaults
+Regional Settings
+Security Policies
+Compliance Settings
+Backup Policies
+Data Retention
+Default Institution Configuration
+Business Rules
+Platform Super Administrators cannot view institution operational data without authorized support access.
+Institution data remains isolated between tenants.
+All platform actions are audited.
+Platform settings apply globally unless overridden by institution-level configuration where permitted.
+Subscription changes take effect according to billing rules.
+Modules may be restricted by subscription or feature flags.
+
+Workspace 2 — Organization Administrator
+1. Overview
+Purpose
+
+The Organization Administrator manages multiple educational institutions that belong to the same organization.
+
+Examples include:
+
+School Groups
+Private Education Companies
+Religious Organizations
+Educational Foundations
+Government Education Authorities (Future)
+
+The Organization Administrator oversees institutions but does not manage their daily operations.
+
+Each institution retains its own administration, staff, students, finances, and academic configuration.
+
+2. Dashboard
+Purpose
+
+Provide a consolidated view of all institutions within the organization.
+
+KPI Cards
+Total Institutions
+Active Institutions
+Total Students
+Total Staff
+Total Parents
+Active Users
+New Admissions
+Outstanding Fees (Aggregate)
+Staff Attendance Rate
+Student Attendance Rate
+Organization Revenue (Optional)
+Pending Approvals
+Open Support Tickets
+Dashboard Widgets
+Institution Performance
+Academic Performance Summary
+Financial Summary
+Attendance Trends
+Recent Institution Activity
+Organization Announcements
+Upcoming Events
+Institution Health Status
+Subscription Status
+Quick Actions
+3. Navigation
+Dashboard
+
+Institutions
+
+Organization Staff
+
+Institution Directory
+
+Organization Reports
+
+Analytics
+
+Announcements
+
+Surveys
+
+Support
+
+Templates
+
+Documents
+
+Calendar
+
+Settings
+4. Institutions
+
+The Organization Administrator can manage institutions under the organization.
+
+Features
+Add Institution
+Link Existing Institution
+Remove Institution
+Suspend Institution
+View Institution Profile
+Assign Institution Administrators
+View Subscription
+View Storage Usage
+View Enabled Modules
+
+Organization Administrators cannot modify institution academic records unless explicitly granted permission.
+
+5. Institution Directory
+
+Displays every institution.
+
+Each institution shows:
+
+Logo
+Name
+Institution Type
+Status
+Student Count
+Staff Count
+Subscription
+Last Activity
+Health Status
+
+Selecting an institution opens its summary dashboard.
+
+6. Organization Staff
+
+Manage organization-level users.
+
+Examples:
+
+Executive Director
+Regional Director
+Finance Director
+Academic Director
+Compliance Officer
+Organization HR
+Auditors
+
+These users are separate from institution staff.
+
+7. Reports
+
+Organization-wide reports.
+
+Examples:
+
+Academic
+
+Enrollment
+Graduation
+Examination Performance
+Attendance
+
+Financial
+
+Revenue
+Outstanding Fees
+Institution Performance
+
+Operational
+
+Staff Distribution
+Student Distribution
+Institution Growth
+Admission Statistics
+
+Reports support:
+
+Filtering
+Export
+Scheduling
+Dashboards
+8. Analytics
+
+Interactive dashboards comparing institutions.
+
+Examples:
+
+Institution Rankings
+Academic Trends
+Attendance Trends
+Financial Trends
+Staff Performance
+Student Growth
+Parent Engagement
+Learning Content Usage
+Module Adoption
+
+All comparisons respect institution privacy and organization policies.
+
+9. Announcements
+
+Organization-wide announcements.
+
+Recipients may include:
+
+Institution Administrators
+Principals
+Staff
+Students
+Parents
+
+Supports:
+
+Scheduling
+Rich text
+Attachments
+Audience targeting
+Delivery tracking
+10. Surveys
+
+Organization surveys.
+
+Examples:
+
+Staff Satisfaction
+Parent Satisfaction
+Student Experience
+Institution Performance Reviews
+Internal Audits
+
+Results can be viewed individually or aggregated across institutions.
+
+11. Support
+
+Manage support for institutions.
+
+Features:
+
+Submit Support Requests
+Track Requests
+Contact Platform Support
+View Maintenance Notices
+Knowledge Base
+12. Templates
+
+Organization-wide templates.
+
+Examples:
+
+Academic Structure
+Fee Categories
+Branding
+Report Cards
+Documents
+Staff Roles
+Communication Templates
+
+Templates can be pushed to institutions.
+
+Institutions may choose to:
+
+Accept
+Modify
+Ignore
+
+Organization policies determine whether templates are mandatory or optional.
+
+13. Documents
+
+Shared organization document library.
+
+Examples:
+
+Policies
+Staff Handbooks
+Compliance Documents
+Standard Operating Procedures
+Forms
+Branding Assets
+
+Permission-controlled.
+
+14. Calendar
+
+Organization calendar.
+
+Events include:
+
+Executive Meetings
+Training
+Institution Visits
+Audits
+Holidays
+Conferences
+
+Institution calendars remain separate but may optionally display organization events.
+
+15. Settings
+
+Organization-level configuration.
+
+Examples:
+
+Branding
+Shared Policies
+Default Templates
+Institution Permissions
+Communication Rules
+Organization Roles
+Approval Workflows
+Business Rules
+Organizations may own one or many institutions.
+Institutions remain operationally independent unless organization policies explicitly enforce shared standards.
+Organization Administrators cannot directly alter institution academic, financial, or operational data unless delegated through institution permissions.
+Shared templates and policies can be configured as mandatory or optional.
+Reports and analytics aggregate data across institutions while respecting privacy and permission boundaries.
+Every organization-level action is recorded in the audit log.
+Enhancement Recommendation: Regional Structure
+
+To make the platform suitable for very large education groups and future government deployments, I recommend adding an optional Regional Layer beneath the organization.
+
+Example:
+
+Organization
+│
+├── Region (North)
+│   ├── Institution A
+│   ├── Institution B
+│
+├── Region (South)
+│   ├── Institution C
+│   ├── Institution D
+
+This would allow organizations to assign Regional Directors or Regional Managers who oversee only institutions within their region, improving scalability without affecting smaller organizations that don't need the feature.
+
+This is the most important workspace in the platform. Nearly every module is managed here, so we should treat it as the reference implementation that other workspaces inherit from.
+
+One design decision before we begin:
+
+I recommend renaming School Administrator to Institution Administrator throughout the platform.
+
+Why?
+
+Your platform is an Educational Institution ERP, not just a school management system. An Institution Administrator works equally well for a secondary school, college, tutorial center, or future university support. Schools can still rename the role locally (e.g., "School Administrator" or "Registrar") through the Custom Roles feature.
+
+Workspace 3 — Institution Administrator
+1. Overview
+Purpose
+
+The Institution Administrator is the primary operational administrator of an institution.
+
+This role is responsible for configuring, managing, and monitoring all institution-wide operations, including academics, finance, staff, admissions, communication, automation, and institutional settings.
+
+The Institution Administrator has the highest level of authority within an institution unless specific permissions are delegated to other roles.
+
+2. Dashboard
+Purpose
+
+Provide a comprehensive operational overview of the institution.
+
+KPI Cards
+Institution
+Total Students
+Total Staff
+Active Parents
+Active Applicants
+Academics
+Classes
+Subjects
+Attendance Today
+Pending Results
+Pending Lesson Notes
+Pending Assignments
+Finance
+Revenue This Month
+Outstanding Fees
+Payments Today
+Overdue Invoices
+Operations
+Visitor Check-ins Today
+Clinic Visits Today
+Library Loans Today
+Transport Trips Today
+Administration
+Pending Approvals
+Active Automations
+Open Support Cases
+Recent Audit Events
+Dashboard Widgets
+Academic Calendar
+Recent Admissions
+Attendance Trends
+Fee Collection Trend
+Student Performance
+Staff Performance
+Parent Engagement
+Pending Tasks
+Quick Actions
+Institution Announcements
+Upcoming Events
+Recent Notifications
+3. Main Navigation
+Dashboard
+
+Students
+
+Admissions
+
+Academic Management
+
+Learning Content
+
+Assignments
+
+CBT & Examinations
+
+Results
+
+Attendance
+
+Student Success & Welfare
+
+Discipline
+
+Student Portfolio
+
+Staff
+
+Finance
+
+Payroll
+
+Human Resources
+
+Visitor Management
+
+Clinic
+
+Library
+
+Transport
+
+Hostel
+
+Inventory & Assets
+
+Communication
+
+Calendar
+
+Documents
+
+Reports & Analytics
+
+Approval Center
+
+Automation Center
+
+Website Builder
+
+Settings
+
+The navigation is automatically filtered based on enabled modules and the administrator's permissions.
+
+4. Responsibilities
+
+The Institution Administrator is responsible for:
+
+Institution setup
+Academic configuration
+Staff management
+Student lifecycle management
+Admissions oversight
+Financial oversight
+Operational oversight
+Communication management
+Approval workflows
+Automation rules
+Institution branding
+Website management
+Security settings
+Role and permission management
+Reporting and analytics
+Integration management
+5. Institution Setup
+
+During onboarding, the administrator configures:
+
+Institution profile
+Institution type
+Academic calendar
+Sessions
+Terms/Semesters
+Academic levels
+Classes
+Streams
+Departments
+Subjects
+Grading system
+Promotion rules
+Fee structure
+Payment gateways
+Staff roles
+Branding
+Website
+Notification preferences
+Default approval workflows
+
+A setup wizard should guide new institutions through these steps, with the ability to pause and resume at any time.
+
+6. Institution Health Dashboard
+
+A dedicated dashboard summarizing operational health.
+
+Indicators include:
+
+Attendance compliance
+Result publication status
+Outstanding approvals
+Fee collection rate
+Student welfare alerts
+Clinic alerts
+Visitor activity
+Staff workload
+System usage
+Storage utilization
+Integration status
+
+Each indicator links directly to the relevant module.
+
+7. Institution Configuration
+
+The administrator can configure:
+
+Academic
+Academic levels
+Sessions
+Terms
+Departments
+Classes
+Streams
+Subjects
+Timetables
+Report card templates
+Grading systems
+Finance
+Fee categories
+Class-specific fee structures
+Discounts
+Scholarships
+Payment plans
+Payment gateways
+Tax settings (where applicable)
+Staff
+Roles
+Departments
+Reporting hierarchy
+Leave policies
+Performance review cycles
+Communication
+Email templates
+SMS templates
+WhatsApp templates
+Push notifications
+Announcement rules
+Branding
+Logo
+Colors
+Typography
+Login page
+Public website
+Certificates
+ID cards
+Automation
+Workflow rules
+Approval chains
+Notifications
+Scheduled tasks
+8. Institution Website
+
+The Website Builder enables institutions to manage their public-facing website.
+
+Features
+Drag-and-drop page builder
+Homepage
+About Us
+Admissions
+Academics
+News
+Events
+Gallery
+Contact
+Staff Directory (optional)
+Downloads
+Blog (optional)
+SEO settings
+Custom domain
+Analytics integration
+
+Institutions can publish changes immediately or schedule them for later.
+
+9. User & Access Management
+
+The Institution Administrator can:
+
+Invite users
+Create staff accounts
+Manage students
+Manage parents
+Manage applicants
+Assign roles
+Create custom roles
+Configure permissions
+Reset passwords
+Suspend accounts
+Archive accounts
+View login history
+Enforce MFA (institution-wide or by role)
+10. Approval Center
+
+The administrator reviews or delegates approvals for:
+
+Admissions
+Lesson notes
+Results
+Attendance corrections
+Leave requests
+Procurement
+Visitor requests
+Fee waivers
+Refunds
+Automation exceptions
+Timetable changes
+
+Approval workflows are configurable and may include HODs, Vice Principals, Principals, or other custom roles.
+
+11. Reports & Analytics
+
+The Institution Administrator has access to institution-wide reporting, including:
+
+Enrollment
+Attendance
+Academic performance
+Finance
+Payroll
+Staff performance
+Parent engagement
+Learning content usage
+Clinic activity
+Visitor statistics
+Transport usage
+Library usage
+Audit reports
+Automation performance
+
+Reports can be filtered, scheduled, exported, and shared with authorized users.
+
+12. Business Rules
+The Institution Administrator cannot access data belonging to another institution.
+Every institution-specific configuration is isolated to its tenant.
+Nothing that varies between institutions is hardcoded.
+Modules, workflows, templates, and permissions are configurable.
+All administrative actions are audited.
+Permissions determine access—not job titles alone.
+Institutions may rename default roles while preserving permission sets.
+
+
+Workspace 4 — Principal
+1. Overview
+Purpose
+
+The Principal is the chief academic and executive leader of the institution.
+
+The Principal oversees academic quality, institutional performance, staff leadership, student welfare, strategic planning, and policy implementation.
+
+Unlike the Institution Administrator, the Principal focuses on running the institution, not configuring the platform.
+
+2. Dashboard
+KPI Cards
+Institution
+Total Students
+Total Staff
+Attendance Today
+Active Parents
+Academic
+Average Academic Performance
+Pending Results
+Pending Lesson Notes
+Pending Assignments
+Students At Risk
+Staff
+Teacher Attendance
+Staff Performance Reviews
+Staff Leave Requests
+Operations
+Clinic Alerts
+Discipline Cases
+Visitor Summary
+Administration
+Pending Approvals
+Upcoming Meetings
+Recent Announcements
+Dashboard Widgets
+Institution Performance
+Attendance Trends
+Academic Performance
+Student Success Dashboard
+Staff Performance
+Parent Engagement
+Welfare Alerts
+Upcoming Events
+Calendar
+Quick Actions
+Notifications
+3. Navigation
+Dashboard
+
+Students
+
+Staff
+
+Academic Management
+
+Learning Content
+
+Assignments
+
+Examinations
+
+Results
+
+Attendance
+
+Student Success & Welfare
+
+Discipline
+
+Clinic
+
+Communication
+
+Calendar
+
+Reports & Analytics
+
+Approval Center
+
+Documents
+
+Profile
+
+The Principal does not have access to institution configuration unless granted additional permissions.
+
+4. Responsibilities
+
+The Principal is responsible for:
+
+Academic leadership
+Staff supervision
+Student discipline
+Student welfare
+Academic performance
+Result approval
+Lesson note approval (optional)
+Policy implementation
+Parent engagement
+Institutional planning
+Leadership meetings
+5. Student Oversight
+
+The Principal can:
+
+View all students
+View student profiles
+Monitor academic progress
+Monitor attendance
+View discipline history
+View welfare interventions
+View medical alerts (summary only by default)
+Approve transfers
+Approve graduations
+Approve withdrawals
+
+The Principal cannot edit medical records unless granted permission.
+
+6. Staff Oversight
+
+The Principal can:
+
+View staff
+View workload
+View teaching schedules
+Monitor attendance
+Review performance
+Conduct appraisals
+Recommend promotions
+Recommend disciplinary actions
+Approve leave (optional)
+7. Academic Oversight
+
+The Principal oversees:
+
+Subjects
+Classes
+Departments
+Timetables
+Examination schedules
+Assessments
+Report cards
+
+The Principal focuses on quality assurance rather than setup.
+
+8. Learning Content
+
+The Principal can:
+
+Review lesson notes
+Approve lesson notes (optional)
+Reject lesson notes
+Request revisions
+Monitor lesson completion
+Review teaching resources
+Track curriculum coverage
+
+Schools may configure lesson note approval to be handled by:
+
+HOD
+Principal
+Both (multi-level approval)
+9. Results
+
+The Principal can:
+
+Review results
+Approve results
+Publish results
+Return results for correction
+Monitor moderation
+View ranking analytics (if enabled)
+
+Result approval workflow is configurable.
+
+10. Attendance
+
+Monitor:
+
+Student Attendance
+
+Teacher Attendance
+
+Department Attendance
+
+Institution Attendance
+
+Alerts include:
+
+Chronic absenteeism
+Staff attendance issues
+Late submissions
+11. Student Success & Welfare
+
+The Principal oversees:
+
+Intervention cases
+Academic recovery plans
+Welfare cases
+Behaviour trends
+Parent meetings
+Student success metrics
+12. Discipline
+
+The Principal can:
+
+Review incidents
+Approve disciplinary actions
+Escalate cases
+Suspend students (if permitted)
+Review behaviour reports
+13. Reports
+
+Examples:
+
+Academic Reports
+
+Attendance Reports
+
+Performance Reports
+
+Teacher Performance
+
+Department Reports
+
+Financial Summary (read-only by default)
+
+Student Welfare Reports
+
+Parent Engagement
+
+Operational Summary
+
+14. Approval Center
+
+Approvals may include:
+
+Results
+Lesson Notes
+Admissions
+Student Transfers
+Leave Requests
+Timetable Changes
+Welfare Plans
+Procurement (optional)
+
+Institutions determine which approvals belong to the Principal.
+
+15. Meetings
+
+Dedicated meeting management.
+
+Examples:
+
+Staff Meetings
+
+HOD Meetings
+
+Parent Meetings
+
+Executive Meetings
+
+PTA Meetings
+
+Supports:
+
+Scheduling
+Agendas
+Minutes
+Attendance
+Action Items
+Follow-up Tasks
+16. Business Rules
+The Principal has institution-wide academic visibility.
+Platform configuration is managed by the Institution Administrator unless delegated.
+Approval workflows are configurable.
+Medical information is summarized by default; detailed records require additional permissions.
+Every approval, rejection, and major decision is recorded in the audit log.
+The Principal's dashboard emphasizes institutional performance, academic quality, and student outcomes rather than system configuration.
+
+
+
+Workspace 5 — Vice Principal
+1. Overview
+Purpose
+
+The Vice Principal supports the Principal in the daily management of the institution.
+
+An institution may have one or more Vice Principals, each assigned different responsibilities. The platform must not assume a fixed structure.
+
+Examples include:
+
+Vice Principal (Academics)
+Vice Principal (Administration)
+Vice Principal (Student Affairs)
+Vice Principal (Boarding)
+Custom Vice Principal roles
+
+Each Vice Principal's permissions are configurable by the Institution Administrator.
+
+2. Dashboard
+
+The dashboard displays information relevant to the Vice Principal's assigned responsibilities.
+
+KPI Cards
+Student Attendance
+Staff Attendance
+Pending Lesson Notes
+Pending Results
+Pending Approvals
+Discipline Cases
+Welfare Cases
+Upcoming Examinations
+Assigned Tasks
+Widgets
+Department Performance
+Calendar
+Notifications
+Recent Activities
+Quick Actions
+Approval Queue
+Institution Announcements
+3. Navigation
+Dashboard
+
+Students
+
+Staff
+
+Academic Management
+
+Learning Content
+
+Assignments
+
+Examinations
+
+Results
+
+Attendance
+
+Student Success & Welfare
+
+Discipline
+
+Communication
+
+Calendar
+
+Reports
+
+Approval Center
+
+Documents
+
+Profile
+
+Visible modules depend on permissions.
+
+4. Responsibilities
+
+Depending on configuration, a Vice Principal may:
+
+Supervise departments
+Monitor teachers
+Review attendance
+Coordinate examinations
+Review lesson notes
+Review results
+Oversee student discipline
+Oversee welfare programmes
+Support admissions
+Supervise extracurricular activities
+Coordinate institutional events
+Assist the Principal in daily operations
+5. Academic Oversight
+
+The Vice Principal can:
+
+Monitor curriculum implementation
+Monitor subject coverage
+Review assessment schedules
+Review examination readiness
+Monitor lesson note completion
+Review academic analytics
+Identify at-risk students
+6. Staff Oversight
+
+The Vice Principal may:
+
+Monitor teacher attendance
+Review teaching workload
+Observe classroom performance
+Review performance indicators
+Recommend professional development
+Recommend commendations or disciplinary actions
+7. Student Oversight
+
+The Vice Principal can:
+
+View student profiles
+Review attendance
+Review academic progress
+Monitor behaviour
+Monitor interventions
+Track welfare cases
+Review extracurricular participation
+8. Approvals
+
+Typical approvals include:
+
+Lesson Notes
+Attendance Corrections
+Examination Timetables
+Student Transfers (optional)
+Leave Requests (optional)
+Result Moderation
+Welfare Plans
+
+Approval workflows are fully configurable.
+
+9. Reports
+
+Access depends on assigned responsibilities.
+
+Examples:
+
+Academic Reports
+Attendance Reports
+Behaviour Reports
+Department Reports
+Examination Reports
+Teacher Performance Reports
+Welfare Reports
+10. Business Rules
+Multiple Vice Principals may exist within the same institution.
+Responsibilities and permissions are configurable.
+A Vice Principal only sees data relevant to their assigned scope unless granted broader access.
+Approval authority is determined by workflow configuration, not by title alone.
+All actions are audited.
+Recommendation for the Academic Hierarchy
+
+I recommend modelling the academic reporting structure as follows:
+
+Institution Administrator
+        │
+        ▼
+Principal
+        │
+ ┌──────┴────────┐
+ ▼               ▼
+Vice Principal   Vice Principal
+(Academics)      (Administration)
+        │
+        ▼
+Head of Department
+        │
+        ▼
+Teachers
+        │
+        ▼
+Students
+
+This hierarchy is flexible enough for institutions with one Vice Principal or several, and it aligns naturally with configurable approval workflows and reporting lines.
+
+
+
+Workspace 6 — Head of Department (HOD)
+1. Overview
+Purpose
+
+The Head of Department (HOD) leads an academic department and is responsible for ensuring high teaching standards, curriculum delivery, teacher performance, assessment quality, and academic compliance within their department.
+
+Teachers report directly to their assigned HOD.
+
+Institutions may create any number of departments, and the platform must not assume a predefined list.
+
+Examples:
+
+Mathematics
+English
+Sciences
+ICT
+Languages
+Commercial
+Arts
+Technical
+Early Years
+Primary Education
+Senior Secondary
+Custom Departments
+
+Department structures are fully configurable.
+
+2. Dashboard
+
+The HOD dashboard provides a real-time overview of departmental performance.
+
+KPI Cards
+Teachers in Department
+Subjects Offered
+Classes Assigned
+Lesson Notes Pending Review
+Results Pending Moderation
+Attendance Submission Rate
+Curriculum Coverage
+Department Performance
+Students at Academic Risk
+Upcoming Assessments
+Dashboard Widgets
+Department Calendar
+Teacher Workload
+Curriculum Progress
+Lesson Note Queue
+Result Moderation Queue
+Teacher Attendance
+Department Announcements
+Recent Activities
+Quick Actions
+3. Navigation
+Dashboard
+
+Department
+
+Teachers
+
+Students
+
+Subjects
+
+Classes
+
+Learning Content
+
+Assignments
+
+Examinations
+
+Results
+
+Attendance
+
+Reports
+
+Approval Center
+
+Communication
+
+Calendar
+
+Documents
+
+Profile
+
+Visible modules depend on permissions.
+
+4. Responsibilities
+
+The HOD is responsible for:
+
+Supervising teachers
+Monitoring curriculum delivery
+Reviewing lesson notes
+Moderating assessments
+Monitoring teacher attendance
+Supporting teacher development
+Reviewing departmental performance
+Coordinating departmental meetings
+Ensuring academic quality
+5. Department Management
+
+The HOD can:
+
+View department profile
+View assigned teachers
+View department subjects
+View department classes
+View department timetable
+View workload distribution
+Monitor curriculum completion
+View departmental analytics
+
+The HOD cannot create or delete departments unless granted permission.
+
+6. Teacher Management
+
+The HOD can:
+
+View teachers
+Monitor attendance
+View teaching timetable
+Review lesson delivery
+Monitor workload
+Conduct classroom observations
+Submit performance reviews
+Recommend training
+Recommend commendations
+Recommend disciplinary actions
+
+The HOD cannot edit teacher employment records.
+
+7. Learning Content Oversight
+
+The HOD oversees all learning materials created by teachers in the department.
+
+This includes:
+
+Lesson Notes
+Teaching Resources
+Reading Materials
+Assignment Templates
+Assessment Blueprints
+Question Banks
+
+The HOD can:
+
+Review submissions
+Approve content
+Request revisions
+Reject content
+Leave comments
+Track curriculum alignment
+
+Institutions may configure whether approved lesson notes proceed directly to students or require additional Principal approval.
+
+8. Curriculum Monitoring
+
+The HOD monitors curriculum implementation.
+
+Metrics include:
+
+Topics completed
+Topics remaining
+Curriculum coverage percentage
+Missed lessons
+Delayed schemes of work
+Subject progress comparisons
+
+Alerts should be generated when curriculum coverage falls behind schedule.
+
+9. Assessment & Results
+
+The HOD oversees departmental assessments.
+
+Functions include:
+
+Moderate results
+Review grading consistency
+Monitor assessment completion
+Review question quality
+Validate examination readiness
+Recommend approval for publication
+
+Final publication follows the institution's configured approval workflow.
+
+10. Attendance Oversight
+
+The HOD monitors:
+
+Teacher attendance
+Student attendance (departmental view)
+Attendance submission compliance
+Attendance correction requests
+
+The HOD may approve attendance corrections if configured.
+
+11. Department Reports
+
+Available reports include:
+
+Academic
+Subject Performance
+Curriculum Coverage
+Assessment Completion
+Student Achievement
+Staff
+Teacher Attendance
+Teaching Load
+Lesson Note Compliance
+Performance Reviews
+Operational
+Department Activity
+Approval Performance
+Meeting Attendance
+
+Reports support filtering, scheduling, and export.
+
+12. Department Meetings
+
+The HOD can:
+
+Schedule meetings
+Create agendas
+Record minutes
+Assign action items
+Track follow-up actions
+Share documents
+
+Meeting records become part of the department's history.
+
+13. Approvals
+
+Typical HOD approvals include:
+
+Lesson Notes
+Learning Resources
+Assignment Templates
+Attendance Corrections
+Assessment Blueprints
+Department Timetable Changes
+Teacher Requests (where configured)
+
+All approvals follow the platform-wide inline approval standard.
+
+14. Teacher Development
+
+The HOD supports continuous improvement by:
+
+Recording classroom observations
+Providing coaching notes
+Setting improvement goals
+Tracking professional development
+Monitoring training completion
+Recommending mentoring
+
+These records contribute to staff performance reviews but are permission-controlled.
+
+15. Business Rules
+Every teacher belongs to one primary department but may teach across multiple departments if permitted.
+Departments are institution-defined and fully configurable.
+Approval authority is determined by workflow configuration.
+The HOD has visibility only into their assigned department unless granted broader permissions.
+Department analytics are calculated independently and contribute to institution-wide reporting.
+All supervisory actions are recorded in the audit log.
+
+
+Workspace 7 — Teacher
+1. Overview
+Purpose
+
+The Teacher Workspace is the primary environment for teachers to manage teaching, learning, assessment, and student development.
+
+The platform does not separate Class Teacher and Subject Teacher into different workspaces.
+
+Instead, both use the same workspace, with permissions and additional modules determined by their assigned responsibilities.
+
+A teacher may simultaneously be:
+
+Subject Teacher
+Class Teacher
+Head of Department
+Club Coordinator
+Examination Officer
+Vice Principal
+
+The workspace dynamically adapts based on assigned roles and permissions.
+
+2. Dashboard
+
+The Teacher Dashboard provides an overview of daily teaching activities.
+
+KPI Cards
+Classes Today
+Students Assigned
+Attendance Pending
+Lesson Notes Pending
+Assignments Pending Grading
+Upcoming Assessments
+Pending Approvals
+Messages
+Notifications
+Dashboard Widgets
+Today's Timetable
+Upcoming Lessons
+Assignment Deadlines
+Student Alerts
+Curriculum Progress
+Quick Actions
+Calendar
+Announcements
+Recent Activity
+3. Navigation
+Dashboard
+
+My Classes
+
+My Subjects
+
+Learning Content
+
+Assignments
+
+Assessments
+
+Results
+
+Attendance
+
+Student Success
+
+Student Portfolios
+
+Communication
+
+Documents
+
+Calendar
+
+Reports
+
+Profile
+
+Additional modules appear automatically when extra responsibilities are assigned.
+
+Example:
+
+A Class Teacher will also see:
+
+Homeroom
+Parent Engagement
+Behaviour
+Welfare
+
+An HOD will additionally see:
+
+Department
+4. Responsibilities
+
+Teachers can:
+
+Teach assigned classes
+Upload lesson notes
+Upload learning resources
+Create assignments
+Grade assignments
+Mark attendance
+Enter results
+Create CBT examinations
+Communicate with parents
+Monitor student progress
+Recommend interventions
+Build student portfolios
+5. My Classes Workspace
+
+Each assigned class has its own workspace.
+
+Example:
+
+SS2 Science
+
+Overview
+
+Students
+
+Attendance
+
+Assignments
+
+Results
+
+Behaviour
+
+Learning Content
+
+Documents
+
+Calendar
+
+Teachers only see assigned classes.
+
+6. My Subjects Workspace
+
+Each subject also has its own workspace.
+
+Example:
+
+Mathematics
+
+Overview
+
+Curriculum
+
+Lesson Notes
+
+Resources
+
+Assignments
+
+Question Bank
+
+Assessments
+
+Reports
+
+Teachers may teach multiple subjects.
+
+7. Learning Content
+
+Teachers create instructional materials.
+
+Supported content:
+
+Lesson Notes
+Reading Notes
+PDFs
+Presentations
+Videos
+Audio
+Images
+External Links
+Interactive Content
+Lesson Notes
+
+Lesson notes support:
+
+Rich text editor
+Tables
+Images
+Equations
+File attachments
+Templates
+Curriculum mapping
+Learning objectives
+Teaching aids
+Homework
+References
+Approval Workflow
+
+Institutions determine the workflow.
+
+Example:
+
+Teacher
+
+↓
+
+HOD
+
+↓
+
+Principal (Optional)
+
+↓
+
+Published to Students
+
+Inline approvals follow platform standards.
+
+Student Experience
+
+Students can:
+
+Read online
+Read offline
+Highlight text
+Make annotations
+Bookmark pages
+Download (if permitted)
+Complete embedded quizzes
+Open linked assignments
+8. Assignments
+
+Teachers can:
+
+Create assignments
+Schedule release
+Set deadlines
+Attach resources
+Create rubrics
+Grade submissions
+Return for correction
+Publish grades
+
+Supported assignment types:
+
+Essay
+Multiple Choice
+Practical
+File Upload
+Project
+Presentation
+Group Assignment
+9. Assessments
+
+Teachers can create:
+
+Quizzes
+Continuous Assessments
+Practical Assessments
+Mid-Term Exams
+Final Exams
+Mock Exams
+
+Assessment templates are configurable.
+
+10. Results
+
+Teachers can:
+
+Enter scores
+Import scores
+Moderate results (where permitted)
+View analytics
+Submit for approval
+
+Result publication follows institution workflows.
+
+11. Attendance
+
+Teachers can:
+
+Mark attendance
+Edit attendance (where permitted)
+Request corrections
+View attendance trends
+Record late arrivals
+Record early departures
+
+Future versions may integrate with RFID attendance devices for automatic check-in.
+
+12. Student Success
+
+Teachers can identify students requiring support.
+
+Examples:
+
+Academic intervention
+Behaviour concerns
+Welfare referrals
+Attendance concerns
+Parent meetings
+Individual improvement plans
+
+Teachers can recommend interventions but only authorized staff can approve and manage institution-wide plans.
+
+13. Student Portfolio
+
+Teachers contribute to student portfolios.
+
+Examples:
+
+Projects
+Awards
+Leadership roles
+Club participation
+Certificates
+Community service
+Teacher recommendations
+Academic achievements
+14. Communication
+
+Teachers can communicate with:
+
+Students
+Parents
+HOD
+Principal
+Institution Administration
+
+Supported channels:
+
+In-app Messaging
+Announcements
+Email
+WhatsApp (where enabled)
+
+Communication permissions are configurable.
+
+15. Reports
+
+Teachers can generate reports such as:
+
+Attendance
+Assignment Completion
+Student Performance
+Curriculum Coverage
+Learning Content Usage
+Class Performance
+Subject Performance
+
+Access depends on permissions.
+
+16. AI Readiness (Future)
+
+The Teacher Workspace should be designed to support AI-powered tools in future releases, including:
+
+Lesson note drafting from curriculum objectives
+Assignment and quiz generation
+Rubric suggestions
+Grammar and readability checks
+Curriculum coverage analysis
+Learning resource recommendations
+Automated feedback suggestions
+Student performance insights
+At-risk student identification
+Parent communication drafting
+
+All AI-generated content must be reviewed and approved by the teacher before publication or sharing.
+
+17. Business Rules
+Teachers only access assigned classes, subjects, and students unless granted additional permissions.
+One teacher may have multiple institutional responsibilities simultaneously.
+Lesson note approval workflows are institution-configurable.
+Student learning materials become available only after the configured approval process is complete.
+All teaching, grading, attendance, and communication activities are recorded in the audit log.
+The workspace adapts dynamically based on assigned roles rather than requiring separate interfaces.
+
+
+Workspace 8 — Admissions Officer
+1. Overview
+Purpose
+
+The Admissions Officer manages the complete admissions lifecycle from inquiry through enrollment.
+
+The admissions process is fully configurable by each institution. No admission workflow is hardcoded.
+
+Admissions Officers are responsible for ensuring applicants progress smoothly through each stage while maintaining complete records and communication.
+
+2. Dashboard
+
+The dashboard provides a real-time overview of admissions.
+
+KPI Cards
+Active Admission Campaigns
+Total Applications
+New Applications
+Applications Awaiting Review
+Interviews Scheduled
+Assessments Pending
+Offers Sent
+Offers Accepted
+Enrolled Students
+Available Capacity
+Dashboard Widgets
+Admission Pipeline
+Upcoming Interviews
+Today's Tasks
+Recent Applications
+Calendar
+Notifications
+Quick Actions
+Recent Communications
+3. Navigation
+Dashboard
+
+Admission Campaigns
+
+Applications
+
+Applicants
+
+Assessments
+
+Interviews
+
+Offers & Decisions
+
+Enrollment
+
+Communication
+
+Reports
+
+Calendar
+
+Documents
+
+Settings
+
+Profile
+
+Modules depend on institution configuration.
+
+4. Admission Campaigns
+
+Institutions can create multiple admission campaigns.
+
+Examples:
+
+2027/2028 Admission
+Mid-Year Admission
+Transfer Admission
+Summer School
+Scholarship Admission
+
+Each campaign defines:
+
+Opening Date
+Closing Date
+Academic Session
+Eligible Academic Levels
+Capacity
+Application Fee
+Required Documents
+Admission Workflow
+Assigned Staff
+
+Campaigns can be Draft, Active, Closed, Archived, or Cancelled.
+
+5. Applications
+
+Displays all submitted applications.
+
+Features include:
+
+Search
+Advanced Filters
+Saved Views
+Bulk Actions
+Tags
+Notes
+Assignment to Staff
+Status Tracking
+
+Applications support attachments and an internal activity history.
+
+6. Applicant Profile
+
+Opening an applicant displays a complete applicant record.
+
+Sections include:
+
+Personal Information
+Parent/Guardian Information
+Academic History
+Previous School
+Uploaded Documents
+Assessment Results
+Interview Notes
+Communication History
+Application Timeline
+
+Once admitted, the applicant record is converted into a student record while preserving the application history.
+
+7. Admission Pipeline
+
+Every institution configures its own pipeline.
+
+A default example:
+
+Application Submitted
+        ↓
+Application Review
+        ↓
+Document Verification
+        ↓
+Entrance Assessment
+        ↓
+Interview
+        ↓
+Admission Decision
+        ↓
+Offer Acceptance
+        ↓
+Fee Payment
+        ↓
+Enrollment
+
+Institutions can:
+
+Add stages
+Remove stages
+Rename stages
+Reorder stages
+Configure approvals
+Configure automatic actions
+8. Assessments
+
+If enabled, Admissions Officers can manage:
+
+Entrance Exams
+Placement Tests
+CBT Assessments
+Practical Assessments
+Language Tests
+
+Assessments may be:
+
+Online
+In-person
+Hybrid
+
+Results feed directly into the admission decision process.
+
+9. Interview Management
+
+Supports:
+
+Interview Scheduling
+Panel Assignment
+Interview Notes
+Interview Scores
+Recommendation Recording
+Virtual Meeting Links (future integration)
+
+Institutions may disable interviews entirely.
+
+10. Document Verification
+
+Admissions staff can review submitted documents such as:
+
+Birth Certificate
+Previous School Reports
+Transfer Letter
+Passport Photograph
+Identification Documents
+Medical Forms
+Other institution-defined documents
+
+Each document can be:
+
+Pending
+Verified
+Rejected
+Requires Resubmission
+11. Offers & Decisions
+
+Admissions decisions may include:
+
+Accepted
+Conditionally Accepted
+Waitlisted
+Rejected
+Deferred
+
+Institutions configure:
+
+Approval requirements
+Offer validity period
+Acceptance deadline
+Required enrollment documents
+
+Offer letters are generated from institution templates.
+
+12. Enrollment
+
+When an offer is accepted:
+
+The platform can automatically:
+
+Create the student record
+Generate the admission number
+Assign academic level
+Assign class (manual or automatic)
+Create parent accounts (or link existing ones)
+Generate invoices
+Issue login credentials
+Notify stakeholders
+
+Enrollment follows institution-defined business rules.
+
+13. Communication
+
+Admissions Officers communicate with applicants and parents using:
+
+In-app Messages (if applicable)
+Email
+SMS
+WhatsApp
+Admission Announcements
+
+Templates are configurable and support personalization.
+
+14. Reports
+
+Reports include:
+
+Admissions
+Application Volume
+Conversion Rate
+Enrollment Rate
+Acceptance Rate
+Rejection Rate
+Waitlist Analysis
+Operational
+Staff Workload
+Average Processing Time
+Pipeline Bottlenecks
+Campaign Performance
+
+Reports support scheduling, exporting, and filtering.
+
+15. Settings
+
+Permission-controlled settings include:
+
+Admission Pipeline
+Required Documents
+Application Form Fields
+Application Number Format
+Admission Number Format
+Capacity Rules
+Default Notifications
+Interview Templates
+Offer Templates
+
+Institution-wide settings remain under Institution Administration.
+
+16. Business Rules
+Admission workflows are fully configurable.
+Institutions may operate multiple admission campaigns simultaneously.
+Applicant records are preserved after enrollment for historical and audit purposes.
+Enrollment automatically creates or links related records according to institution rules.
+All admission decisions, document reviews, and communications are audited.
+Admissions Officers manage applicants until enrollment; once enrolled, responsibility transitions to the appropriate academic and administrative roles.
+
+
+Role Workspace — Finance Officer
+1. Overview
+Purpose
+
+The Finance Officer manages the institution's financial operations, including fee management, invoicing, payments, refunds, financial reporting, scholarships, discounts, and reconciliation.
+
+The platform supports configurable financial structures, allowing each institution to define its own fee categories, billing rules, payment schedules, and approval workflows.
+
+The Finance Workspace is designed to support both simple schools and institutions with complex financial requirements.
+
+2. Dashboard
+
+The dashboard provides a real-time overview of institutional finances.
+
+KPI Cards
+Total Revenue
+Revenue This Term
+Outstanding Balances
+Invoices Issued
+Payments Received Today
+Overdue Payments
+Pending Refunds
+Pending Financial Approvals
+Scholarships Awarded
+Active Payment Plans
+Dashboard Widgets
+Revenue Trend
+Outstanding Fee Analysis
+Recent Payments
+Pending Approvals
+Payment Gateway Status
+Upcoming Due Dates
+Financial Calendar
+Quick Actions
+3. Navigation
+Dashboard
+
+Fee Structures
+
+Invoices
+
+Payments
+
+Students & Accounts
+
+Scholarships
+
+Discounts
+
+Payment Plans
+
+Refunds
+
+Financial Approvals
+
+Reports
+
+Communication
+
+Documents
+
+Settings
+
+Profile
+
+Additional modules appear if enabled by the institution.
+
+4. Fee Structures
+
+Institutions configure their own fee models.
+
+Examples include:
+
+Tuition
+Registration
+Examination
+Laboratory
+Library
+Sports
+Transport
+Hostel
+PTA Levy
+Development Levy
+Technology Fee
+Graduation Fee
+Custom Fees
+
+Each fee can define:
+
+Academic Session
+Term/Semester
+Academic Level
+Class
+Program
+Currency
+Amount
+Due Date
+Installment Eligibility
+Late Fee Rules
+Refund Policy
+Visibility
+
+Nothing about fees is hardcoded.
+
+5. Invoices
+
+Finance Officers can:
+
+Generate invoices
+Generate invoices in bulk
+Schedule invoice generation
+Apply discounts
+Apply scholarships
+Merge invoices
+Split invoices
+Void invoices
+Reissue invoices
+
+Invoices support:
+
+Partial payment
+Multiple payment methods
+Installments
+Due dates
+Automatic reminders
+6. Payments
+
+Supported payment methods include:
+
+Online payment gateways
+Bank transfer
+Cash
+POS
+Cheque
+Manual payment recording
+
+Finance Officers can:
+
+Verify payments
+Reconcile transactions
+Reverse payments (permission-controlled)
+Issue receipts
+Export payment records
+
+Receipts are generated automatically and stored in the student's financial record.
+
+7. Student Financial Accounts
+
+Every student has a financial profile.
+
+Displays:
+
+Outstanding Balance
+Payment History
+Active Invoices
+Payment Plans
+Scholarships
+Discounts
+Financial Holds
+Refund History
+
+Opening a student links directly to the Student Workspace with finance-related permissions.
+
+8. Scholarships
+
+Institutions can manage:
+
+Full Scholarships
+Partial Scholarships
+Merit Scholarships
+Need-Based Scholarships
+Sponsor-Funded Scholarships
+
+Each scholarship can define:
+
+Eligibility Rules
+Value
+Duration
+Renewal Conditions
+Funding Source
+Approval Workflow
+9. Discounts
+
+Supports institution-defined discounts such as:
+
+Sibling Discount
+Early Payment Discount
+Staff Child Discount
+Alumni Discount
+Promotional Discount
+Custom Discounts
+
+Discounts may be:
+
+Fixed Amount
+Percentage
+Automatic
+Approval Required
+10. Payment Plans
+
+Institutions can create flexible payment schedules.
+
+Examples:
+
+Two Installments
+Monthly Installments
+Custom Schedule
+
+Each plan defines:
+
+Installment Dates
+Amount per Installment
+Grace Period
+Late Charges
+Default Rules
+11. Refunds
+
+Finance Officers can manage:
+
+Refund Requests
+Approval Workflow
+Refund Reason
+Refund Method
+Refund Status
+Refund History
+
+Refund approvals follow institution-defined workflows.
+
+12. Financial Approvals
+
+The workspace includes a centralized approval queue for:
+
+Refunds
+Fee Adjustments
+Manual Discounts
+Invoice Cancellation
+Payment Reversals
+Scholarship Approval
+
+Approvals follow the platform-wide Approval Framework.
+
+13. Reports
+
+Available reports include:
+
+Revenue
+Revenue by Session
+Revenue by Term
+Revenue by Fee Category
+Revenue by Academic Level
+Revenue by Program
+Collections
+Daily Collections
+Monthly Collections
+Outstanding Fees
+Collection Rate
+Payment Method Analysis
+Financial Performance
+Scholarships Awarded
+Discounts Applied
+Refund Summary
+Aging Analysis
+Cash Flow Summary
+
+Reports support export, scheduling, and dashboards.
+
+14. Communication
+
+Finance Officers can communicate with parents and students regarding financial matters.
+
+Supported communications include:
+
+Invoice Notifications
+Payment Confirmations
+Due Date Reminders
+Overdue Notices
+Refund Updates
+Payment Plan Updates
+
+Delivery channels:
+
+Email
+SMS
+WhatsApp
+In-App Notifications
+
+Templates are configurable.
+
+15. Settings
+
+Permission-controlled settings include:
+
+Fee Categories
+Invoice Templates
+Receipt Templates
+Payment Methods
+Late Fee Rules
+Payment Gateway Configuration
+Scholarship Types
+Discount Types
+Financial Notifications
+
+Institution-wide financial policies remain under Institution Administration.
+
+16. Business Rules
+Institutions define all fee structures and billing policies.
+A student may have multiple active invoices at the same time.
+Discounts and scholarships may be combined or restricted according to institution rules.
+Payment plans follow configurable schedules and conditions.
+Financial actions requiring authorization use the centralized Approval Framework.
+Every financial transaction is logged for auditing and reporting.
+
+17. Finance Requests
+Overview
+
+The Finance Requests module provides a centralized workflow for financial requests submitted by authorized users.
+
+Instead of handling requests through emails, paper forms, or informal conversations, all requests are created, tracked, approved, and resolved within the platform.
+
+All requests follow the institution's configurable approval workflow and are fully auditable.
+
+Supported Request Types
+
+Institutions can enable or disable request types.
+
+Examples include:
+
+Student & Parent Requests
+Payment Verification
+Payment Plan Request
+Scholarship Application
+Financial Aid Request
+Discount Request
+Refund Request
+Invoice Correction
+Receipt Reissue
+Fee Clarification
+Fee Appeal
+Staff Requests
+Budget Request
+Department Funding Request
+Expense Reimbursement
+Petty Cash Request
+Purchase Request
+Vendor Payment Request
+Custom Requests
+
+Institutions can create unlimited request types.
+
+Examples:
+
+Graduation Fee Waiver
+Sports Fee Exemption
+PTA Levy Appeal
+Alumni Discount Request
+Request Lifecycle
+
+Every request follows a configurable workflow.
+
+Example:
+
+Draft
+    ↓
+Submitted
+    ↓
+Under Review
+    ↓
+Awaiting Approval
+    ↓
+Approved / Rejected
+    ↓
+Processed
+    ↓
+Completed
+
+Institutions may modify:
+
+Workflow stages
+Required approvals
+Notifications
+Service Level Agreements (SLAs)
+Escalation rules
+Request Details
+
+Each request contains:
+
+Request Number
+Request Type
+Requester
+Related Student/Staff
+Description
+Supporting Documents
+Current Status
+Approval History
+Comments
+Timeline
+Assigned Officer
+Resolution
+Finance Officer Actions
+
+Finance staff can:
+
+Review requests
+Request additional information
+Assign requests
+Approve or reject (where permitted)
+Escalate requests
+Process approved requests
+Close requests
+Reopen requests (permission-controlled)
+Notifications
+
+Automatic notifications can be sent when:
+
+Request submitted
+Additional information required
+Request approved
+Request rejected
+Request completed
+Request overdue
+
+Supported channels:
+
+In-App
+Email
+SMS
+WhatsApp
+Reports
+
+Institutions can monitor:
+
+Request volume
+Average processing time
+Approval rate
+Rejection rate
+Outstanding requests
+Staff workload
+SLA compliance
+Business Rules
+Every request receives a unique reference number.
+Supporting documents remain attached to the request throughout its lifecycle.
+Approval and processing actions are recorded in the audit log.
+Institutions configure request types, workflows, and approval requirements.
+Requests can be linked to student, parent, staff, department, or program records where applicable.
+
+
+Workspace 10 — Human Resources (HR)
+1. Overview
+Purpose
+
+The Human Resources Workspace manages the institution's workforce throughout the employee lifecycle.
+
+Institutions can configure their own organizational structure, job titles, departments, reporting hierarchy, employment types, and HR policies.
+
+The workspace supports both academic and non-academic staff.
+
+2. Dashboard
+
+The dashboard provides a real-time overview of workforce activities.
+
+KPI Cards
+Total Staff
+Academic Staff
+Non-Academic Staff
+New Employees
+Staff on Leave
+Vacant Positions
+Pending Approvals
+Performance Reviews Due
+Contract Renewals Due
+Training Programs
+Dashboard Widgets
+New Hires
+Upcoming Birthdays
+Leave Calendar
+Performance Review Schedule
+Recent Staff Activity
+Announcements
+Quick Actions
+Notifications
+3. Navigation
+Dashboard
+
+Staff Directory
+
+Recruitment
+
+Onboarding
+
+Employment
+
+Attendance
+
+Leave Management
+
+Performance
+
+Professional Development
+
+Documents
+
+Requests
+
+Reports
+
+Communication
+
+Settings
+
+Profile
+4. Staff Directory
+
+The institution's central employee directory.
+
+Displays:
+
+Staff Profile
+Employee ID
+Department
+Position
+Reporting Manager
+Employment Status
+Contact Information
+Employment Type
+Assigned Roles
+Assigned Campuses (if applicable)
+
+Selecting a staff member opens the Staff Workspace.
+
+5. Recruitment
+
+Institutions can manage recruitment from vacancy creation to hiring.
+
+Supports:
+
+Job Vacancies
+Applications
+Interview Scheduling
+Evaluation Forms
+Offer Letters
+Hiring Decisions
+Talent Pool
+
+Future versions may integrate with external job boards.
+
+6. Onboarding
+
+After hiring, HR can:
+
+Generate Employee ID
+Assign Departments
+Assign Roles
+Configure Permissions
+Assign Manager
+Upload Required Documents
+Create System Accounts
+Assign Orientation Tasks
+Issue Welcome Checklist
+
+Progress is tracked through an onboarding checklist.
+
+First-Login Document Requirement (Staff / Teachers)
+
+When a new staff member (especially teachers) logs in for the first time, they are required to upload mandatory identity and supporting documents before gaining full account access.
+
+Current mandatory document: National Identification Number (NIN)
+
+The full list of required documents will be finalized during development (pending product owner input).
+
+Required documents are tracked per staff member with a verification status, and can be managed from the Staff / Profile areas and by HR.
+
+7. Employment
+
+Manages employment records.
+
+Includes:
+
+Employment History
+Promotions
+Transfers
+Role Changes
+Contract Renewals
+Salary Grade (future payroll)
+Employment Status
+Exit Records
+
+Institutions define employment categories.
+
+Examples:
+
+Permanent
+Contract
+Part-Time
+Visiting Lecturer
+Volunteer
+Intern
+8. Attendance
+
+HR can monitor staff attendance across the institution.
+
+Supports:
+
+Manual Attendance
+Shift Attendance
+Working Hours
+Overtime
+Absence Records
+Attendance Analytics
+
+Future integrations:
+
+RFID Staff Cards
+Biometric Attendance
+Smart Access Control
+
+Attendance data can feed into future payroll calculations.
+
+9. Leave Management
+
+Supports configurable leave policies.
+
+Examples:
+
+Annual Leave
+Sick Leave
+Maternity Leave
+Paternity Leave
+Compassionate Leave
+Study Leave
+Special Leave
+
+Workflow:
+
+Employee Request → Approval → HR Processing → Calendar Update
+
+Institutions configure:
+
+Leave Types
+Entitlements
+Approval Rules
+Carry-over Policies
+10. Performance Management
+
+Supports continuous staff evaluation.
+
+Institutions define review cycles.
+
+Examples:
+
+Annual
+Termly
+Quarterly
+Custom
+
+Evaluation sources may include:
+
+Principal
+Vice Principal
+HOD
+Peers
+Self Assessment
+
+Performance records include:
+
+Goals
+KPIs
+Competencies
+Observations
+Classroom Reviews (Teachers)
+Recommendations
+Development Plans
+11. Professional Development
+
+Tracks staff learning and growth.
+
+Supports:
+
+Internal Training
+External Training
+Certifications
+Workshops
+Conferences
+Mandatory Compliance Training
+
+Records include:
+
+Attendance
+Completion
+Certificates
+CPD Hours
+12. Documents
+
+Stores employment documents.
+
+Examples:
+
+Employment Letter
+Contracts
+Qualifications
+Certifications
+Appraisal Reports
+Disciplinary Records
+Promotion Letters
+Exit Documents
+
+Version history and access permissions apply.
+
+13. Requests
+
+Uses the platform's Request Management Framework.
+
+Examples:
+
+Leave Request
+Promotion Request
+Transfer Request
+Training Request
+Equipment Request
+Employment Verification Letter
+Contract Renewal Request
+Role Change Request
+
+All requests follow configurable workflows.
+
+14. Reports
+
+Available reports include:
+
+Workforce
+Staff Distribution
+Staff by Department
+Employment Types
+Recruitment Statistics
+Attendance
+Staff Attendance
+Absence Trends
+Leave Utilization
+Performance
+Review Completion
+Department Performance
+Training Participation
+Certification Status
+
+Reports support scheduling, dashboards, and export.
+
+15. Communication
+
+HR can communicate with:
+
+Individual Staff
+Departments
+Campuses
+All Employees
+
+Supported channels:
+
+In-App Notifications
+Email
+SMS
+WhatsApp
+
+Communication templates are configurable.
+
+16. Settings
+
+Permission-controlled settings include:
+
+Employment Types
+Job Titles
+Departments
+Leave Policies
+Review Templates
+Performance Rubrics
+Recruitment Templates
+Onboarding Checklists
+Training Categories
+
+Institution-wide policies remain under Institution Administration.
+
+17. Business Rules
+Institutions define their own organizational structure, job titles, and reporting hierarchy.
+Staff may hold multiple roles simultaneously.
+HR records are protected by role-based access controls.
+Performance reviews follow institution-defined schedules and workflows.
+Leave approvals use the centralized Approval Framework.
+Every employment action is recorded in the audit log.
+Future payroll functionality will integrate with HR records rather than replacing them.
+
+
+Workspace 11 — Secretary / Administrative Officer
+1. Overview
+Purpose
+
+The Secretary Workspace supports the day-to-day administrative operations of the institution.
+
+The role acts as the administrative coordination hub, assisting school leadership by managing records, correspondence, meetings, visitors, calendars, documents, and institution-wide communications.
+
+Responsibilities vary by institution and are controlled through configurable permissions.
+
+2. Dashboard
+KPI Cards
+Today's Meetings
+Pending Approvals
+Visitor Check-ins
+Incoming Correspondence
+Outgoing Correspondence
+Announcements Scheduled
+Administrative Requests
+Tasks Due Today
+Dashboard Widgets
+Today's Calendar
+Pending Tasks
+Recent Documents
+Recent Communications
+Visitor Activity
+Meeting Schedule
+Quick Actions
+Notifications
+3. Navigation
+Dashboard
+
+Correspondence
+
+Meetings
+
+Calendar
+
+Visitors
+
+Announcements
+
+Tasks
+
+Documents
+
+Requests
+
+Reports
+
+Communication
+
+Settings
+
+Profile
+
+Additional modules appear based on permissions.
+
+4. Correspondence
+
+The Correspondence module manages official institutional communication.
+
+Supports:
+
+Incoming
+Letters
+Emails
+Courier Deliveries
+Government Notices
+Internal Memos
+Outgoing
+Official Letters
+Circulars
+Certificates
+Invitations
+Notices
+
+Features:
+
+Reference Numbers
+Templates
+Digital Signatures
+Attachments
+Approval Workflow
+Delivery Tracking
+5. Meetings
+
+Manage institutional meetings.
+
+Supports:
+
+Meeting Scheduling
+Agenda Creation
+Participant Invitations
+Attendance
+Minutes
+Action Items
+Follow-up Tasks
+
+Meeting invitations may be sent through:
+
+Email
+WhatsApp
+In-App Notifications
+6. Calendar
+
+Institution-wide calendar management.
+
+Displays:
+
+Academic Events
+Meetings
+Public Holidays
+Examination Dates
+Admission Events
+Sports Activities
+Staff Events
+
+Institutions can create multiple calendars for different audiences.
+
+7. Visitor Management
+
+Integrated with the Visitor Management module.
+
+Supports:
+
+Visitor Registration
+Appointment Verification
+Host Notification
+Visitor Badges
+Entry & Exit Logs
+Visitor History
+
+Future versions integrate with:
+
+QR Codes
+RFID Visitor Passes
+Smart Gates
+8. Announcements
+
+Create and publish announcements.
+
+Target audiences include:
+
+Entire Institution
+Staff
+Teachers
+Parents
+Students
+Departments
+Classes
+Programs
+Groups & Communities
+
+Announcements may be:
+
+Immediate
+Scheduled
+Draft
+Approval Required
+9. Tasks
+
+Administrative task management.
+
+Supports:
+
+Personal Tasks
+Delegated Tasks
+Recurring Tasks
+Due Dates
+Priorities
+Attachments
+Comments
+
+Tasks may be linked to meetings or requests.
+
+10. Documents
+
+Central document management.
+
+Examples:
+
+Policies
+Circulars
+Meeting Minutes
+Official Forms
+Institution Templates
+Certificates
+Administrative Records
+
+Supports:
+
+Version History
+Access Control
+Search
+Categories
+Approval Workflow
+11. Requests
+
+Built on the platform's Request Management Framework.
+
+Examples:
+
+Certificate Request
+Letter Request
+Transcript Request
+Administrative Approval
+Facility Booking
+Event Approval
+
+Institutions may define additional request types.
+
+12. Reports
+
+Reports include:
+
+Administration
+Correspondence Log
+Meeting Statistics
+Visitor Statistics
+Task Completion
+Announcement Delivery
+Operational
+Document Activity
+Request Processing
+Calendar Utilization
+
+Reports support export and scheduling.
+
+13. Communication
+
+The Secretary can communicate with:
+
+Staff
+Students
+Parents
+Applicants
+Departments
+External Contacts
+
+Supported channels:
+
+Email
+SMS
+WhatsApp
+In-App Notifications
+
+Communication templates are institution-configurable.
+
+14. Settings
+
+Permission-controlled settings include:
+
+Correspondence Templates
+Meeting Templates
+Announcement Templates
+Visitor Categories
+Document Categories
+Calendar Categories
+
+Institution-wide administrative policies remain under Institution Administration.
+
+15. Business Rules
+Secretaries access only the administrative modules assigned by the institution.
+Official correspondence can require approval before distribution.
+Visitor records are retained according to institutional policies.
+Meeting minutes and action items become part of the institutional audit trail.
+All administrative activities are logged for accountability.
+
+
+Role Workspace — Reception & Visitor Management
+1. Overview
+Purpose
+
+The Reception & Visitor Management Workspace manages front desk operations, visitor registration, appointments, access authorization, deliveries, and visitor communications.
+
+The workspace provides a secure and auditable process for everyone entering the institution while integrating with institutional calendars, staff availability, and future CIAM hardware.
+
+2. Dashboard
+KPI Cards
+Visitors Checked In Today
+Visitors Currently On Campus
+Scheduled Appointments
+Pending Visitor Approvals
+Deliveries Received
+Visitor Passes Issued
+Visitors Awaiting Host
+Security Alerts
+Dashboard Widgets
+Today's Visitor Schedule
+Current Visitors
+Upcoming Appointments
+Recent Deliveries
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+Visitors
+
+Appointments
+
+Check-In / Check-Out
+
+Visitor Passes
+
+Deliveries
+
+Communication
+
+Reports
+
+Documents
+
+Settings
+
+Profile
+4. Visitors
+
+Maintain a complete visitor registry.
+
+Each visitor profile includes:
+
+Full Name
+Photograph (optional)
+Contact Information
+Identification Type
+Identification Number
+Organization
+Purpose of Visit
+Host
+Visit History
+Notes
+Restrictions or Flags
+
+Visitors may be:
+
+One-time visitors
+Returning visitors
+Contractors
+Vendors
+Parents
+Government Officials
+Alumni
+Guests
+
+Institutions may define additional visitor categories.
+
+5. Appointments
+
+Manage visitor appointments before arrival.
+
+Supports:
+
+Appointment Requests
+Host Approval
+Calendar Integration
+Appointment Confirmation
+Rescheduling
+Cancellation
+Visitor Instructions
+
+Appointments can be linked to:
+
+Staff
+Departments
+Meetings
+Events
+6. Check-In / Check-Out
+
+Reception staff can:
+
+Register walk-in visitors
+Check in scheduled visitors
+Record check-out time
+Extend visits
+Transfer visitors between hosts (if permitted)
+
+Future CIAM integrations include:
+
+QR Code Check-In
+RFID Visitor Cards
+Smart Gate Entry
+Facial Recognition (future, optional)
+Self-Service Visitor Kiosks
+
+Every entry and exit is recorded in the audit log.
+
+7. Visitor Passes
+
+Generate visitor credentials.
+
+Passes may include:
+
+Visitor Name
+Photograph
+Host
+Department
+Visit Date
+Expiry Time
+QR Code
+RFID Identifier (V2)
+Access Level
+Emergency Instructions
+
+Institutions may print or issue digital visitor passes.
+
+8. Deliveries
+
+Track incoming deliveries.
+
+Supports:
+
+Courier Deliveries
+Mail
+Packages
+Internal Deliveries
+Vendor Deliveries
+
+Records include:
+
+Delivery Reference
+Sender
+Recipient
+Date & Time Received
+Collection Status
+Supporting Documents
+9. Communication
+
+Reception staff can communicate with:
+
+Hosts
+Visitors
+Parents
+Security Personnel
+Administrative Staff
+
+Channels include:
+
+Email
+SMS
+WhatsApp
+In-App Notifications
+
+Examples:
+
+Visitor Arrival Notification
+Appointment Reminder
+Delivery Notification
+Visit Cancellation
+10. Reports
+
+Available reports include:
+
+Visitor Reports
+Daily Visitor Log
+Visitor Trends
+Repeat Visitors
+Visitor Categories
+Peak Visiting Hours
+Operational Reports
+Appointment Statistics
+Delivery Log
+Visitor Pass Usage
+Average Visit Duration
+
+Reports support export and scheduling.
+
+11. Documents
+
+Store documents related to visitor operations.
+
+Examples:
+
+Visitor Policies
+NDA Forms
+Contractor Agreements
+Safety Instructions
+Visitor Consent Forms
+12. Settings
+
+Permission-controlled settings include:
+
+Visitor Categories
+Appointment Types
+Pass Templates
+Check-In Rules
+Visitor Notifications
+Delivery Categories
+Visit Time Limits
+
+Institution-wide security policies remain under Institution Administration.
+
+13. Business Rules
+Every visitor receives a unique visit record.
+Visitor check-in and check-out times are always recorded.
+Institutions configure visitor categories, pass formats, and approval requirements.
+Visits may require host approval before entry, depending on institutional policy.
+Visitor records are retained according to configurable retention policies.
+All visitor activities are fully auditable.
+Enhancement: Unified Identity Management
+
+This workspace should be designed with your Campus Identity & Access Management (CIAM) roadmap in mind.
+
+Rather than treating visitors as isolated records, the platform should manage identities consistently across all people interacting with the institution.
+
+Examples include:
+
+Students
+Parents
+Staff
+Applicants
+Visitors
+Contractors
+Vendors
+Alumni
+Guest Speakers
+
+Each identity type can have configurable credentials and access rights. In V1, this supports digital records, QR codes, and manual verification. In V2, the same identity framework can power RFID cards, smart door access, gate control, attendance, visitor kiosks, and other hardware features without requiring a redesign of the software architecture.
+
+By building around a unified identity model now, you'll make the transition to your CIAM hardware ecosystem much smoother while keeping the platform consistent and scalable.
+
+
+Workspace 12 — School Clinic
+1. Overview
+Purpose
+
+The School Clinic Workspace manages student and staff healthcare within the institution.
+
+It provides a secure environment for recording medical visits, treatments, medications, immunizations, emergencies, referrals, and health monitoring.
+
+Medical information is highly sensitive and is protected by role-based permissions.
+
+2. Dashboard
+KPI Cards
+Patients Seen Today
+Students Currently in Clinic
+Emergency Cases
+Medication Dispensed
+Follow-Up Appointments
+Medical Alerts
+Outstanding Referrals
+Low Stock Alerts
+Dashboard Widgets
+Today's Appointments
+Current Patients
+Emergency Notifications
+Medication Inventory
+Upcoming Follow-Ups
+Recent Medical Activity
+3. Navigation
+Dashboard
+
+Patients
+
+Medical Visits
+
+Appointments
+
+Medical Records
+
+Medication
+
+Immunizations
+
+Inventory
+
+Emergency Cases
+
+Referrals
+
+Reports
+
+Communication
+
+Documents
+
+Settings
+
+Profile
+4. Patients
+
+The clinic can manage both students and staff.
+
+Each patient profile displays:
+
+Basic Information
+Emergency Contacts
+Allergies
+Medical Conditions
+Blood Group
+Current Medications
+Immunization Summary
+Medical Alerts
+Visit History
+
+Selecting a patient opens their profile with medical permissions applied.
+
+5. Medical Visits
+
+Each visit records:
+
+Visit Date & Time
+Reason for Visit
+Symptoms
+Vital Signs
+Examination Notes
+Diagnosis
+Treatment
+Medication Given
+Follow-Up Instructions
+Staff Member Responsible
+
+Visit templates can be customized by the institution.
+
+6. Appointments
+
+Supports:
+
+Clinic Appointments
+Follow-Up Visits
+Health Screenings
+Vaccination Clinics
+Medical Reviews
+
+Appointments may be:
+
+Staff Scheduled
+Parent Requested
+Student Requested (if permitted)
+Automatically Generated
+7. Medical Records
+
+Secure medical history includes:
+
+Allergies
+Chronic Conditions
+Medical Certificates
+Surgical History
+Injury Records
+Laboratory Results (if applicable)
+Specialist Reports
+Care Plans
+
+Access is controlled through permissions and institutional policy.
+
+8. Medication Management
+
+Track medications dispensed within the clinic.
+
+Supports:
+
+Medication Catalogue
+Dispensing Records
+Dosage Instructions
+Expiry Dates
+Stock Levels
+Low Stock Notifications
+
+Future integrations could support barcode scanning.
+
+9. Immunizations
+
+Track required and completed immunizations.
+
+Supports:
+
+Institution Requirements
+Government Requirements
+Reminder Notifications
+Parent Confirmation
+Certificate Uploads
+10. Inventory
+
+Manage clinic supplies.
+
+Examples:
+
+Medicines
+First Aid Supplies
+Medical Equipment
+PPE
+Diagnostic Tools
+
+Features include:
+
+Stock Levels
+Batch Numbers
+Expiry Tracking
+Reorder Alerts
+Purchase History
+11. Emergency Cases
+
+Emergency management includes:
+
+Emergency Registration
+Parent Notification
+Staff Notification
+Ambulance Log
+Incident Timeline
+Treatment Record
+Outcome
+Follow-Up Actions
+
+Every emergency case receives a unique incident record.
+
+12. Referrals
+
+Support internal and external referrals.
+
+Examples:
+
+Hospital Referral
+Specialist Referral
+Counsellor Referral
+Welfare Team Referral
+
+Referral status is tracked until completion.
+
+13. Reports
+
+Available reports include:
+
+Clinical
+Daily Visits
+Common Illnesses
+Medication Usage
+Referral Statistics
+Emergency Incidents
+Operational
+Inventory Usage
+Expired Medication
+Appointment Statistics
+Clinic Activity Trends
+
+Reports support export and scheduling.
+
+14. Communication
+
+Clinic staff can communicate with:
+
+Parents
+Students
+Staff
+Emergency Contacts
+
+Supported channels:
+
+In-App Notifications
+Email
+SMS
+WhatsApp
+
+Examples:
+
+Medication Updates
+Appointment Reminders
+Emergency Notifications
+Follow-Up Instructions
+15. Documents
+
+Store:
+
+Medical Certificates
+Referral Letters
+Consent Forms
+Immunization Records
+Health Reports
+Treatment Plans
+
+Version history and access controls apply.
+
+16. Settings
+
+Permission-controlled settings include:
+
+Visit Templates
+Medical Categories
+Medication Categories
+Referral Types
+Emergency Protocols
+Inventory Categories
+Notification Rules
+
+Institution-wide health policies remain under Institution Administration.
+
+17. Business Rules
+Medical records are visible only to authorized users.
+Emergency contacts must be available for every student where required by the institution.
+Every clinic visit creates a permanent medical record.
+Medication dispensing updates inventory automatically.
+Inventory alerts are generated based on configurable stock thresholds.
+All medical activities are fully audited.
+Parents receive notifications only in accordance with institutional policy and consent settings.
+
+
+18. Student Counselling & Welfare
+Overview
+
+The School Clinic Workspace includes a secure Student Counselling & Welfare module to support students' emotional wellbeing, personal development, safeguarding, and welfare needs.
+
+Access to counselling records is restricted to authorized personnel based on institution-defined permissions.
+
+Navigation
+Counselling
+
+Welfare Cases
+
+Mentorship
+
+Referrals
+
+Follow-ups
+
+Reports
+Counselling
+
+Authorized staff can create confidential counselling records.
+
+Each session includes:
+
+Student
+Session Date
+Session Type
+Reason for Referral
+Summary
+Goals
+Recommendations
+Risk Level
+Follow-up Required
+Assigned Staff
+Attachments
+
+Institutions may configure counselling categories.
+
+Examples:
+
+Academic
+Behaviour
+Emotional Wellbeing
+Family
+Peer Relationships
+Career Guidance
+Personal Development
+Safeguarding
+Custom Categories
+Welfare Cases
+
+Track ongoing student welfare concerns.
+
+Examples include:
+
+Financial Hardship
+Bullying
+Attendance Concerns
+Behaviour Support
+Family Challenges
+Learning Difficulties
+Health Concerns
+Safeguarding Cases
+
+Each case includes:
+
+Case Number
+Status
+Assigned Officer
+Timeline
+Notes
+Documents
+Actions Taken
+Outcome
+Mentorship
+
+Institutions can assign mentors to students.
+
+Mentors may be:
+
+Teachers
+HODs
+Vice Principals
+Principals
+Designated Staff
+External Mentors (if enabled)
+
+The system tracks:
+
+Mentor Assignment
+Meeting Schedule
+Progress Notes
+Student Goals
+Achievements
+Action Plans
+Referrals
+
+Students may be referred by authorized users.
+
+Referral sources include:
+
+Teacher
+Head of Department
+Vice Principal
+Principal
+School Clinic
+Institution Administrator
+Student Self-Referral (optional)
+Parent Request (optional)
+
+Referral reasons are institution-configurable.
+
+Follow-up Schedule
+
+Each counselling or welfare case supports structured follow-up.
+
+Features include:
+
+Next Review Date
+Assigned Staff
+Progress Tracking
+Completed Actions
+Pending Actions
+Reminder Notifications
+Case Closure
+Confidential Case Notes
+
+Authorized staff can maintain confidential notes for each case.
+
+Features include:
+
+Timestamped Entries
+Author
+Attachments
+Internal Comments
+Visibility Controls
+Audit History
+
+Case notes are not visible to unauthorized users, including teachers and parents unless explicitly permitted by institutional policy.
+
+Reports
+
+Generate reports such as:
+
+Active Welfare Cases
+Counselling Sessions
+Referral Sources
+Follow-up Completion
+Common Welfare Categories
+Mentorship Participation
+Student Support Outcomes
+
+Reports respect role-based permissions and confidentiality.
+
+Business Rules
+Counselling and welfare records are protected by role-based access controls.
+Institutions determine which roles can create, view, update, or close cases.
+Every referral creates an auditable case history.
+Follow-up reminders are generated automatically according to institution-defined schedules.
+Mentorship assignments may be manual or automated based on configurable rules.
+Parents are notified only when required by institutional policy or applicable legal and safeguarding requirements.
+
+
+Role Workspace — Librarian
+1. Overview
+Purpose
+
+The Librarian Workspace manages the institution's physical and digital learning resources.
+
+It supports cataloguing, circulation, reservations, inventory, fines, digital resources, and reporting while integrating with student, staff, academic, and finance records.
+
+Institutions may enable or disable library features according to their needs.
+
+2. Dashboard
+KPI Cards
+Total Resources
+Resources on Loan
+Overdue Items
+Reservations
+Digital Resource Views
+New Resources Added
+Lost Resources
+Outstanding Fines
+Dashboard Widgets
+Recent Borrowing Activity
+Overdue Items
+Popular Resources
+Inventory Alerts
+New Acquisitions
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+Catalog
+
+Loans
+
+Reservations
+
+Digital Resources
+
+Inventory
+
+Members
+
+Fines & Payments
+
+Reports
+
+Communication
+
+Documents
+
+Settings
+
+Profile
+4. Catalog
+
+Manage all learning resources.
+
+Resource types include:
+
+Books
+Textbooks
+Journals
+Magazines
+Newspapers
+Research Papers
+eBooks
+PDFs
+Videos
+Audio Resources
+Institution Publications
+Custom Resource Types
+
+Each resource stores:
+
+Title
+Author
+ISBN (where applicable)
+Publisher
+Edition
+Subject
+Academic Level
+Category
+Keywords
+Physical/Digital Location
+Availability Status
+5. Loans
+
+Manage borrowing and returns.
+
+Features include:
+
+Check-Out
+Check-In
+Loan Renewal
+Due Dates
+Overdue Tracking
+Lost Item Reporting
+Damaged Item Reporting
+
+Loan rules are configurable by institution.
+
+6. Reservations
+
+Users can reserve unavailable resources.
+
+Supports:
+
+Waiting Lists
+Reservation Expiry
+Automatic Notifications
+Priority Rules
+Reservation History
+7. Digital Resources
+
+Manage online learning materials.
+
+Supports:
+
+eBooks
+PDFs
+Videos
+Audio
+Interactive Learning Materials
+
+Students and staff can:
+
+Read Online
+Download (if permitted)
+Bookmark
+Highlight
+Annotate
+Resume Reading
+Track Reading Progress
+
+This module integrates with your Lesson Notes framework.
+
+8. Inventory
+
+Manage physical library inventory.
+
+Supports:
+
+Multiple Copies
+Shelf Locations
+Barcode Support (future)
+RFID Support (V2)
+Condition Tracking
+Stock Audits
+Resource Disposal
+Acquisition Records
+9. Members
+
+Library membership includes:
+
+Students
+Staff
+Administrators
+
+Institutions define:
+
+Borrowing Limits
+Loan Periods
+Eligible Resource Types
+Membership Categories
+10. Fines & Payments
+
+Supports:
+
+Late Return Fines
+Lost Item Charges
+Damage Charges
+Waivers
+Appeals
+
+Payments integrate with the Finance module.
+
+11. Reports
+
+Reports include:
+
+Circulation
+Borrowing Statistics
+Most Borrowed Resources
+Overdue Trends
+Lost Resources
+Reservation Statistics
+Inventory
+Collection Summary
+Resource Age
+Damaged Resources
+Acquisition Trends
+Digital
+Reading Activity
+Downloads
+Popular Digital Resources
+Engagement Statistics
+12. Communication
+
+The Librarian can send:
+
+Due Date Reminders
+Overdue Notices
+Reservation Availability
+Library Announcements
+New Resource Notifications
+
+Channels:
+
+Email
+SMS
+WhatsApp
+In-App Notifications
+13. Documents
+
+Store:
+
+Library Policies
+Membership Rules
+Acquisition Records
+Vendor Documents
+Resource Licenses
+14. Settings
+
+Permission-controlled settings include:
+
+Resource Categories
+Borrowing Rules
+Fine Policies
+Reservation Rules
+Membership Types
+Digital Access Rules
+Notification Templates
+
+Institution-wide policies remain under Institution Administration.
+
+15. Business Rules
+Institutions configure borrowing limits and loan periods.
+Digital and physical resources may have different access policies.
+Fines are calculated according to institution-defined rules.
+Library transactions are audited.
+Lost and damaged resources follow configurable resolution workflows.
+Finance integration handles fine collection and fee reconciliation.
+
+
+Role Workspace — Hostel Officer
+1. Overview
+Purpose
+
+The Hostel Officer Workspace manages student accommodation, room allocation, occupancy, inspections, maintenance, disciplinary incidents, visitor access, and residential welfare.
+
+The module integrates with Student Records, Finance, Visitor Management, Student Support, and future CIAM hardware.
+
+2. Dashboard
+KPI Cards
+Total Hostels
+Occupied Rooms
+Available Beds
+Pending Allocations
+Maintenance Requests
+Resident Visitors
+Welfare Cases
+Outstanding Hostel Fees
+Dashboard Widgets
+Occupancy Overview
+New Check-ins
+Maintenance Queue
+Student Requests
+Hostel Notices
+Upcoming Inspections
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+Hostels
+
+Rooms & Beds
+
+Residents
+
+Allocations
+
+Check-in / Check-out
+
+Maintenance
+
+Visitors
+
+Inspections
+
+Incidents
+
+Requests
+
+Reports
+
+Communication
+
+Settings
+
+Profile
+4. Hostels
+
+Institutions define their own hostel structure.
+
+Examples:
+
+Male Hostel A
+Female Hostel B
+Senior Hostel
+Junior Hostel
+Staff Quarters (optional)
+
+Each hostel includes:
+
+Name
+Capacity
+Warden
+Floors
+Blocks
+Facilities
+Rules
+Status
+
+Nothing is hardcoded.
+
+5. Rooms & Beds
+
+Supports:
+
+Buildings
+Floors
+Wings
+Rooms
+Bed Spaces
+
+Each bed has:
+
+Status
+Current Occupant
+Reservation Status
+Maintenance Status
+Inspection History
+
+Institutions define their own numbering system.
+
+6. Residents
+
+Each resident profile includes:
+
+Student Information
+Assigned Hostel
+Room
+Bed
+Check-in History
+Visitor History
+Discipline Records
+Welfare Notes
+Maintenance Reports
+Emergency Contacts
+
+Opening a resident links to the Student Workspace.
+
+7. Allocations
+
+Supports:
+
+Automatic Allocation
+Manual Allocation
+Room Transfers
+Waiting Lists
+Priority Rules
+
+Allocation criteria may include:
+
+Academic Level
+Gender
+Accessibility Requirements
+Scholarship Status
+Program
+Institution-defined rules
+8. Check-in / Check-out
+
+Track:
+
+Initial Check-in
+Room Acceptance
+Inventory Verification
+End-of-Term Check-out
+Clearance
+Damage Assessment
+Key/Card Return
+
+Future CIAM integration:
+
+RFID Access Cards
+Smart Door Locks
+Digital Room Access
+9. Maintenance
+
+Hostel staff can manage:
+
+Repairs
+Cleaning Requests
+Furniture Replacement
+Utility Issues
+Safety Inspections
+
+Requests follow the Request Management Framework.
+
+10. Visitors
+
+Manage hostel visitors.
+
+Supports:
+
+Visitor Registration
+Visiting Hours
+Host Approval
+Entry Logs
+Exit Logs
+
+Future versions support:
+
+QR Visitor Passes
+RFID Visitor Access
+11. Inspections
+
+Schedule:
+
+Routine Room Inspections
+Safety Checks
+Cleanliness Reviews
+End-of-Term Inspections
+
+Inspection records include:
+
+Findings
+Photos
+Recommendations
+Follow-up Actions
+12. Incidents
+
+Track residential incidents.
+
+Examples:
+
+Rule Violations
+Damage
+Medical Emergencies
+Welfare Concerns
+Safety Incidents
+Theft Reports
+
+Incidents may generate referrals to Student Support, Clinic, Security, or Administration.
+
+13. Requests
+
+Uses the Request Management Framework.
+
+Examples:
+
+Room Change
+Maintenance Request
+Additional Furniture
+Early Check-out
+Lost Key/Card
+Hostel Transfer
+
+Institutions can create custom request types.
+
+14. Reports
+
+Reports include:
+
+Occupancy
+Occupancy Rate
+Bed Utilization
+Waiting Lists
+Room Availability
+Operations
+Maintenance Trends
+Inspection Results
+Visitor Statistics
+Incident Reports
+Finance
+Hostel Fee Collection
+Outstanding Hostel Fees
+Damage Charges
+15. Communication
+
+Hostel Officers can communicate with:
+
+Residents
+Parents
+Wardens
+Maintenance Staff
+Security
+
+Channels:
+
+Email
+SMS
+WhatsApp
+In-App Notifications
+16. Settings
+
+Institutions configure:
+
+Hostel Types
+Room Types
+Allocation Rules
+Visitor Policies
+Inspection Templates
+Maintenance Categories
+Curfew Rules
+Resident Categories
+17. Business Rules
+Hostel structures are fully configurable.
+Room allocation rules are institution-defined.
+Maintenance and room change requests use the Request Management Framework.
+Every check-in, transfer, and check-out is audited.
+Residential incidents may integrate with Student Support and disciplinary processes.
+Future CIAM hardware extends access control without changing the software workflow.
+
+
+Role Workspace — Transport Officer
+1. Overview
+Purpose
+
+The Transport Officer Workspace manages the institution's transportation services, including vehicles, routes, drivers, student assignments, scheduling, maintenance, and transport billing.
+
+The module supports institution-owned fleets and third-party transport providers.
+
+2. Dashboard
+KPI Cards
+Active Vehicles
+Active Routes
+Students Enrolled
+Drivers on Duty
+Scheduled Trips Today
+Vehicles Under Maintenance
+Outstanding Transport Fees
+Transport Requests
+Dashboard Widgets
+Today's Trips
+Route Status
+Vehicle Availability
+Maintenance Alerts
+Driver Schedule
+Recent Incidents
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+Vehicles
+
+Drivers
+
+Routes
+
+Stops
+
+Students
+
+Trips
+
+Attendance
+
+Maintenance
+
+Requests
+
+Reports
+
+Communication
+
+Settings
+
+Profile
+4. Vehicles
+
+Manage all transport assets.
+
+Each vehicle includes:
+
+Registration Number
+Vehicle Number
+Capacity
+Driver Assignment
+Assistant/Bus Monitor
+Vehicle Type
+Status
+Insurance Details
+Inspection Dates
+Maintenance History
+
+Future integrations:
+
+GPS Tracking
+RFID Readers
+Smart Attendance Devices
+CCTV Event Integration
+5. Drivers
+
+Driver profiles include:
+
+Personal Information
+License Details
+Assigned Vehicle
+Assigned Routes
+Certifications
+Medical Fitness
+Employment Status
+Incident History
+Performance Records
+6. Routes
+
+Institutions define their own transport routes.
+
+Each route contains:
+
+Route Name
+Stops
+Pickup Times
+Drop-off Times
+Assigned Vehicle
+Assigned Driver
+Capacity
+Estimated Duration
+
+Routes may vary by:
+
+Session
+Day
+Academic Level
+Special Programs
+7. Stops
+
+Manage pickup and drop-off locations.
+
+Each stop includes:
+
+Name
+Address
+GPS Coordinates (optional)
+Estimated Arrival Time
+Assigned Students
+Safety Notes
+8. Student Transport
+
+Assign students to transport services.
+
+Each record includes:
+
+Assigned Route
+Pickup Stop
+Drop-off Stop
+Transport Status
+Guardian Information
+Emergency Contact
+Transport Fee Plan
+Special Instructions
+
+Transport assignments may follow approval workflows.
+
+9. Trips
+
+Manage daily transport operations.
+
+Supports:
+
+Morning Trips
+Afternoon Trips
+Special Trips
+Event Transportation
+Excursions
+
+Each trip records:
+
+Vehicle
+Driver
+Attendance
+Departure Time
+Arrival Time
+Delays
+Incidents
+10. Attendance
+
+Track transport attendance separately from classroom attendance.
+
+Supports:
+
+Boarding Attendance
+Drop-off Confirmation
+Missed Pickup Records
+Absence Tracking
+
+Future V2:
+
+RFID Card Tap
+QR Code Check-In
+Parent Notifications
+Automated Attendance Sync
+11. Maintenance
+
+Track vehicle maintenance.
+
+Supports:
+
+Preventive Maintenance
+Repairs
+Service Schedule
+Tire Replacement
+Fuel Logs (optional)
+Inspection Records
+Maintenance Costs
+
+Maintenance requests use the Request Management Framework.
+
+12. Requests
+
+Examples:
+
+Transport Enrollment
+Route Change
+Stop Change
+Temporary Suspension
+Permanent Withdrawal
+Lost Transport Card (future)
+Special Trip Request
+
+Institutions may create custom request types.
+
+13. Reports
+
+Reports include:
+
+Operations
+Vehicle Utilization
+Route Performance
+Student Ridership
+Attendance Statistics
+Trip History
+Maintenance
+Maintenance Costs
+Vehicle Downtime
+Service Compliance
+Finance
+Transport Fee Collection
+Outstanding Balances
+Route Revenue
+14. Communication
+
+Transport staff can communicate with:
+
+Parents
+Drivers
+Bus Monitors
+Students
+School Administration
+
+Channels:
+
+In-App Notifications
+Email
+SMS
+WhatsApp
+
+Examples:
+
+Bus Delays
+Route Changes
+Emergency Notifications
+Maintenance Updates
+15. Settings
+
+Institutions configure:
+
+Route Structures
+Stop Categories
+Vehicle Types
+Driver Roles
+Attendance Rules
+Fee Structures
+Notification Rules
+16. Business Rules
+Transport services are optional and can be enabled per institution.
+Route structures, stops, and pricing are fully configurable.
+Students may be assigned to one or more transport services, depending on institutional policy.
+Transport attendance is maintained separately from academic attendance but may be synchronized for reporting.
+Vehicle maintenance follows configurable schedules and approval workflows.
+Future CIAM integrations extend attendance and vehicle access without changing the software architecture.
+
+
+Role Workspace — ICT Administrator
+1. Overview
+Purpose
+
+The ICT Administrator Workspace manages the institution's technology infrastructure within the platform.
+
+Responsibilities include user account administration, device management, integrations, technical support, access provisioning, security monitoring, and institution-level technology settings.
+
+The ICT Administrator does not manage academic or financial operations unless explicitly granted additional permissions.
+
+2. Dashboard
+KPI Cards
+Active Users
+New User Accounts
+Locked Accounts
+Connected Devices
+Open Support Tickets
+Active Integrations
+Security Alerts
+System Health
+Dashboard Widgets
+Recent Logins
+Failed Login Attempts
+Device Status
+Integration Status
+Support Queue
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+User Management
+
+Access Management
+
+Devices
+
+Support Desk
+
+Integrations
+
+Security
+
+Audit Logs
+
+Reports
+
+Communication
+
+Settings
+
+Profile
+4. User Management
+
+Manage institution user accounts.
+
+Supports:
+
+Create Accounts
+Activate Accounts
+Suspend Accounts
+Password Reset
+Account Unlock
+Account Recovery
+Bulk User Import
+Bulk User Export
+
+User accounts are linked to:
+
+Students
+Parents
+Staff
+Applicants
+External Users
+5. Access Management
+
+Manage platform access.
+
+Supports:
+
+Role Assignment
+Permission Assignment
+Temporary Access
+Delegated Access
+Multi-Role Users
+Session Management
+
+Institutions can:
+
+Create Custom Roles
+Clone Roles
+Disable Roles
+Configure Permission Templates
+6. Device Management
+
+Manage institution-connected devices.
+
+Examples:
+
+Desktop Computers
+Laptops
+Tablets
+Interactive Boards
+Shared Kiosks
+Future RFID Readers
+Future Attendance Devices
+
+Each device stores:
+
+Name
+Type
+Assigned User
+Assigned Location
+Status
+Warranty
+Maintenance History
+7. Support Desk
+
+Built on the Request Management Framework.
+
+Supports:
+
+Technical Support Requests
+Password Assistance
+Device Issues
+Software Requests
+Account Issues
+Printer Issues
+Network Issues
+Hardware Faults
+
+Features:
+
+Ticket Assignment
+Priority Levels
+SLA Tracking
+Resolution History
+8. Integrations
+
+Manage institution integrations.
+
+Examples:
+
+Payment Gateways
+Email Providers
+SMS Providers
+WhatsApp Provider
+Calendar Services
+Authentication Providers
+Future Learning Platforms
+
+Institutions enable only the integrations they require.
+
+9. Security
+
+Monitor institution security.
+
+Supports:
+
+Failed Login Monitoring
+Suspicious Activity
+Session Management
+Login History
+Device Access
+Account Lockouts
+Password Policies
+Two-Factor Authentication (if enabled)
+
+Future versions:
+
+Single Sign-On (SSO)
+Identity Federation
+Hardware Authentication
+10. Audit Logs
+
+View institution audit activity.
+
+Tracks:
+
+Login Activity
+User Actions
+Permission Changes
+Configuration Changes
+Data Exports
+Integration Activity
+Security Events
+
+Audit logs are searchable and exportable.
+
+11. Reports
+
+Reports include:
+
+Users
+Active Users
+Inactive Users
+Login Statistics
+Role Distribution
+Security
+Failed Login Attempts
+Locked Accounts
+Security Events
+Password Reset Activity
+Support
+Ticket Volume
+Resolution Time
+SLA Performance
+Common Issues
+12. Communication
+
+ICT staff can communicate with:
+
+Staff
+Students
+Parents
+Institution Administrators
+
+Examples:
+
+Planned Maintenance
+System Updates
+Security Alerts
+Password Expiry Notifications
+Service Outages
+
+Channels:
+
+In-App Notifications
+Email
+SMS
+WhatsApp
+13. Settings
+
+Permission-controlled settings include:
+
+Authentication Policies
+Password Policies
+Session Timeout
+Device Policies
+Integration Settings
+Security Notifications
+Account Recovery Rules
+
+Institution-wide governance settings remain under Institution Administration.
+
+14. Business Rules
+ICT Administrators manage technology resources but do not automatically receive academic or financial permissions.
+User accounts are linked to platform identities rather than individual modules.
+Support requests follow the Request Management Framework.
+All administrative actions are recorded in the audit log.
+Institutions may assign multiple ICT Administrators with different permission levels.
+Future CIAM hardware integrates through this workspace while preserving the same identity and permission model.
+
+
+Role Workspace — Parent
+1. Overview
+Purpose
+
+The Parent Workspace provides parents and guardians with a centralized view of their children's academic progress, wellbeing, finances, communication, and school activities.
+
+A parent may be linked to one or more students across one or more institutions (where supported by the organization).
+
+Access is limited to the students the parent or guardian is authorized to manage.
+
+2. Dashboard
+KPI Cards
+Children Enrolled
+Outstanding Fees
+Upcoming Events
+Assignments Due
+Attendance Summary
+New Announcements
+Pending Requests
+Unread Messages
+Dashboard Widgets
+Child Overview
+Academic Progress
+Attendance Summary
+Recent Results
+Upcoming Assessments
+School Calendar
+Notifications
+Quick Actions
+
+If a parent has multiple children, the dashboard provides both a combined overview and child-specific filters.
+
+3. Navigation
+Dashboard
+
+My Children
+
+Academics
+
+Assignments
+
+Attendance
+
+Learning Resources
+
+Portfolio
+
+Finance
+
+Student Support
+
+Communication
+
+Requests
+
+Calendar
+
+Reports
+
+Profile & Family
+4. My Children
+
+Displays all linked students.
+
+Selecting a child switches the entire workspace context to that student.
+
+Each child profile shows:
+
+Student Information
+Class
+Academic Level
+Homeroom Teacher
+Attendance
+Current Performance
+Outstanding Fees
+Medical Alerts (where permitted)
+Recent Activity
+5. Academics
+
+Parents can view:
+
+Subjects
+Continuous Assessments
+Examination Results
+Report Cards
+Teacher Comments
+Academic Progress
+Class Position (if enabled)
+Promotion Status
+
+Historical records remain available.
+
+6. Assignments
+
+Parents can monitor:
+
+Homework
+Projects
+Submission Status
+Due Dates
+Teacher Feedback
+Grades
+
+Parents may receive reminders for overdue work.
+
+7. Attendance
+
+Displays:
+
+Daily Attendance
+Monthly Summary
+Late Arrivals
+Early Departures
+Absence Reasons
+Attendance Trends
+
+Attendance notifications are configurable by the institution.
+
+8. Learning Resources
+
+Parents can access learning materials published for their children.
+
+Examples:
+
+Lesson Notes
+Reading Materials
+Videos
+Assignments
+Revision Resources
+
+Parents may monitor reading progress where enabled.
+
+9. Student Portfolio
+
+Parents can view their child's portfolio, including:
+
+Projects
+Certificates
+Awards
+Leadership Roles
+Clubs & Communities
+Community Service
+Teacher Recommendations
+Achievements
+
+Portfolio visibility is controlled by the institution.
+
+10. Finance
+
+Parents can:
+
+View Invoices
+Make Payments
+Download Receipts
+View Payment History
+Apply for Payment Plans
+Request Scholarships
+Request Discounts
+Track Finance Requests
+
+All financial actions integrate with the Finance module.
+
+11. Student Support
+
+Parents can access permitted information relating to:
+
+Welfare Updates
+Support Plans
+Mentorship Participation
+Behaviour Records (if enabled)
+Clinic Visits (where institution policy permits)
+Follow-up Actions
+
+Confidential counselling notes remain hidden unless explicitly shared by authorized staff.
+
+12. Communication
+
+Parents communicate with:
+
+Teachers
+HODs
+School Administration
+Finance
+Admissions (where applicable)
+Clinic
+Transport Office
+
+Supports:
+
+Direct Messaging
+Announcements
+Broadcast Messages
+Meeting Invitations
+
+Channels:
+
+In-App Messaging
+Email
+SMS
+WhatsApp
+13. Requests
+
+Built on the Request Management Framework.
+
+Examples:
+
+Leave of Absence
+Payment Plan Request
+Scholarship Request
+Student Transfer Request
+Transport Enrollment
+Document Request
+Appointment Request
+Welfare Request
+
+Institutions can configure available request types.
+
+14. Calendar
+
+Parents can view:
+
+School Calendar
+Examination Dates
+Assignment Deadlines
+Parent-Teacher Meetings
+Sports Days
+Holidays
+Club Activities
+Institution Events
+
+Events can be filtered by child.
+
+15. Reports
+
+Available reports include:
+
+Academic Progress
+Attendance Summary
+Fee Statements
+Assignment Completion
+Portfolio Summary
+Student Growth
+Behaviour Summary (if enabled)
+
+Reports can be downloaded according to institutional policy.
+
+16. Profile & Family
+
+Parents can manage:
+
+Personal Information
+Contact Details
+Emergency Contacts
+Authorized Pickup Persons
+Communication Preferences
+Notification Preferences
+
+Institutions control which fields parents may edit.
+
+17. Business Rules
+A parent may be linked to one or more students.
+Parents can only access information for students they are authorized to manage.
+Visibility of medical, behavioural, and welfare information is controlled by institutional policy and permissions.
+Financial requests and administrative requests use the centralized Request Management Framework.
+All parent actions are audited where appropriate.
+Parent Engagement
+
+The Parent Workspace includes a dedicated Parent Engagement capability to strengthen collaboration between families and the institution.
+
+Features include:
+
+Parent-Teacher Conferences
+Request meetings
+View scheduled meetings
+Meeting history
+Follow-up notes
+Surveys
+Complete institution surveys
+Respond anonymously where permitted
+View survey invitations
+Events
+RSVP for school events
+Volunteer opportunities
+Open days
+PTA meetings
+Announcements
+Personalized announcements
+School-wide announcements
+Class-specific updates
+Feedback
+Submit compliments
+Raise concerns
+Suggest improvements
+Track submitted feedback
+
+
+Role Workspace — Student
+1. Overview
+Purpose
+
+The Student Workspace serves as the student's personalized digital campus, providing access to academics, learning resources, assignments, communication, finance, wellbeing, extracurricular activities, and institutional services.
+
+The workspace adapts to each student's academic level, enrolled programs, permissions, and institution configuration.
+
+2. Dashboard
+KPI Cards
+Today's Classes
+Upcoming Assignments
+Attendance Rate
+Current GPA/Average (if enabled)
+Outstanding Fees (optional)
+Active Clubs & Programs
+New Announcements
+Pending Requests
+Dashboard Widgets
+Today's Schedule
+Assignment Timeline
+Academic Progress
+Recent Results
+Learning Streak
+Calendar
+Notifications
+Quick Actions
+
+Students can personalize their dashboard by enabling, disabling, or rearranging supported widgets.
+
+3. Navigation
+Dashboard
+
+Academics
+
+Learning
+
+Assignments
+
+Assessments
+
+Attendance
+
+Timetable
+
+Programs & Communities
+
+Portfolio
+
+Student Support
+
+Finance
+
+Requests
+
+Communication
+
+Calendar
+
+Documents
+
+Profile
+4. Academics
+
+Students can view:
+
+Subjects
+Teachers
+Academic Level
+Class
+Continuous Assessments
+Examination Results
+Report Cards
+Academic Progress
+Promotion History
+Teacher Feedback
+
+Institutions control which academic information is visible.
+
+5. Learning
+
+This integrates with the Learning Content Framework.
+
+Students can access:
+
+Lesson Notes
+eBooks
+PDFs
+Videos
+Audio Lessons
+Interactive Learning Content
+Embedded Quizzes
+Revision Materials
+
+Features include:
+
+Offline Reading
+Highlighting
+Personal Notes & Annotations
+Bookmarks
+Reading Progress Sync
+Search Within Content
+Continue Reading
+6. Assignments
+
+Students can:
+
+View Assignments
+Submit Work
+Upload Files
+Track Submission Status
+View Grades
+Read Teacher Feedback
+View Rubrics (if enabled)
+
+Late submission rules follow institution policies.
+
+7. Assessments
+
+Displays:
+
+Upcoming Tests
+CBT Examinations
+Practical Assessments
+Oral Assessments
+Completed Assessments
+Assessment Results
+Performance Analysis
+
+Students receive reminders before scheduled assessments.
+
+8. Attendance
+
+Students can view:
+
+Daily Attendance
+Monthly Attendance
+Attendance Trends
+Late Arrivals
+Excused Absences
+Attendance Notifications
+
+If transport attendance is enabled, it is shown separately.
+
+9. Timetable
+
+Displays:
+
+Daily Schedule
+Weekly Timetable
+Examination Timetable
+Club Activities
+Special Events
+
+Updates synchronize automatically when schedules change.
+
+10. Programs & Communities
+
+Students can:
+
+Browse Available Programs
+Join Clubs
+Enroll in Paid Programs (subject to approval and payment)
+View Memberships
+Access Program Resources
+Track Attendance
+View Certificates
+Participate in Community Activities
+
+Examples:
+
+Robotics Club
+Debate Society
+Coding Academy
+Summer School
+Football Team
+11. Portfolio
+
+Students build a lifelong portfolio containing:
+
+Academic Projects
+Awards
+Certificates
+Leadership Roles
+Community Service
+Clubs
+Competitions
+Skills
+Teacher Recommendations
+Achievements
+
+Students may upload additional evidence where permitted.
+
+12. Student Support
+
+Students can access support services, including:
+
+Welfare Cases (where appropriate)
+Mentorship
+Counselling Appointments
+Follow-up Activities
+Academic Support Plans
+Referrals
+Clinic Appointments
+
+Students only see information appropriate to their permissions and institutional policies.
+
+13. Finance
+
+Students can view (or, where permitted, pay):
+
+Outstanding Fees
+Payment History
+Invoices
+Receipts
+Scholarships
+Discounts
+Payment Plans
+
+Financial actions may require parent authorization depending on institutional policy.
+
+14. Requests
+
+Built on the Request Management Framework.
+
+Examples:
+
+Leave Request
+Transport Enrollment
+Club Registration
+Hostel Transfer
+Room Change
+Document Request
+Transcript Request
+Welfare Request
+IT Support Request
+
+Available request types are configured by the institution.
+
+15. Communication
+
+Students can communicate with authorized users.
+
+Examples:
+
+Teachers
+Mentors
+HODs
+Administration
+Finance
+Library
+Clinic
+Transport Office
+
+Communication channels:
+
+In-App Messaging
+Email
+SMS
+WhatsApp
+
+Institutions define communication rules.
+
+16. Calendar
+
+Students can view:
+
+Class Schedule
+Assignment Deadlines
+Examinations
+School Events
+Club Meetings
+Holidays
+Personal Reminders
+
+Calendar entries can be filtered by category.
+
+17. Documents
+
+Students can access:
+
+Report Cards
+Certificates
+Admission Letter
+Fee Receipts
+Timetables
+Medical Documents (where permitted)
+Learning Resources
+Institution Documents
+
+Documents can be downloaded according to institution policies.
+
+18. Profile
+
+Students manage:
+
+Personal Information (where permitted)
+Profile Photo
+Contact Information
+Emergency Contacts (view only or editable, per policy)
+Notification Preferences
+Privacy Preferences
+19. Business Rules
+Students only access modules and data permitted by institutional policy.
+Learning progress synchronizes across supported devices.
+Request workflows follow the centralized Request Management Framework.
+Student actions are recorded in the audit log where appropriate.
+Academic, financial, medical, and welfare records remain under role-based access control.
+Module visibility can vary by academic level, institution type, or student status.
+
+
+Role Workspace — Security Officer
+1. Overview
+Purpose
+
+The Security Officer Workspace manages campus safety, access control, security incidents, patrols, emergencies, lost-and-found records, and coordination with other departments.
+
+The workspace integrates with Visitor Management, Reception, Hostel, Student Support, Clinic, and future CIAM hardware such as smart gates, access cards, and CCTV event integration.
+
+2. Dashboard
+KPI Cards
+Visitors on Campus
+Security Incidents
+Active Patrols
+Emergency Alerts
+Access Violations
+Lost & Found Items
+Restricted Access Attempts
+Open Security Cases
+Dashboard Widgets
+Active Visitors
+Emergency Alerts
+Patrol Schedule
+Incident Queue
+Recent Access Events
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+Access Control
+
+Visitors
+
+Patrols
+
+Incidents
+
+Emergency Management
+
+Lost & Found
+
+Requests
+
+Reports
+
+Communication
+
+Settings
+
+Profile
+4. Access Control
+
+Manage campus access.
+
+Supports:
+
+Entry Monitoring
+Exit Monitoring
+Restricted Area Access
+Temporary Access
+Visitor Verification
+Gate Logs
+
+Future integrations:
+
+QR Codes
+RFID Cards
+NFC
+Facial Recognition (optional)
+Smart Gates
+5. Visitors
+
+Integrated with the Reception & Visitor Management module.
+
+Security staff can:
+
+Verify Visitors
+Approve Entry (if authorized)
+Deny Entry
+Record Incidents
+View Visit History
+Monitor Visitors Currently on Campus
+6. Patrols
+
+Manage routine patrols.
+
+Supports:
+
+Patrol Scheduling
+Patrol Checkpoints
+Incident Logging
+Patrol Notes
+Shift Assignments
+Patrol Completion Tracking
+
+Future versions may support GPS-assisted patrol verification.
+
+7. Security Incidents
+
+Track all security-related events.
+
+Examples:
+
+Unauthorized Access
+Theft
+Vandalism
+Student Altercations
+Missing Student
+Suspicious Activity
+Property Damage
+Facility Breach
+
+Each incident includes:
+
+Incident Number
+Date & Time
+Location
+Persons Involved
+Description
+Evidence
+Actions Taken
+Follow-up
+Status
+8. Emergency Management
+
+Supports:
+
+Medical Emergencies
+Fire Incidents
+Security Threats
+Natural Disasters
+Building Evacuation
+Lockdown Procedures
+
+Each emergency includes:
+
+Response Timeline
+Assigned Responders
+Notifications Sent
+Resolution
+Post-Incident Review
+9. Lost & Found
+
+Track recovered property.
+
+Supports:
+
+Item Registration
+Owner Verification
+Claim Process
+Collection History
+Disposal Records
+10. Requests
+
+Uses the Request Management Framework.
+
+Examples:
+
+Temporary Access Request
+Event Security Request
+Visitor Exception Request
+Security Escort Request
+Lost Property Claim
+11. Reports
+
+Reports include:
+
+Security
+Incident Statistics
+Access Violations
+Visitor Security Reports
+Patrol Performance
+Emergency Response Time
+Operations
+Lost & Found Summary
+Security Requests
+Restricted Access Reports
+12. Communication
+
+Security Officers communicate with:
+
+Reception
+School Administration
+Clinic
+Hostel Officers
+Teachers
+Parents (when authorized)
+Emergency Responders
+
+Channels:
+
+In-App Notifications
+Email
+SMS
+WhatsApp
+13. Settings
+
+Institutions configure:
+
+Access Zones
+Incident Categories
+Patrol Schedules
+Emergency Protocols
+Visitor Verification Rules
+Lost & Found Categories
+14. Business Rules
+Security actions are fully audited.
+Incident reports cannot be permanently deleted.
+Emergency notifications follow institution-defined escalation rules.
+Access permissions integrate with the platform's identity framework.
+Future CIAM hardware extends physical security without changing platform workflows.
+
+
+Role Workspace — Applicant
+1. Overview
+Purpose
+
+The Applicant Workspace provides prospective students and their guardians with a secure portal to complete the admission process from application through enrollment.
+
+The portal is fully configurable, allowing each institution to define its own admission workflow, required documents, assessments, and communication process.
+
+2. Dashboard
+KPI Cards
+Application Status
+Outstanding Requirements
+Upcoming Assessments
+Interview Schedule
+Admission Decision
+Enrollment Progress
+Dashboard Widgets
+Application Timeline
+Admission Checklist
+Upcoming Activities
+Messages
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+My Application
+
+Required Documents
+
+Assessments
+
+Interviews
+
+Offers
+
+Enrollment
+
+Finance
+
+Messages
+
+Requests
+
+Profile
+
+Navigation automatically adapts to the institution's admission process. For example, if interviews are disabled, that menu item is hidden.
+
+4. My Application
+
+Applicants can:
+
+Start a new application
+Continue a saved application
+Update permitted information before submission
+Track application status
+View application history
+
+The application form is fully configurable by the institution.
+
+5. Required Documents
+
+Applicants upload documents required by the institution.
+
+Examples include:
+
+Birth Certificate
+Passport Photograph
+Previous School Results
+Transfer Letter
+Medical Records
+National Identification
+Recommendation Letters
+Custom Documents
+
+Each document displays its review status:
+
+Pending Review
+Verified
+Rejected
+Resubmission Required
+6. Assessments
+
+Applicants can:
+
+View scheduled entrance examinations
+Complete online assessments (if enabled)
+View assessment instructions
+Download admit slips
+View assessment results (if permitted)
+
+Supports:
+
+CBT
+Written Exams
+Practical Tests
+Placement Assessments
+7. Interviews
+
+If interviews are part of the admission process, applicants can:
+
+View interview schedules
+Confirm attendance
+Reschedule (if permitted)
+Join virtual interviews (future)
+View interview instructions
+8. Offers
+
+Applicants can:
+
+View admission decisions
+Download offer letters
+Accept or decline offers
+View offer expiry dates
+Complete required acceptance steps
+
+Institutions define offer validity periods and conditions.
+
+9. Enrollment
+
+After accepting an offer, applicants complete enrollment.
+
+Tasks may include:
+
+Payment of admission fees
+Acceptance of institutional policies
+Submission of final documents
+Parent/Guardian confirmation
+Account activation
+
+Once complete, the applicant record is converted into a student record while preserving the admissions history.
+
+10. Finance
+
+Applicants can:
+
+View application fees
+Pay admission-related fees
+Download receipts
+View payment history
+
+Supported payment methods depend on the institution's configured payment gateways.
+
+11. Messages
+
+Applicants receive communications from:
+
+Admissions Office
+Finance Office
+Institution Administration
+
+Supported channels:
+
+In-App Messages
+Email
+SMS
+WhatsApp
+12. Requests
+
+Built on the Request Management Framework.
+
+Examples:
+
+Application Correction
+Document Resubmission
+Interview Reschedule
+Admission Appeal
+Payment Verification
+
+Institutions configure available request types.
+
+13. Profile
+
+Applicants manage:
+
+Personal Information
+Contact Details
+Parent/Guardian Information
+Emergency Contacts
+Communication Preferences
+
+Editing permissions are controlled by the institution and may be restricted after submission.
+
+14. Business Rules
+Institutions define admission workflows, forms, and required documents.
+Applicants only see the steps applicable to their application.
+Application history is retained after enrollment for auditing.
+All applicant actions are logged.
+Access to the Applicant Workspace ends once the account is converted to a student account, unless the institution chooses to preserve read-only access to the application history.
+
+
+Applicants often complete applications over several days and from multiple devices. The platform should:
+
+Automatically save progress.
+Allow applications to be resumed from any device.
+Validate completed sections.
+Indicate incomplete fields.
+Prevent data loss during network interruptions.
+Show the percentage of completion.
+
+This improves the admission experience significantly, especially in regions with intermittent internet connectivity, and aligns well with your goal of making the platform accessible on both web and mobile.
+
+Role Workspace — Organization Administrator
+1. Overview
+Purpose
+
+The Organization Administrator manages a group of educational institutions from a centralized workspace.
+
+An organization may own one or many institutions, each with its own configuration, users, academic structure, branding, and operational settings.
+
+The Organization Administrator oversees governance, standardization, reporting, licensing, and shared services across all institutions without interfering with institution-level daily operations unless granted permission.
+
+2. Dashboard
+KPI Cards
+Institutions
+Active Students
+Active Staff
+Organization Users
+Pending Institution Requests
+Active Subscriptions
+Organization Announcements
+System Health
+Dashboard Widgets
+Institution Overview
+Enrollment Trends
+Revenue Summary
+Academic Performance Snapshot
+Compliance Alerts
+Pending Approvals
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+Institutions
+
+Institution Templates
+
+Organization Users
+
+Shared Services
+
+Analytics
+
+Approvals
+
+Communication
+
+Requests
+
+Reports
+
+Organization Settings
+
+Profile
+4. Institutions
+
+Manage all institutions within the organization.
+
+Supports:
+
+Create Institution
+Archive Institution
+Suspend Institution
+Restore Institution
+Assign Institution Administrators
+View Institution Health
+View Subscription Status
+
+Each institution maintains its own data while remaining part of the organization.
+
+5. Institution Templates
+
+Create reusable templates that institutions can adopt.
+
+Templates may include:
+
+Academic Structures
+Grading Systems
+Report Card Templates
+Fee Categories
+Staff Roles
+Permission Sets
+Approval Workflows
+Admission Workflows
+Subject Catalogues
+Department Structures
+
+Institutions can adopt a template and customize it afterward without affecting the original.
+
+6. Organization Users
+
+Manage users with organization-level responsibilities.
+
+Examples:
+
+Regional Directors
+Organization Finance Officers
+Organization HR
+Curriculum Supervisors
+Auditors
+Compliance Officers
+
+Users can be assigned access to one, several, or all institutions.
+
+7. Shared Services
+
+Organizations may centralize certain services.
+
+Examples:
+
+Central Finance
+Central HR
+Central Admissions
+Procurement (future)
+Curriculum Development
+Teacher Training
+IT Support
+Legal & Compliance
+
+Institutions decide which services are managed centrally and which remain local.
+
+8. Analytics
+
+View organization-wide insights.
+
+Examples:
+
+Enrollment Trends
+Student Retention
+Academic Performance
+Fee Collection
+Staff Distribution
+Attendance
+Resource Utilization
+Institution Comparisons
+
+Reports can be filtered by institution, region, academic year, or other configurable dimensions.
+
+9. Approvals
+
+Organization-level approval center.
+
+Examples:
+
+Institution Creation
+Subscription Changes
+New Institution Administrators
+Shared Policy Changes
+Organization-wide Templates
+High-Level Financial Requests
+
+Uses the centralized Approval Framework.
+
+10. Communication
+
+Communicate with:
+
+Institution Administrators
+Regional Managers
+Organization Staff
+Multiple Institutions
+Selected Institutions
+
+Supports:
+
+Announcements
+Circulars
+Emergency Notifications
+Scheduled Communications
+
+Channels:
+
+In-App
+Email
+SMS
+WhatsApp
+11. Requests
+
+Built on the Request Management Framework.
+
+Examples:
+
+Institution Support Requests
+New Institution Request
+Template Update Request
+Shared Service Request
+Subscription Upgrade Request
+12. Reports
+
+Reports include:
+
+Organization
+Institution Performance
+Enrollment Growth
+Student Population
+Staff Population
+Academic Performance
+Financial Performance
+Compliance Status
+Operational
+Template Adoption
+Shared Service Utilization
+User Activity
+Approval Statistics
+13. Organization Settings
+
+Configure:
+
+Organization Profile
+Branding
+Shared Templates
+Default Policies
+Institution Defaults
+Shared Integrations
+Organization Calendar
+Organization Roles
+
+Institution-specific settings remain under each Institution Administrator.
+
+14. Business Rules
+Organizations may manage one or many institutions.
+Institutions maintain separate operational data unless sharing is explicitly enabled.
+Shared templates are version-controlled.
+Organization users only access institutions assigned to them.
+Shared services operate according to configurable organizational policies.
+All organization-level actions are audited.
+
+One feature that would make your platform exceptionally powerful is Cross-Institution Services.
+
+Examples include:
+
+A teacher employed by the organization can teach at multiple institutions without duplicate profiles.
+Students can transfer between institutions with their academic history preserved.
+Shared libraries, digital learning resources, and question banks can be maintained centrally.
+Organization-wide professional development can be assigned to staff across all schools.
+Finance and HR teams can operate as shared service centers while still respecting institution-specific rules.
+
+This builds on your existing configurable architecture and gives education groups the flexibility to operate as either fully independent schools or as a coordinated network under a single organization. It's a capability that many traditional school management systems struggle to support effectively.
+
+
+
+Role Workspace — Institution Administrator
+1. Overview
+Purpose
+
+The Institution Administrator is the highest administrative role within an educational institution.
+
+This workspace manages institution-wide configuration, governance, user administration, permissions, modules, approvals, integrations, branding, compliance, and operational oversight.
+
+Operational responsibilities may be delegated to other roles through the platform's permission system.
+
+2. Dashboard
+KPI Cards
+Active Students
+Active Staff
+Parents Linked
+Pending Approvals
+Outstanding Requests
+Active Modules
+Institution Health
+Subscription Status
+Dashboard Widgets
+Enrollment Overview
+Financial Snapshot
+Attendance Summary
+Academic Performance
+Staff Overview
+Support Requests
+Compliance Alerts
+Notifications
+Quick Actions
+3. Navigation
+Dashboard
+
+Institution Setup
+
+Academic Structure
+
+Staff & Roles
+
+Users
+
+Modules
+
+Approvals
+
+Automation
+
+Analytics
+
+Communication
+
+Integrations
+
+Reports
+
+Audit Center
+
+Settings
+
+Profile
+4. Institution Setup
+
+Configure the institution.
+
+Supports:
+
+Institution Profile
+Branding
+Logo
+Contact Information
+Campuses
+Academic Sessions
+Terms/Semesters
+Time Zones
+Languages
+Working Days
+School Hours
+
+Nothing is hardcoded.
+
+5. Academic Structure
+
+Institutions define their own structure.
+
+Examples:
+
+Academic Levels
+Classes
+Streams
+Departments
+Faculties
+Programs
+Subjects
+Subject Groups
+Electives
+Curriculum Structure
+Grading Systems
+Report Card Templates
+
+Everything is institution-defined.
+
+6. Staff & Roles
+
+Manage:
+
+Staff Roles
+Permission Sets
+Reporting Hierarchy
+Role Templates
+Department Structures
+
+Supports:
+
+Custom Roles
+Role Cloning
+Permission Groups
+Delegated Administration
+
+Examples:
+
+Principal
+Vice Principal
+HOD
+Registrar
+Finance Officer
+Secretary
+Custom Roles
+7. Users
+
+Manage:
+
+Students
+Parents
+Staff
+Applicants
+
+Supports:
+
+Bulk Import
+Bulk Export
+User Activation
+User Suspension
+Identity Verification
+Account Recovery
+8. Modules
+
+One of the platform's strongest differentiators.
+
+Institutions choose which modules are active.
+
+Examples:
+
+Admissions
+Finance
+Library
+Hostel
+Transport
+Clinic
+Student Support
+Visitor Management
+Clubs & Communities
+Learning Resources
+Timetable Builder
+Surveys
+WhatsApp Notifications
+Automation Center
+
+Modules can be:
+
+Enabled
+Disabled
+Permission Restricted
+9. Approval Center
+
+The Institution Administrator has access to the centralized Approval Center.
+
+Examples:
+
+Admissions
+Finance
+HR
+Student Support
+Transport
+Library
+Hostel
+Clubs
+Procurement (future)
+
+Approvals are displayed in one unified queue with filtering by module, priority, requester, status, and due date.
+
+10. Automation Center
+
+One of the platform's flagship capabilities.
+
+Institutions can automate processes without writing code.
+
+Examples:
+
+When
+
+Student is admitted
+
+Then
+
+Generate student ID
+Create portal account
+Assign class
+Generate invoice
+Notify parent
+Notify class teacher
+
+Other automation examples:
+
+Attendance alerts
+Fee reminders
+Certificate generation
+Report card publishing
+Staff onboarding
+Birthday greetings
+Low inventory alerts
+Escalation rules
+
+Institutions create their own workflows.
+
+11. Analytics
+
+Institution-wide dashboards.
+
+Examples:
+
+Enrollment
+Attendance
+Finance
+Academic Performance
+Staff Performance
+Student Welfare
+Library Usage
+Transport Usage
+Clinic Activity
+
+Dashboards are customizable.
+
+12. Communication
+
+Manage institution-wide communication.
+
+Supports:
+
+Announcements
+Emergency Alerts
+Scheduled Messages
+Newsletters
+Broadcast Messages
+
+Channels:
+
+In-App
+Email
+SMS
+WhatsApp
+
+Templates are configurable.
+
+13. Integrations
+
+Configure:
+
+Payment Gateways
+Email Providers
+SMS Providers
+WhatsApp Providers
+Authentication Providers
+Calendar Services
+Storage Providers
+
+Future integrations include:
+
+LMS platforms
+Accounting software
+Government reporting systems
+Biometric devices
+Smart campus hardware
+14. Reports
+
+Institution-wide reporting.
+
+Examples:
+
+Academic
+Financial
+HR
+Admissions
+Student Success
+Transport
+Hostel
+Library
+Clinic
+Compliance
+Audit
+
+Supports scheduled reports and exports.
+
+15. Audit Center
+
+The Institution Administrator has visibility into platform activity.
+
+Examples:
+
+Login History
+Permission Changes
+Configuration Changes
+Financial Actions
+Academic Changes
+Automation Executions
+Security Events
+
+Audit records are immutable and searchable.
+
+16. Settings
+
+Institution-wide settings include:
+
+Branding
+Feature Selection
+Default Templates
+Notification Preferences
+Academic Defaults
+Financial Defaults
+Workflow Defaults
+Security Policies
+Data Retention Policies
+
+Where possible, defaults can be overridden by module-specific settings.
+
+17. Business Rules
+The Institution Administrator has the highest level of authority within an institution but can delegate responsibilities through custom roles and permissions.
+Institution-specific configurations do not affect other institutions within the organization.
+All configuration changes are versioned and audited.
+Modules can be enabled or disabled without affecting historical data.
+Institution policies override platform defaults where permitted.
+Automation workflows execute according to institution-defined rules.
+
+
+
+Role Workspace — Platform Super Administrator
+1. Overview
+Purpose
+
+The Platform Super Administrator manages the OpenSchool ERP platform, its organizations, subscriptions, infrastructure, platform services, marketplace, security, compliance, and operational health.
+
+Platform Super Administrators do not participate in the day-to-day operations of individual institutions unless granted temporary support access.
+
+The Platform Super Administrator oversees the platform as a Software-as-a-Service (SaaS) product.
+
+2. Dashboard
+KPI Cards
+Organizations
+Institutions
+Active Users
+Platform Uptime
+Active Subscriptions
+Monthly Revenue
+Support Tickets
+System Health
+Dashboard Widgets
+Platform Health
+Organization Growth
+Subscription Analytics
+Revenue Overview
+Infrastructure Status
+Security Alerts
+Product Updates
+Quick Actions
+3. Navigation
+Dashboard
+
+Organizations
+
+Subscriptions
+
+Marketplace
+
+Support Center
+
+Platform Analytics
+
+Platform Services
+
+System Monitoring
+
+Security
+
+Compliance
+
+Feature Management
+
+Reports
+
+Audit Center
+
+Platform Settings
+
+Profile
+4. Organizations
+
+Manage organizations using the platform.
+
+Supports:
+
+Create Organization
+Suspend Organization
+Archive Organization
+Restore Organization
+Assign Organization Administrators
+View Organization Health
+View Subscription Status
+
+Organizations own one or more institutions.
+
+5. Subscriptions
+
+Manage commercial aspects of the platform.
+
+Supports:
+
+Subscription Plans
+Billing
+Renewals
+Trials
+Feature Limits
+Usage Metrics
+Add-ons
+License Management
+
+Supports:
+
+Monthly Plans
+Annual Plans
+Enterprise Contracts
+6. Marketplace
+
+The Marketplace allows institutions to extend their platform.
+
+Examples:
+
+Institution Templates
+Report Card Templates
+Certificate Templates
+Email Templates
+Automation Templates
+Report Templates
+AI Prompt Packs (future)
+Third-Party Integrations
+Themes
+Icon Packs
+
+Marketplace content may be:
+
+Free
+Paid
+OpenSchool Verified
+Community Published (future)
+7. Support Center
+
+Manage:
+
+Support Tickets
+Live Support
+Remote Assistance
+Institution Support Requests
+Incident Management
+Platform Announcements
+
+Temporary support access should require approval and be fully audited.
+
+8. Platform Analytics
+
+Monitor platform-wide metrics.
+
+Examples:
+
+Daily Active Users
+Institution Growth
+Student Growth
+Revenue
+Feature Adoption
+Module Usage
+API Usage
+AI Usage (future)
+9. Platform Services
+
+Manage shared platform services.
+
+Examples:
+
+Email Service
+SMS Service
+WhatsApp Service
+File Storage
+Notification Queue
+Search Index
+Background Jobs
+AI Services (future)
+
+Monitor health, capacity, and failures from a centralized view.
+
+10. System Monitoring
+
+Provides real-time operational visibility.
+
+Examples:
+
+Server Health
+Database Performance
+Queue Status
+API Performance
+Storage Usage
+Error Rates
+Scheduled Maintenance
+Deployment Status
+11. Security
+
+Manage platform-wide security.
+
+Supports:
+
+Administrator Access
+Two-Factor Authentication
+API Keys
+OAuth Clients
+Threat Monitoring
+Abuse Detection
+Audit Reviews
+Session Management
+
+Future support:
+
+Single Sign-On
+Hardware Security Keys
+12. Compliance
+
+Manage:
+
+Privacy Compliance
+Data Retention Policies
+Regional Regulations
+Consent Management
+Audit Requirements
+Data Export Requests
+Data Deletion Requests
+
+Compliance tools should support multiple jurisdictions, allowing institutions to meet local regulatory requirements.
+
+13. Feature Management
+
+Control platform capabilities.
+
+Supports:
+
+Feature Flags
+Beta Programs
+Experimental Features
+Module Releases
+Gradual Rollouts
+Early Access Programs
+
+Allows OpenSchool to safely release new functionality without impacting all customers simultaneously.
+
+14. Reports
+
+Platform-wide reporting.
+
+Examples:
+
+Revenue
+Growth
+Usage
+Adoption
+Support
+Performance
+Security
+Compliance
+Marketplace
+15. Audit Center
+
+Track every platform-level administrative action.
+
+Examples:
+
+Subscription Changes
+Organization Creation
+Support Access
+Security Events
+Platform Configuration
+Marketplace Publishing
+Feature Flag Changes
+
+Audit logs are immutable and retained according to platform policy.
+
+16. Platform Settings
+
+Manage global platform configuration.
+
+Examples:
+
+Default Branding Assets
+Global Notification Providers
+Platform Email Templates
+Platform SMS Templates
+Default AI Settings (future)
+Global Security Policies
+Global Rate Limits
+Maintenance Windows
+
+Institution-specific settings remain isolated from platform defaults.
+
+17. Business Rules
+Platform Super Administrators do not automatically have unrestricted access to institution data.
+Temporary access to an institution for troubleshooting must require authorization, be time-limited, and be fully audited.
+Organizations and institutions remain logically isolated to preserve tenant security.
+Platform-wide changes must not override institution-specific configurations unless explicitly designed to do so.
+Feature releases should support staged rollouts through feature flags.
+All platform administrative actions are permanently recorded in the audit lo

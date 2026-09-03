@@ -1,0 +1,17 @@
+{
+  "name": "openschool-erp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Educational Institution ERP Platform",
+  "scripts": {
+    "dev": "pnpm --filter @openschool/web dev",
+    "build": "pnpm --filter @openschool/web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

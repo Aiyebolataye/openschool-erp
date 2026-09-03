@@ -1,0 +1,484 @@
+04 — Core Platform Capabilities
+1. Overview
+
+The platform is an Educational Institution ERP Platform designed to support a wide variety of educational institutions without hardcoded assumptions about their organizational, academic, financial, or operational structures.
+
+Every institution should be able to configure its own environment to match how it operates.
+
+Core Principle
+
+Nothing that varies between educational institutions should be hardcoded.
+
+Institution-specific structures—including academic levels, grading systems, departments, fee structures, approval workflows, organizational hierarchies, report cards, and learning programs—must be configurable wherever practical.
+
+2. Multi-Tenant Architecture
+
+The platform is multi-tenant from day one.
+
+A single platform instance can host:
+
+Multiple Organizations
+Multiple Institutions
+Multiple Campuses (optional)
+Multiple Academic Sessions
+Multiple Academic Structures
+
+Each institution operates independently with:
+
+Users
+Branding
+Domain
+Configuration
+Modules
+Data
+Roles
+Permissions
+
+No institution can access another institution's data.
+
+## Identity & Access
+
+The platform provides centralized identity and access management.
+
+Features include:
+
+- Authentication
+- Multi-role users
+- Role-based permissions
+- Permission groups
+- Delegated access
+- Multi-factor authentication
+- Session management
+- Password policies
+
+Permissions determine what users can see and perform throughout the platform.
+
+3. Institution Configuration
+
+Every institution configures its own operational structure.
+
+Examples include:
+
+Academic Structure
+Sessions
+Terms
+Semesters
+Academic Levels
+Classes
+Streams
+Departments
+Subjects
+Organizational Structure
+Staff Roles
+Leadership Hierarchy
+Reporting Structure
+Approval Levels
+Committees
+Academic Policies
+Grading Systems
+Promotion Rules
+Attendance Rules
+Assessment Structure
+Report Card Templates
+Financial Structure
+Fee Categories
+Fee Structures
+Discounts
+Scholarships
+Payment Plans
+Payment Gateways
+Institution Identity
+Logo
+Brand Colors
+Domain
+Website
+Public Pages
+4. Programs, Groups & Communities
+
+The platform supports flexible organization of learners and staff beyond traditional classes.
+
+Programs
+
+A Program represents a structured educational or extracurricular offering.
+
+Examples:
+
+Summer School
+Robotics Academy
+Coding Academy
+SAT Preparation
+Holiday Camp
+Music Academy
+
+Programs may contain one or more Groups.
+
+Groups & Communities
+
+Groups are flexible collections of members.
+
+Examples include:
+
+Classes
+Subject Groups
+Clubs
+Sports Teams
+Houses
+Boarding Groups
+Mentorship Groups
+Academic Support Groups
+Staff Committees
+Student Leadership Teams
+
+Institutions may create unlimited custom groups.
+
+Paid Programs
+
+Programs or groups may be:
+
+Free
+Paid
+
+Paid offerings support:
+
+One-time payments
+Recurring payments
+Installments
+Capacity limits
+Waiting lists
+Enrollment approval
+Automatic invoice generation
+Integration with the Finance Module
+
+Summer School & Credit Recovery
+
+A Summer School Program is a specialized, typically paid program that institutions use for credit recovery.
+
+Students who fail a course are automatically or manually flagged for credit recovery.
+
+A flagged student may be enrolled in a Summer School (remediation) group to recover the failed course credit(s).
+
+Enrollment may require payment depending on institutional policy.
+
+Credit Recovery workflow:
+
+1. Results identify a student who failed one or more courses.
+2. The student is flagged for credit recovery.
+3. Institution Admin (or a delegated staff member) enrolls the student in a Summer School remediation group.
+4. A fee plan is attached (one-time, installments, or recurring), generating an invoice.
+5. The student attends the remediation group and completes the course.
+6. Upon completion, the failed grade is updated / credit is recovered.
+
+Summer School remediation groups support the paid-program capabilities:
+
+One-time payments
+Recurring payments
+Installments
+Capacity limits
+Waiting lists
+Enrollment approval
+Automatic invoice generation
+Integration with the Finance Module
+Attendance tracking
+Course/grad recovery records
+
+Rollover handling / failed-grade reuse is configurable per institution.
+5. Entity Workspace Architecture
+
+The platform follows a workspace-first design philosophy.
+
+Major entities have dedicated workspaces that centralize all related information and actions.
+
+Core workspaces include:
+
+Student
+Staff
+Parent
+Applicant
+Class
+Subject
+Department
+Program
+Group
+Visitor
+Vehicle
+Hostel
+Clinic Patient
+Library Item (optional)
+Asset
+
+Each workspace provides a consistent navigation pattern while exposing only the modules and actions relevant to that entity.
+
+6. Configurable Approval Framework
+
+Approval workflows are fully configurable.
+
+Institutions define:
+
+Approval levels
+Approval order
+Required approvers
+Escalation rules
+Delegation
+Time limits
+
+Approvals are performed inline where work occurs and are also available through the centralized Approval Center.
+
+7. Automation Framework
+
+The platform includes a configurable automation engine.
+
+Automations can be triggered by events such as:
+
+Student admission
+Enrollment in a program
+Fee payment
+Attendance thresholds
+Result publication
+Assignment submission
+Approval completion
+Medical alerts
+
+Automations can perform actions including:
+
+Notifications
+Record updates
+Workflow progression
+Document generation
+Task creation
+
+## Scheduling Framework
+
+The platform supports scheduled operations across modules.
+
+Examples include:
+
+- Scheduled reports
+- Automated reminders
+- Recurring notifications
+- Background processing
+- Data synchronization
+- Maintenance jobs
+
+Schedules are configurable by authorized administrators.
+
+8. Communication Framework
+
+The platform provides centralized communication across all modules.
+
+Supported channels:
+
+In-App Notifications
+Email
+SMS
+WhatsApp
+Push Notifications (mobile)
+
+Communication rules are configurable per institution.
+
+## Integration Framework
+
+The platform supports integration with external services through standardized connectors.
+
+Examples include:
+
+- Payment Gateways
+- Email Providers
+- SMS Providers
+- WhatsApp Business
+- Calendar Services
+- Cloud Storage
+- Government Services (where available)
+
+Integrations should be configurable without modifying application code.
+
+9. Learning Content Framework
+
+Teachers create digital learning materials using reusable templates.
+
+Supported content includes:
+
+Lesson Notes
+Reading Materials
+PDFs
+Videos
+Audio
+Interactive Content
+Embedded Quizzes
+
+Students can:
+
+Read online
+Read offline
+Highlight text
+Create annotations
+Bookmark content
+Sync progress across devices
+
+Publication follows institution-defined approval workflows.
+
+10. Student Success Framework
+
+The platform supports holistic student development beyond academics.
+
+Institutions can manage:
+
+Academic Interventions
+Welfare Cases
+Mentorship
+Counselling
+Behaviour Support
+Attendance Recovery
+Learning Support
+
+Progress is tracked collaboratively by authorized staff.
+
+11. Portfolio Framework
+
+Student portfolios provide a long-term record of achievement.
+
+Portfolio items include:
+
+Projects
+Awards
+Certificates
+Leadership Roles
+Community Service
+Clubs
+Competitions
+Teacher Recommendations
+
+Portfolio visibility is configurable by the institution.
+
+12. Survey Framework
+
+Institutions can create surveys for:
+
+Students
+Parents
+Staff
+Applicants
+
+The Platform Administrator can also issue platform-wide surveys to gather feedback and improve the product.
+
+Surveys support:
+
+Anonymous or identified responses
+Scheduled distribution
+Analytics
+Export
+
+## Reporting & Analytics
+
+Reporting is available across all modules.
+
+Capabilities include:
+
+- Interactive dashboards
+- KPI cards
+- Charts
+- Scheduled reports
+- Historical trends
+- Drill-down reporting
+- PDF, Excel and CSV exports
+
+Report visibility is permission-controlled.
+
+13. Institution Template Framework
+
+The platform ships with optional templates that accelerate onboarding.
+
+Templates may include:
+
+Academic Structures
+Fee Structures
+Report Card Templates
+Staff Roles
+Approval Workflows
+Branding
+Subject Lists
+Department Structures
+
+Institutions may customize any imported template.
+
+## Document Generation
+
+The platform generates standardized documents using configurable templates.
+
+Examples include:
+
+- Admission Letters
+- Student ID Cards
+- Report Cards
+- Certificates
+- Receipts
+- Invoices
+- Staff Letters
+- Visitor Passes
+
+Generated documents inherit institution branding where applicable.
+
+## File Management
+
+The platform provides centralized file storage for documents and media.
+
+Features include:
+
+- Secure uploads
+- File preview
+- Version history
+- Access control
+- Download tracking
+- Storage quotas (optional)
+
+File permissions follow the platform's role-based access model.
+
+## Security Framework
+
+Platform security is enforced through multiple layers.
+
+Key capabilities include:
+
+- Role-based access control
+- Multi-factor authentication
+- Audit logging
+- Session management
+- Password policies
+- Data encryption
+- Rate limiting
+- Secure API access
+
+Security policies apply consistently across all modules.
+
+14. AI Extension Framework
+
+The architecture reserves extension points for AI capabilities in future releases.
+
+Potential AI features include:
+
+Lesson note generation
+Question generation
+Student performance insights
+Timetable optimization
+Parent communication drafting
+Report summarization
+Predictive risk analysis
+
+AI-generated outputs must always require human review before affecting institutional records or communications.
+
+15. Future Hardware Ecosystem (V2)
+
+Version 2 introduces the Campus Identity & Access Management (CIAM) ecosystem.
+
+Supported hardware will include:
+
+RFID Identity Cards
+Smart ID Printing
+RFID Readers
+Smart Door Controllers
+Smart Gate Controllers
+Visitor Pass Printers
+Staff Attendance Terminals
+Student Attendance Terminals
+Optional CCTV event integration
+
+The hardware ecosystem is developed and supplied as part of the platform rather than relying on third-party branded solutions.

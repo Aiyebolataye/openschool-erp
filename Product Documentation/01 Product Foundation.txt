@@ -1,0 +1,843 @@
+01 — Product Foundation
+1. Product Overview
+Product Name: Educational Institution ERP Platform
+
+Product Category
+
+Multi-tenant, white-label Educational Institution Enterprise Resource Planning (ERP) platform delivered as Software-as-a-Service (SaaS).
+
+Purpose
+
+Provide educational institutions with a configurable digital platform to manage academic, administrative, financial, communication, operational, and institutional processes from a single system.
+
+The platform is designed to support institutions of different sizes, structures, curricula, and operational models without requiring custom software development.
+
+Platform Objectives
+
+The platform enables institutions to manage:
+
+Academic administration
+Student lifecycle
+Staff management
+Parent engagement
+Admissions
+Attendance
+Assessments & examinations
+Learning content
+Finance
+Payroll
+Human resources
+Communication
+Student welfare
+School clinic
+Visitor management
+Library
+Hostel
+Transport
+Inventory & assets
+Website management
+Reports & analytics
+Automation
+Institution configuration
+Product Type
+
+The platform is an Educational Institution ERP, not a Learning Management System (LMS).
+
+Teaching and learning tools are included where they support institutional operations, while advanced digital learning capabilities may be expanded in future releases.
+
+2. Vision
+
+Create the most configurable Educational Institution ERP platform that enables any educational institution to digitize its operations without custom software development.
+
+3. Mission
+
+Provide educational institutions with a secure, scalable, and configurable platform that simplifies administration, improves collaboration, supports teaching and learning, and enables data-driven decision-making.
+
+## Product Scope
+
+### Version 1
+
+The first release focuses on providing a complete, configurable ERP platform for educational institutions.
+
+Core capabilities include:
+
+- Admissions
+- Student Information Management
+- Academics
+- Learning Management
+- Finance
+- Human Resources
+- Library
+- Clinic
+- Hostel
+- Transport
+- Visitor Management
+- Student Support & Welfare
+- Parent Portal
+- Student Portal
+- Communication
+- Automation
+- Reporting & Analytics
+- Institution Website
+- Multi-tenant Platform Management
+
+### Future Releases
+
+Future versions may introduce:
+
+- AI-powered assistance
+- Marketplace
+- Mobile applications
+- Smart Campus (RFID, Biometrics, Smart Gates)
+- Public APIs
+- Advanced Predictive Analytics
+
+4. Product Goals
+
+The platform shall:
+
+Reduce administrative workload.
+Eliminate duplicate data entry.
+Improve communication.
+Digitize institutional workflows.
+Increase operational transparency.
+Improve student outcomes.
+Support institutional growth.
+Enable automation of repetitive tasks.
+Provide actionable reporting and analytics.
+Scale from a single institution to large educational organizations.
+5. Target Institutions
+
+Initial Release:
+
+Primary Schools
+Secondary Schools
+Combined Primary & Secondary Schools
+Colleges
+Tutorial Centres
+
+Future Support:
+
+Universities
+Polytechnics
+Monotechnics
+Technical Colleges
+Vocational Institutions
+Training Academies
+Corporate Learning Institutions
+6. Target Users
+
+The platform supports multiple user types.
+
+Institution Management
+
+School Administrator
+Principal
+Vice Principal
+Head of Department
+Department Managers
+Custom Administrative Roles
+
+Academic Staff
+
+Subject Teachers
+Class Teachers
+Teaching Assistants (Future)
+
+Administrative Staff
+
+Admissions
+Finance
+Human Resources
+Secretary
+Reception
+Clinic
+Library
+Hostel
+Transport
+Inventory
+ICT
+
+Students
+
+Parents & Guardians
+
+Applicants
+
+Platform Administration
+
+Platform Super Admin
+Organization Administrator
+
+Additional roles may be created by institutions through the Custom Roles system.
+
+7. Deployment Model
+
+The platform is delivered as a cloud-hosted SaaS application.
+
+Supported clients:
+
+Web Application
+Android Application
+iOS Application
+
+Each institution operates within its own isolated tenant.
+
+8. Multi-Tenant Architecture
+
+Each institution receives:
+
+Independent database records
+Separate branding
+Independent users
+Institution-specific configurations
+Independent academic structure
+Independent financial configuration
+Independent automation rules
+Independent permissions
+Independent domains/subdomains
+
+Institutions cannot access data belonging to another institution.
+
+9. White-Label Platform
+
+Each institution can customize:
+
+Logo
+Colors
+Typography
+Login page
+Homepage
+Public website
+Email templates
+Notification templates
+Report card templates
+Certificates
+Student ID cards
+Staff ID cards
+Portal branding
+10. Product Philosophy
+
+The platform is built on the following principles.
+
+Configuration First
+
+Institution-specific behavior should be configurable rather than hardcoded.
+
+Metadata Driven
+
+Academic structures, grading systems, workflows, organizational hierarchies, financial models, and permissions should be defined through configuration.
+
+Modular
+
+Institutions enable only the modules they require.
+
+Secure by Default
+
+Security features are enabled by default and configurable where appropriate.
+
+Mobile First Experience
+
+All features available on the web platform should also be available on the mobile applications unless restricted by hardware limitations.
+
+API First
+
+Every major platform capability should be accessible through secure APIs.
+
+Automation Ready
+
+Manual processes should be replaceable with configurable automation rules.
+
+AI Ready
+
+The platform architecture should support future AI capabilities without requiring major redesign.
+
+Smart Campus Ready
+
+Future integrations with RFID, smart cards, access control, biometrics, CCTV, IoT devices, and other campus technologies should integrate with the existing architecture.
+
+## Product Principles
+
+The platform is guided by the following principles:
+
+- Configuration over customization.
+- Nothing institution-specific should be hardcoded.
+- Security and privacy by design.
+- Mobile-first user experience.
+- Consistent user experience across all workspaces.
+- Modular architecture.
+- Permission-based access to all features and data.
+- Automation where it improves operational efficiency.
+- Scalable from a single institution to large educational organizations.
+
+11. Core Product Principles
+
+The following principles govern every design and development decision.
+
+Principle 1
+
+Nothing that varies between educational institutions should be hardcoded.
+
+Academic structures, grading systems, class hierarchies, fee structures, departments, approval workflows, calendars, report templates, admission numbering, communication preferences, organizational hierarchies, staff roles, and similar institution-specific configurations must be configurable wherever practical.
+
+Principle 2
+
+The platform should model how institutions operate rather than forcing institutions to change their processes.
+
+Principle 3
+
+Configuration should always be preferred over customization.
+
+Institutions configure existing capabilities rather than requiring custom software development.
+
+Principle 4
+
+Every action affecting institutional data should be permission-controlled, auditable, and traceable.
+
+Principle 5
+
+Every workflow should support configurable approval processes where appropriate.
+
+Principle 6
+
+The platform should scale from a single institution to organizations managing multiple institutions.
+
+Principle 7
+
+Every feature should integrate naturally with the rest of the platform rather than operating as an isolated module.
+
+Principle 8
+
+The user experience should remain consistent across web and mobile platforms.
+
+12. Product Ecosystem (Version 1)
+
+Core Platform
+
+Educational Institution ERP (Web)
+Educational Institution ERP (Android)
+Educational Institution ERP (iOS)
+
+Institution Website
+
+Public Website
+Website Builder
+Admissions Portal
+
+User Portals
+
+Staff Portal
+Parent Portal
+Student Portal
+Applicant Portal
+
+Administration
+
+Platform Administration
+Organization Administration
+Institution Administration
+
+13. Platform Modules 
+
+Overview
+
+The Educational Institution ERP Platform is organized into independent but integrated modules.
+
+Modules can be enabled or disabled by the institution based on subscription, licensing, and operational requirements.
+
+Every module integrates with the platform's authentication, permissions, notification, reporting, audit logging, and automation systems.
+
+Core Administration
+Dashboard
+
+Provides role-specific dashboards with KPIs, quick actions, recent activity, pending approvals, alerts, and analytics.
+
+Institution Management
+
+Manage institution profile, branding, campuses (future), academic configuration, operational settings, and subscription.
+
+User & Access Management
+
+Manage user accounts, authentication, roles, permissions, invitations, account lifecycle, and session management.
+
+Organization Management
+
+For organizations managing multiple institutions.
+
+Features include:
+
+Institution management
+Cross-institution reporting
+Shared policies
+Organization administrators
+Academic Management
+Students
+
+Manage the complete student lifecycle.
+
+Features:
+
+Enrollment
+Profiles
+Class assignment
+Promotion
+Transfer
+Graduation
+Withdrawal
+Alumni preparation
+Student documents
+Admissions
+
+Manage applicant lifecycle.
+
+Features:
+
+Online applications
+Document verification
+Admission screening
+Interview scheduling
+Entrance examinations
+Admission decisions
+Enrollment
+Staff
+
+Manage teaching and non-teaching staff.
+
+Features:
+
+Staff profiles
+Departments
+Employment
+Contracts
+Qualifications
+Certifications
+Leave
+Performance
+Payroll integration
+Academic Structure
+
+Institution-configurable:
+
+Sessions
+Terms
+Academic Levels
+Classes
+Streams
+Departments
+Subjects
+Timetables
+Learning Content
+
+Digital teaching resources.
+
+Features:
+
+Lesson notes
+Handouts
+Worksheets
+Reading materials
+Videos
+Presentations
+Resource links
+Learning templates
+Approval workflow
+Student reading
+Offline reading
+Highlights
+Student annotations
+Embedded quizzes
+Assignment integration
+
+Future:
+
+AI lesson generation
+AI content review
+AI question generation
+Assignments
+
+Manage homework and coursework.
+
+Features:
+
+Assignment creation
+Submission
+Grading
+Feedback
+Due dates
+Linked learning content
+Analytics
+CBT & Examinations
+
+Features:
+
+Question bank
+Exam creation
+Secure browser policies (future)
+Student assessments
+Automatic marking
+Manual grading
+Results publishing
+Results & Report Cards
+
+Manage academic results.
+
+Features:
+
+Score entry
+Moderation
+Approval
+Report cards
+Transcripts
+Rankings (configurable)
+Promotion decisions
+Attendance
+
+Student and staff attendance.
+
+Features:
+
+Daily attendance
+Attendance corrections
+Reports
+Parent notifications
+Analytics
+
+Future:
+
+RFID
+Biometrics
+Face recognition
+Student Support
+Student Success & Welfare
+
+Monitor student wellbeing and academic progress.
+
+Features:
+
+Intervention plans
+Academic monitoring
+Behaviour monitoring
+Student goals
+Teacher observations
+Parent meetings
+Progress reviews
+School Clinic
+
+Manage student healthcare.
+
+Features:
+
+Medical records
+Allergies
+Blood group
+Genotype
+Medical conditions
+Clinic visits
+Treatments
+Medication
+Vaccinations
+Emergency contacts
+Medical reports
+Discipline
+
+Manage behaviour.
+
+Features:
+
+Incidents
+Sanctions
+Rewards
+Behaviour history
+Parent notifications
+Intervention integration
+Student Portfolio
+
+Digital portfolio for every student.
+
+Includes:
+
+Projects
+Certificates
+Awards
+Learning content
+Notes
+Achievements
+Leadership roles
+Clubs
+Community service
+Sports
+Creative work
+Finance
+Finance
+
+Manage institutional finances.
+
+Features:
+
+Fee structures
+Invoices
+Payments
+Discounts
+Scholarships
+Installments
+Refunds
+Financial reports
+Payroll
+
+Manage staff salaries.
+
+Features:
+
+Salary structures
+Payroll processing
+Deductions
+Benefits
+Payslips
+Tax calculations
+Operations
+Human Resources
+
+Features:
+
+Recruitment
+Staff records
+Leave
+Performance
+Promotions
+Training
+
+Visitor Management
+
+Reception and gate management.
+
+Features:
+
+Visitor registration
+Visitor approval
+QR visitor passes
+Check-in/out
+Vehicle registration
+Visitor history
+Emergency reports
+
+Future:
+
+RFID
+Smart cards
+Face recognition
+
+Transport
+
+Features:
+
+Routes
+Vehicles
+Drivers
+Student assignments
+Trip management
+
+Hostel
+
+Features:
+
+Blocks
+Rooms
+Bed allocation
+Occupancy
+Hostel reports
+
+Library
+
+Features:
+
+Books
+Borrowing
+Returns
+Fines
+Digital resources
+
+Inventory & Assets
+
+Features:
+
+Inventory
+Asset register
+Procurement requests
+Maintenance
+Stock movements
+
+Future:
+
+RFID asset tracking
+Communication
+Communication Center
+
+Supports:
+
+In-app messaging
+Email
+SMS
+Push notifications
+WhatsApp notifications
+Announcements
+
+Institution-wide communications.
+
+Supports:
+
+Scheduling
+Audience targeting
+Attachments
+Read receipts
+Calendar & Events
+
+Manage institutional events.
+
+Features:
+
+Academic calendar
+Meetings
+Examinations
+Sports
+Holidays
+PTA meetings
+Institution events
+Surveys
+
+Create and manage surveys for:
+
+Students
+Parents
+Teachers
+Staff
+School administrators
+
+Platform administrators can also send surveys to school administrators for product feedback and customer satisfaction.
+
+Reporting & Analytics
+Reports
+
+Generate reports across all modules.
+
+Supports:
+
+Charts
+Dashboards
+Filters
+Exports
+Scheduled reports
+Approval Center
+
+Centralized approval dashboard.
+
+Includes approvals for:
+
+Admissions
+Results
+Learning content
+Attendance corrections
+Leave
+Payments
+Procurement
+Timetable changes
+Visitor requests
+Staff requests
+
+Approval workflows are configurable.
+
+Automation Center
+
+Create no-code automation rules.
+
+Supports:
+
+Triggers
+Conditions
+Actions
+Delays
+Notifications
+Approval routing
+Institution Services
+Website Builder
+
+Institution-managed public website.
+
+Features:
+
+Drag-and-drop page builder
+Homepage
+Admissions pages
+News
+Events
+Contact pages
+SEO settings
+Custom domains
+Documents
+
+Institution document management.
+
+Supports:
+
+Uploads
+Version history
+Categories
+Permissions
+Search
+Settings
+
+Institution configuration.
+
+Includes:
+
+Academic setup
+Finance setup
+Staff setup
+Branding
+Integrations
+Templates
+Roles
+Permissions
+Notification settings
+Automation settings
+Platform Services
+Institution Templates
+
+Pre-configured setup templates for different institution types.
+
+Examples:
+
+Nigerian Primary School
+Nigerian Secondary School
+Combined Primary & Secondary School
+British Curriculum School
+American Curriculum School
+Montessori School
+International School
+Technical & Vocational Institution
+
+Templates provide a starting point for academic structures, grading systems, roles, departments, fee categories, workflows, and report card layouts. Institutions can modify every aspect after setup.
+
+Module Design Principles
+Every module supports role-based permissions.
+Every module integrates with the notification engine.
+Every module integrates with the audit log.
+Every module supports configurable approval workflows where applicable.
+Every module can expose reports and analytics where relevant.
+Every module respects institution-level configuration and subscription settings.
+Modules are designed to work independently while sharing common platform services such as authentication, automation, reporting, and communication.
+
+## Key Terminology
+
+**Organization** – An entity that manages one or more institutions.
+
+**Institution** – A school or educational institution operating independently within the platform.
+
+**Workspace** – The role-based environment presented to a user after login.
+
+**Module** – A functional area of the platform such as Finance, Admissions or Library.
+
+**Program** – A structured academic or extracurricular offering.
+
+**Group** – A flexible collection of users such as clubs, committees, houses or support groups.
+
+**Tenant** – An isolated institution within the multi-tenant platform.

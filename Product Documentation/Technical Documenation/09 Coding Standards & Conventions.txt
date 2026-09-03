@@ -1,0 +1,332 @@
+09 — Coding Standards & Conventions
+
+## 1. Purpose
+
+This document defines the coding standards, architectural conventions, and implementation rules for the OpenSchool ERP platform.
+
+Its purpose is to ensure consistency, maintainability, scalability, and readability across the entire codebase.
+
+These standards apply to all backend, frontend, mobile, and shared code.
+
+---
+
+# 2. General Principles
+
+Code should be:
+
+* Simple
+* Readable
+* Consistent
+* Testable
+* Maintainable
+* Secure
+* Scalable
+
+Prefer clarity over cleverness.
+
+Business logic must be explicit.
+
+Avoid unnecessary abstraction.
+
+---
+
+# 3. Technology Stack
+
+## Frontend
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+
+## Mobile
+
+* Flutter
+* Dart
+
+## Backend
+
+* NestJS
+* TypeScript
+* Prisma ORM
+* PostgreSQL
+
+## Infrastructure
+
+* Redis
+* BullMQ
+* Docker
+* S3-Compatible Object Storage
+
+---
+
+# 4. Backend Architecture
+
+Backend implementation follows a modular architecture.
+
+Each business domain owns its module.
+
+Example:
+
+```text
+identity-access/
+institution-management/
+people/
+academic-management/
+finance/
+communication/
+operations/
+documents-learning/
+reporting-analytics/
+platform-administration/
+```
+
+Modules communicate through well-defined interfaces and domain events.
+
+Business logic must not be duplicated across modules.
+
+---
+
+# 5. Project Structure
+
+Each backend module should follow a consistent structure.
+
+```text
+domain/
+├── controllers
+├── services
+├── repositories
+├── dto
+├── entities
+├── guards
+├── validators
+├── events
+├── jobs
+├── interfaces
+├── mappers
+├── utils
+└── tests
+```
+
+The structure should remain consistent across all modules.
+
+---
+
+# 6. Naming Conventions
+
+Use descriptive names.
+
+Classes:
+
+```text
+StudentService
+RoleController
+InvoiceRepository
+```
+
+Interfaces:
+
+```text
+StudentRepository
+NotificationProvider
+```
+
+DTOs:
+
+```text
+CreateStudentDto
+UpdateStudentDto
+```
+
+Events:
+
+```text
+StudentEnrolledEvent
+InvoicePaidEvent
+```
+
+Enums:
+
+```text
+UserStatus
+PaymentStatus
+AttendanceStatus
+```
+
+Avoid abbreviations unless universally understood.
+
+---
+
+# 7. Business Logic
+
+Business rules belong inside domain services.
+
+Controllers should:
+
+* Validate requests
+* Authorize requests
+* Call services
+* Return responses
+
+Controllers must not contain business logic.
+
+Repositories should only access data.
+
+---
+
+# 8. Validation
+
+Validate all external input.
+
+Validation should occur before business logic executes.
+
+Business validation belongs in services.
+
+Request validation belongs in DTOs.
+
+Database constraints do not replace application validation.
+
+---
+
+# 9. Error Handling
+
+Use consistent exception handling.
+
+Errors should be:
+
+* Predictable
+* Structured
+* Meaningful
+
+Never expose internal implementation details.
+
+Log technical information separately from client responses.
+
+---
+
+# 10. Authorization
+
+Authorization must be enforced at every protected endpoint.
+
+Never assume client-side restrictions are sufficient.
+
+Permissions must always be evaluated by the backend.
+
+---
+
+# 11. Multi-Tenant Rules
+
+Every tenant-scoped operation must enforce institution isolation.
+
+Queries must never access records belonging to another institution.
+
+Platform-level data must remain separate from institution data.
+
+---
+
+# 12. Database Conventions
+
+Use UUID primary keys.
+
+Use timestamps for auditing.
+
+Use soft deletion where appropriate.
+
+Create indexes for frequently queried fields.
+
+Avoid duplicated data.
+
+Normalize until a clear business reason exists to denormalize.
+
+---
+
+# 13. API Design
+
+REST endpoints should:
+
+* Use nouns
+* Be consistent
+* Support filtering
+* Support pagination
+* Return standard HTTP status codes
+
+Responses should use a consistent format throughout the platform.
+
+---
+
+# 14. Background Jobs
+
+Long-running operations should execute asynchronously.
+
+Examples include:
+
+* Bulk imports
+* Email delivery
+* Report generation
+* File processing
+* Notification delivery
+
+Jobs should be idempotent where possible.
+
+---
+
+# 15. Logging
+
+Log significant application events.
+
+Separate:
+
+* Application logs
+* Security logs
+* Audit logs
+
+Sensitive information must never be logged.
+
+---
+
+# 16. Testing
+
+Every module should include:
+
+* Unit tests
+* Integration tests
+* Authorization tests
+* Validation tests
+
+Critical business rules should always be tested.
+
+---
+
+# 17. Documentation
+
+Public APIs should be documented.
+
+Business rules should reference the approved architecture documents.
+
+Code comments should explain intent rather than restating implementation.
+
+---
+
+# 18. Code Review Standards
+
+Every implementation should be reviewed for:
+
+* Architectural consistency
+* Security
+* Readability
+* Performance
+* Multi-tenant isolation
+* Test coverage
+* Compliance with approved documentation
+
+---
+
+# 19. Definition of Done
+
+Code is complete when:
+
+* It satisfies the approved requirements.
+* It follows these coding standards.
+* It passes all tests.
+* It is documented where necessary.
+* It has been reviewed and approved.

@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #254ac6;
+  --color-primary-hover: #1e3da8;
+  --color-primary-light: #e0ecfe;
+  --color-primary-deep: #16328f;
+
+  --color-surface: #f8fafd;
+  --color-card: #ffffff;
+  --color-input: #f7f9fe;
+
+  --color-text-dark: #0f172a;
+  --color-text-muted: #64748e;
+
+  --color-green: #22804a;
+  --color-green-light: #e1f5e6;
+  --color-orange: #e6860e;
+  --color-orange-light: #feefd9;
+  --color-red: #e64842;
+  --color-red-light: #fee0e0;
+  --color-purple: #943700;
+  --color-purple-light: #f3e8ff;
+
+  --color-border: #c3c6d7;
+  --color-border-light: #e8ebf0;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-text-dark font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+}

@@ -1,0 +1,276 @@
+08 — Engineering Workflow & Development Standards
+
+## 1. Purpose
+
+This document defines the engineering workflow and development standards used to implement the OpenSchool ERP platform.
+
+It establishes a consistent process for analysing, designing, implementing, and validating every business domain.
+
+This document governs the engineering process and complements the product and architecture documentation.
+
+---
+
+# 2. Engineering Principles
+
+Engineering must follow these principles throughout the project.
+
+* Documentation is the source of truth.
+* Architecture precedes implementation.
+* Business rules precede technology.
+* Configuration is preferred over hardcoded behaviour.
+* Every business entity has a single owning domain.
+* Shared platform services must be reused.
+* Multi-tenant isolation is mandatory.
+* Security is enforced by design.
+* Every implementation must remain consistent with the approved architecture.
+
+---
+
+# 3. Engineering Lifecycle
+
+Every business domain follows the same engineering lifecycle.
+
+## Phase 1 — Domain Analysis
+
+Purpose:
+
+Understand the business domain.
+
+Deliverables:
+
+* Domain purpose
+* Responsibilities
+* Boundaries
+* Dependencies
+* Shared services
+* Integration points
+* Core entities
+* Lifecycle overview
+* Business rules
+* Domain events
+* Assumptions
+* Risks
+* Non-goals
+
+No implementation artifacts are produced.
+
+---
+
+## Phase 2 — Domain Design
+
+Purpose:
+
+Design the business model.
+
+Deliverables:
+
+* Aggregate design
+* Entity catalogue
+* Entity relationships
+* Mermaid ER diagram
+* Business invariants
+* Domain services
+* Validation rules
+* Ownership matrix
+* Cross-domain interactions
+* Extension points
+
+No database schema or application code is produced.
+
+---
+
+## Phase 3 — Database Design
+
+Purpose:
+
+Translate the approved domain model into a relational database design.
+
+Deliverables:
+
+* Tables
+* Relationships
+* Keys
+* Constraints
+* Indexes
+* Multi-tenant strategy
+* Soft delete strategy
+* Audit strategy
+
+Technology-specific implementation is excluded.
+
+---
+
+## Phase 4 — ORM Design
+
+Purpose:
+
+Implement the approved database design using the project's ORM.
+
+Deliverables:
+
+* Models
+* Enums
+* Relationships
+* Constraints
+* Index definitions
+
+No application code is produced.
+
+---
+
+## Phase 5 — Backend Implementation
+
+Purpose:
+
+Implement the domain using the approved architecture.
+
+Deliverables:
+
+* Modules
+* Controllers
+* Services
+* Repositories
+* Validation
+* Authorization
+* Domain events
+* Background jobs
+
+Implementation must remain consistent with the approved domain model.
+
+---
+
+## Phase 6 — API Design
+
+Purpose:
+
+Define the public interface of the domain.
+
+Deliverables:
+
+* Endpoints
+* Request models
+* Response models
+* Filtering
+* Sorting
+* Pagination
+* Error responses
+* Authorization requirements
+
+API contracts must remain consistent across all domains.
+
+---
+
+## Phase 7 — Testing
+
+Purpose:
+
+Validate correctness, security, and reliability.
+
+Deliverables:
+
+* Unit tests
+* Integration tests
+* Authorization tests
+* Validation tests
+* Multi-tenant isolation tests
+* Performance tests where applicable
+
+A domain is not complete until testing has been approved.
+
+---
+
+# 4. Review Process
+
+Each phase must be reviewed before the next phase begins.
+
+Every review should confirm:
+
+* Alignment with approved documentation.
+* Architectural consistency.
+* Compliance with engineering principles.
+* No unresolved design conflicts.
+
+Engineering does not proceed until the current phase is approved.
+
+---
+
+# 5. Domain Ownership
+
+Each business entity has a single owning domain.
+
+Other domains may reference an entity but must not own or modify it directly.
+
+Ownership must be explicitly defined during Domain Design.
+
+---
+
+# 6. Cross-Domain Communication
+
+Domains communicate through well-defined interfaces.
+
+Where appropriate, communication should use:
+
+* Shared platform services.
+* Domain events.
+* Controlled references.
+
+Direct coupling between unrelated domains should be avoided.
+
+---
+
+# 7. Shared Platform Services
+
+Shared platform services provide common functionality used across multiple domains.
+
+Examples include:
+
+* Identity & Access
+* Notifications
+* Automation
+* Audit Logging
+* Search
+* Reporting
+* File Storage
+
+Business domains must reuse shared services instead of duplicating functionality.
+
+---
+
+# 8. Approval Criteria
+
+A phase is considered complete when:
+
+* All required deliverables are present.
+* Documentation is internally consistent.
+* Architectural concerns have been resolved.
+* Outstanding assumptions are documented.
+* The phase has been formally approved.
+
+---
+
+# 9. Engineering Constraints
+
+Engineers must not:
+
+* Skip engineering phases.
+* Generate implementation before design approval.
+* Introduce undocumented business rules.
+* Hardcode institution-specific behaviour.
+* Duplicate shared platform services.
+* Couple business domains to specific technologies without approval.
+
+---
+
+# 10. Definition of Done
+
+A business domain is complete only when:
+
+* All engineering phases have been approved.
+* Architecture aligns with the platform documentation.
+* Database design has been approved.
+* ORM models have been approved.
+* Backend implementation is complete.
+* API contracts are complete.
+* Tests pass successfully.
+* No unresolved architectural issues remain.
+in.

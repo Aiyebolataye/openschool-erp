@@ -1,0 +1,343 @@
+03 Workspace Architecture
+1. Overview
+
+A workspace is the primary working environment for a user after authentication.
+
+Every role is assigned a workspace based on its permissions. Users with multiple roles can switch between workspaces without logging out.
+
+The workspace architecture is consistent across all roles, ensuring a familiar user experience while allowing role-specific functionality.
+
+2. Workspace Structure
+
+Every workspace follows the same high-level structure.
+
+Workspace
+│
+├── Dashboard
+├── Modules
+├── Global Search
+├── Notifications
+├── Tasks
+├── Calendar
+├── Reports (if permitted)
+├── Profile
+└── Workspace Settings (if permitted)
+3. Dashboard
+
+Every workspace starts with a dashboard.
+
+Purpose
+
+Provide users with an overview of relevant information and quick access to common actions.
+
+Standard Components
+Welcome message
+KPI cards
+Pending tasks
+Pending approvals (if applicable)
+Recent activity
+Notifications
+Calendar/events
+Quick actions
+System announcements
+
+Role-specific widgets are displayed based on permissions.
+
+4. Navigation
+Primary Navigation
+
+Desktop
+
+Left sidebar
+
+Tablet
+
+Collapsible sidebar
+
+Mobile
+
+Collapsible navigation drawer
+
+There will be no bottom navigation.
+
+Secondary Navigation
+
+Modules may contain:
+
+Tabs
+Sub-navigation
+Breadcrumbs
+Context menus
+
+## Standard Page Layout
+
+Module pages should follow a consistent structure where applicable.
+
+Header
+
+Toolbar
+
+Search & Filters
+
+Primary Content
+
+Pagination
+
+Context Actions
+
+This consistency improves usability and reduces learning time.
+
+5. Global Search
+
+Available in every authenticated workspace.
+
+Searches only data the user has permission to access.
+
+Supports:
+
+Students
+Staff
+Parents
+Applicants
+Subjects
+Classes
+Documents
+Learning Content
+Payments
+Visitors
+Reports
+Settings
+
+Future:
+
+AI-powered semantic search
+6. Notifications
+
+Every workspace includes a notification center.
+
+Notification types:
+
+Information
+Success
+Warning
+Error
+Approval requests
+Reminders
+Announcements
+
+Supported channels:
+
+In-app
+Push
+Email
+SMS
+WhatsApp
+
+Notification preferences are configurable by the institution and user where permitted.
+
+7. Tasks
+
+Users see tasks relevant to their role.
+
+Examples:
+
+Teacher
+
+Submit results
+Mark attendance
+Upload lesson notes
+Grade assignments
+
+Finance
+
+Verify payments
+Process refunds
+
+Principal
+
+Review results
+Approve lesson notes
+Review reports
+8. Calendar
+
+Integrated into every workspace.
+
+Displays:
+
+Academic events
+Meetings
+Deadlines
+Examinations
+Holidays
+Assigned activities
+
+Users only see events they have permission to access.
+
+9. Reports
+
+Available where permitted.
+
+Supports:
+
+Interactive dashboards
+Charts
+Tables
+Scheduled reports
+Export (PDF, Excel, CSV)
+
+Report visibility is permission-controlled.
+
+10. Profile
+
+Every user has a profile.
+
+Includes:
+
+Personal information
+Contact information
+Role(s)
+Profile picture
+Password management
+Multi-factor authentication
+Notification preferences
+Activity log (optional)
+Active sessions
+Linked accounts (future)
+11. Workspace Settings
+
+Available only to authorized users.
+
+Examples:
+
+Dashboard customization
+Notification preferences
+Theme
+Language
+Accessibility settings
+
+Institution-wide settings remain in the Settings module.
+
+12. Quick Actions
+
+Each dashboard provides shortcuts for common tasks.
+
+Examples:
+
+School Administrator
+
+Add Student
+Add Staff
+Create Class
+Record Payment
+
+Teacher
+
+Mark Attendance
+Upload Learning Content
+Create Assignment
+Enter Results
+
+Finance
+
+Create Invoice
+Record Payment
+
+These actions are configurable by role.
+
+## Bulk Operations
+
+Where appropriate, list-based modules should support bulk operations.
+
+Examples include:
+
+- Assign
+- Archive
+- Export
+- Notify
+- Approve
+- Delete (where permitted)
+
+Bulk actions must respect role permissions.
+
+13. Pending Items
+
+Where applicable, dashboards display pending work.
+
+Examples:
+
+Pending approvals
+Unread messages
+Outstanding tasks
+Overdue invoices
+Attendance not submitted
+Results awaiting approval
+Visitor approvals
+Clinic follow-ups
+Welfare interventions
+14. Recent Activity
+
+Displays recent actions relevant to the user.
+
+Examples:
+
+New student enrolled
+Results published
+Payment received
+Lesson note approved
+Visitor checked in
+
+Visibility follows permission rules.
+
+15. Accessibility
+
+Every workspace must support:
+
+Keyboard navigation
+Screen readers
+High-contrast mode
+Responsive layouts
+Adjustable text size
+Reduced motion
+WCAG 2.2 AA compliance
+16. Responsive Behaviour
+
+Desktop
+
+Multi-column layout
+Persistent sidebar
+
+Tablet
+
+Responsive grid
+Collapsible sidebar
+
+Mobile
+
+Single-column layout
+Responsive cards
+Drawer navigation
+Touch-optimized controls
+
+All major features must be available on both web and mobile unless restricted by hardware or operating system limitations.
+
+## Workspace States
+
+All workspaces should consistently handle the following system states:
+
+- Loading
+- Empty
+- Error
+- Offline (where supported)
+- Read-only
+- Permission Denied
+
+This ensures a predictable user experience throughout the platform.
+
+17. Workspace Principles
+Every workspace begins with a dashboard.
+Navigation remains consistent across all roles.
+Permissions determine visibility, not separate interfaces.
+Users only see modules they are authorized to access.
+Frequently used actions are accessible within one or two interactions.
+Workspaces are optimized for both desktop and mobile.
+Dashboards prioritize actionable information over decorative content.

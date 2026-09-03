@@ -1,0 +1,156 @@
+06 — Domain Model
+1. Purpose
+
+The Domain Model defines the core business domains, entities, ownership, and relationships used throughout the Educational Institution ERP Platform.
+
+It serves as the foundation for database design, API design, backend development, and business logic.
+
+2. Design Principles
+
+The domain model follows these principles:
+
+Multi-tenant by design.
+Every business record belongs to a single institution unless explicitly platform-owned.
+Business domains are modular and loosely coupled.
+Configuration replaces institution-specific hardcoding wherever practical.
+Users, roles, and permissions are managed independently of business entities.
+Relationships should reflect real-world educational operations.
+Shared platform services are reused across all domains.
+3. Business Domains
+Domain	Purpose
+Identity & Access	Authentication, authorization, users, roles and permissions
+Organizations	Organizations, institutions and campuses
+People	Students, parents, staff, applicants and visitors
+Academic Management	Academic structure, enrollment, teaching and assessments
+Learning Management	Lesson notes, assignments, learning resources and quizzes
+Student Success	Welfare, counselling, mentorship, portfolios and interventions
+Finance	Fees, invoicing, payments and financial records
+Human Resources	Employment, leave, performance and staff records
+Operations	Library, clinic, hostel, transport, assets and visitor management
+Communication	Notifications, announcements, surveys and messaging
+Platform Services	Approvals, requests, automation, audit logs and reporting
+Configuration	Institution settings, templates and platform configuration
+4. Core Entity Catalogue
+Entity	Domain	Owner
+Organization	Organizations	Platform
+Institution	Organizations	Organization
+Campus (Optional)	Organizations	Institution
+User	Identity & Access	Institution
+Role	Identity & Access	Institution
+Permission	Identity & Access	Platform
+Student	People	Institution
+Parent	People	Institution
+Staff	People	Institution
+Applicant	People	Institution
+Visitor	People	Institution
+Academic Session	Academic Management	Institution
+Academic Term	Academic Management	Institution
+Academic Level	Academic Management	Institution
+Department	Academic Management	Institution
+Class	Academic Management	Institution
+Subject	Academic Management	Institution
+Program	Academic Management	Institution
+Group	Academic Management	Institution
+Enrollment	Academic Management	Institution
+Attendance	Academic Management	Institution
+Assessment	Academic Management	Institution
+Examination	Academic Management	Institution
+Result	Academic Management	Institution
+Lesson Note	Learning Management	Institution
+Learning Resource	Learning Management	Institution
+Assignment	Learning Management	Institution
+Quiz	Learning Management	Institution
+Submission	Learning Management	Institution
+Welfare Case	Student Success	Institution
+Counselling Session	Student Success	Institution
+Mentorship Record	Student Success	Institution
+Portfolio	Student Success	Institution
+Invoice	Finance	Institution
+Payment	Finance	Institution
+Fee Structure	Finance	Institution
+Scholarship	Finance	Institution
+Staff Record	Human Resources	Institution
+Leave Request	Human Resources	Institution
+Performance Review	Human Resources	Institution
+Library Item	Operations	Institution
+Clinic Record	Operations	Institution
+Hostel	Operations	Institution
+Vehicle	Operations	Institution
+Visitor Pass	Operations	Institution
+Notification	Communication	Institution
+Survey	Communication	Institution
+Approval	Platform Services	Institution
+Request	Platform Services	Institution
+Automation Rule	Platform Services	Institution
+Audit Log	Platform Services	Platform
+Generated Document	Platform Services	Institution
+Institution Template	Configuration	Platform
+5. Aggregate Ownership
+Platform
+│
+└── Organization
+    │
+    └── Institution
+        ├── Identity & Access
+        ├── People
+        ├── Academic Management
+        ├── Learning Management
+        ├── Student Success
+        ├── Finance
+        ├── Human Resources
+        ├── Operations
+        ├── Communication
+        ├── Platform Services
+        └── Configuration
+6. Core Relationships
+Organization
+One Organization manages many Institutions.
+Institution
+One Institution owns all institution-specific data.
+One Institution may operate multiple Campuses.
+People
+One Student may have multiple Parents or Guardians.
+One Parent may be linked to multiple Students.
+One Staff member may hold multiple Roles.
+One User account may be linked to one or more roles.
+Academics
+One Academic Session contains multiple Terms.
+One Term contains multiple Classes.
+One Class contains multiple Students.
+One Subject may be taught by multiple Teachers.
+One Teacher may teach multiple Subjects.
+Students enroll in multiple Subjects.
+Subjects belong to one or more Departments or Programs.
+Learning
+One Subject contains multiple Lesson Notes.
+One Lesson Note may contain multiple Learning Resources.
+One Assignment belongs to one Subject.
+One Assignment has many Student Submissions.
+Finance
+One Student may have multiple Invoices.
+One Invoice may contain multiple Payment Transactions.
+One Fee Structure may apply to multiple Students.
+Student Success
+One Student may have multiple Welfare Cases.
+One Student may have multiple Counselling Sessions.
+One Student owns one Portfolio containing multiple achievements and records.
+Platform Services
+Every Request may generate one or more Approval records.
+Every significant action creates an Audit Log.
+Notifications may be triggered by any module through the Automation Framework.
+7. Global Business Rules
+Every institution-specific record belongs to exactly one institution.
+Platform-owned entities are shared across institutions where applicable.
+Users may hold multiple roles.
+Permissions are determined by assigned roles and permission groups.
+Institution data must remain isolated from other institutions.
+Audit logs are immutable.
+Soft deletion should be used where recovery is required.
+Entity relationships must preserve referential integrity.
+Business rules should be enforced within the domain layer rather than duplicated across modules.
+8. Domain Principles
+Domains communicate through shared platform services rather than direct dependencies wherever possible.
+Business logic belongs to its owning domain.
+Modules should remain independent while sharing common services such as Authentication, Notifications, Automation, Reporting and Audit Logging.
+New modules should extend existing domains where appropriate before introducing new domains.
+Domain models should remain technology-agnostic and independent of database or framework implementations.

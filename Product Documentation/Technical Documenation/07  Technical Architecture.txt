@@ -1,0 +1,318 @@
+07 — Technical Architecture
+1. Purpose
+
+This document defines the technical architecture, development principles, technology stack, project structure, and implementation standards for the Educational Institution ERP Platform.
+
+It provides a consistent foundation for backend, frontend, mobile, infrastructure, and future platform expansion.
+
+2. Architecture Principles
+
+The platform follows these architectural principles:
+
+Modular Monolith architecture.
+API-first development.
+Multi-tenant by design.
+Domain-driven modularization.
+Configuration over hardcoding.
+Shared platform services.
+Event-driven workflows.
+Security by design.
+Mobile-first user experience.
+Cloud-native deployment.
+Scalable and extensible architecture.
+3. High-Level Architecture
+                    Flutter Mobile Apps
+                            │
+                    Next.js Web Applications
+                            │
+                    REST API / WebSockets
+                            │
+                    NestJS Backend
+                            │
+     ┌─────────────────────────────────────────────┐
+     │ Identity │ Academics │ Finance │ Operations │
+     │ Learning │ HR │ Communication │ Platform    │
+     └─────────────────────────────────────────────┘
+                            │
+      PostgreSQL • Redis • Object Storage
+                            │
+               External Platform Integrations
+4. Technology Stack
+Layer	Technology
+Web	Next.js + TypeScript
+Mobile	Flutter
+Backend	NestJS + TypeScript
+Database	PostgreSQL
+ORM	Prisma
+Authentication	Keycloak (or equivalent enterprise identity provider)
+Cache	Redis
+Queue	BullMQ
+File Storage	S3-Compatible Object Storage
+Realtime	WebSockets (Socket.IO)
+API	REST
+Containerization	Docker
+CI/CD	GitHub Actions
+5. Project Architecture
+
+The platform is organized as a modular monolith.
+
+apps/
+    web/
+    mobile/
+    api/
+
+packages/
+    ui/
+    shared/
+    types/
+    config/
+    utilities/
+
+docs/
+
+infrastructure/
+
+Modules communicate through shared services and published events rather than direct coupling.
+
+6. Backend Architecture
+
+Backend modules follow a consistent layered structure.
+
+Module
+│
+├── Controller
+├── Service
+├── Repository
+├── DTOs
+├── Validators
+├── Events
+└── Domain Models
+
+Business logic resides within services and domain models.
+
+Controllers handle request routing only.
+
+7. Frontend Architecture
+
+Each application follows a feature-based structure.
+
+Application
+│
+├── Layouts
+├── Pages
+├── Features
+├── Components
+├── Hooks
+├── Services
+├── Types
+└── Utilities
+
+Reusable UI components are maintained in a shared package.
+
+8. Mobile Architecture
+
+The Flutter application shares the same backend APIs.
+
+Applications include:
+
+Student
+Parent
+Teacher
+Staff (Future)
+
+Core principles:
+
+Offline-first where practical.
+Local caching for frequently accessed content.
+Background synchronization.
+Push notification support.
+9. Shared Platform Services
+
+Shared services are used by all modules.
+
+Core services include:
+
+Authentication
+Authorization
+Notifications
+Automation
+Reporting
+Audit Logging
+Search
+File Management
+Document Generation
+Template Engine
+
+Modules must reuse shared services instead of implementing duplicate functionality.
+
+10. API Architecture
+
+The platform exposes versioned REST APIs.
+
+Example:
+
+/api/v1/
+
+API standards:
+
+Resource-based endpoints
+Stateless requests
+JSON payloads
+Consistent response format
+Pagination
+Filtering
+Sorting
+Validation
+API versioning
+11. Authentication & Authorization
+
+Authentication is centralized.
+
+Supported capabilities:
+
+Email/password authentication
+Multi-factor authentication
+Role-based access control
+Multi-role users
+Session management
+Device management
+Password reset
+Access token refresh
+
+Permissions are evaluated per request.
+
+12. Event Architecture
+
+Modules communicate through published domain events.
+
+Example:
+
+Attendance Submitted
+
+↓
+
+Automation Engine
+
+↓
+
+Notify Parent
+
+↓
+
+Update Dashboard
+
+↓
+
+Create Audit Log
+
+This reduces module coupling and improves extensibility.
+
+13. Data Architecture
+
+Platform data is isolated by institution.
+
+Principles:
+
+UUID primary keys.
+Audit fields on major entities.
+Soft deletes where appropriate.
+Referential integrity.
+Transaction support.
+Institution data isolation.
+14. File Storage
+
+Files are stored outside the relational database.
+
+Supported file types include:
+
+Documents
+Images
+Videos
+Learning resources
+Certificates
+Generated reports
+Institution branding assets
+
+File access is controlled through platform permissions.
+
+15. Caching & Background Processing
+
+Redis provides:
+
+Caching
+Session storage
+Rate limiting
+Queue coordination
+
+Background jobs include:
+
+Notifications
+Report generation
+Document generation
+Scheduled tasks
+Imports and exports
+Automation workflows
+16. Communication Architecture
+
+The communication service supports:
+
+In-app notifications
+Email
+SMS
+WhatsApp
+Push notifications
+
+All communication passes through a centralized notification service.
+
+17. Security Architecture
+
+Platform security includes:
+
+HTTPS enforcement
+Encryption in transit
+Encryption at rest (where applicable)
+Role-based authorization
+Audit logging
+Rate limiting
+Input validation
+Secure file access
+Secret management
+18. Deployment Architecture
+
+Deployment environments:
+
+Development
+Testing
+Staging
+Production
+
+Deployments should support:
+
+Containerized services
+Automated CI/CD
+Environment-based configuration
+Zero-downtime deployments where practical
+19. Monitoring & Observability
+
+Platform monitoring includes:
+
+Application logs
+Error tracking
+Performance monitoring
+Queue monitoring
+API monitoring
+Database monitoring
+Audit logs
+Health checks
+20. Future Architecture
+
+The architecture reserves extension points for future capabilities including:
+
+AI services
+Public APIs
+Marketplace
+RFID and Smart Campus
+Biometric devices
+Smart access control
+Multi-region deployments
+External education system integrations

@@ -1,0 +1,150 @@
+# Product Roadmap / Backlog
+
+This file tracks planned, in-progress, and completed features across the platform.
+
+---
+
+## Summer School & Credit Recovery
+
+**Status:** In Progress (frontend + docs done; backend pending)
+**Module:** Academic Management / Programs & Groups / Finance
+**Type:** Feature
+
+### Summary
+A paid Summer School program used for **credit recovery**: students who fail a course are flagged and can pay to enroll in a remediation group to recover the failed credit(s).
+
+### Key flows
+1. Results identify a student who failed one or more courses.
+2. The student is flagged for credit recovery.
+3. Institution Admin (or delegated staff) enrolls the student in a Summer School remediation group.
+4. A fee plan is attached (one-time, installments, or recurring), generating an invoice.
+5. The student attends and completes the course.
+6. Upon completion, the failed grade is updated / credit is recovered.
+
+### Requirements
+- [x] Feature definition documented (`04 Core Platform Capabilities.txt`)
+- [x] Institution Admin UI: Summer School & Credit Recovery page (`/institution/summer-school`)
+  - [x] Credit Recovery tab (flagged students, failed courses, enroll action)
+  - [x] Summer School Program tab (remediation groups, capacity, schedule, fee)
+  - [x] Payments tab (invoices, fee plans)
+  - [x] "Enroll Student" modal (course selection, dates, fee plan)
+  - [x] "New Session" modal (session config, capacity, enrollment approval)
+- [ ] Backend: results → auto-flag failed students
+- [ ] Backend: program enrollment + capacity + waiting list
+- [ ] Backend: automatic invoice generation & fee plan handling (Finance integration)
+- [ ] Backend: grade/credit recovery update on completion
+- [ ] Notification to parents/students when flagged and when invoice is due
+- [ ] Parent/student self-service enrollment + payment (optional)
+
+### Definition of Done
+- Student failing a course appears in Credit Recovery with one-click enroll.
+- Enrolling attaches a fee plan and generates an invoice automatically.
+- Remediation group enforces capacity and waiting list.
+- Completion updates the failed grade to "credit recovered".
+
+---
+
+## Principal / Head Teacher Workspace
+
+**Status:** Built (frontend live)
+**Module:** Workspace / Academic Management
+**Type:** Workspace
+
+### Summary
+A dedicated Principal / Head Teacher portal. Academic configuration, learning content, assignments, results, attendance, and student welfare primarily live here.
+
+### Requirements
+- [x] Principal workspace: nav + layout + pages (`/principal`)
+  - [x] Dashboard
+  - [x] Students
+  - [x] Academics & Content (academic config + learning content review)
+  - [x] Assignments
+  - [x] Results (moderation + published + credit recovery)
+  - [x] Attendance
+  - [x] Student Welfare
+  - [x] Staff
+  - [x] Calendar (add event)
+  - [x] Communication
+  - [x] Reports
+  - [x] Profile
+- [x] Institution Admin: removed Academics & Content, Assignments, Results, Attendance (moved to Principal)
+- [x] Institution Admin: Student Welfare retained (appears on both dashboards)
+- [ ] Backend: role-based routing/authorization for principal vs institution admin
+- [ ] Backend: assignment/result/attendance moderation workflows
+
+---
+
+## Staff Document Upload (NIN + Others) on First Login
+
+**Status:** In Progress (frontend + docs done)
+**Module:** Staff / HR / Onboarding
+**Type:** Feature
+
+### Summary
+When a new staff member (especially teachers) logs in for the first time, they are required to upload their National Identification Number (NIN) and other supporting documents before receiving full account access.
+
+### Requirements
+- [x] Add Staff modal includes School Email and Personal Email fields
+- [x] Add Staff modal notes the first-login document requirement (NIN + others)
+- [x] Profile page shows a Required Documents section (NIN as "Complete")
+- [ ] Define the full list of required documents (NIN + others) — PENDING user input during development
+- [ ] First-login gating: block full access until documents uploaded
+- [ ] Upload/verification flow + status per document
+- [ ] Backend: document storage, verification, and audit
+
+---
+
+## Finance: Flexible Fee Setup
+
+**Status:** Built (frontend live)
+**Module:** Finance
+**Type:** Feature
+
+### Summary
+Institution Admin can add fees and choose exactly who they apply to: all students, a specific class/classes, or boarding/day students only. Tuition can differ per class, and new / ad-hoc fees can be added as needed.
+
+### Requirements
+- [x] Fee Structure tab listing fees with type, target audience, amount, frequency, status
+- [x] Class Tuition tab (per-class base tuition)
+- [x] "+ Add Fee" modal: fee name, type (Tuition/Boarding/Ad-hoc/PTA/Exam), applies-to (all / specific class / boarding / day), class selector, amount, frequency, status
+- [ ] Backend: billing engine applies fees per class/boarding-day targeting
+- [ ] Backend: per-class tuition differentials and ad-hoc fee invoicing
+
+---
+
+## Inventory: Purchase & Payment Records
+
+**Status:** Built (frontend live)
+**Module:** Operations / Inventory
+**Type:** Feature
+
+### Summary
+Inventory works like a request/record log: the admin records items bought with their amounts, then processes the payment to an account, keeping everything on record.
+
+### Requirements
+- [x] Inventory tab (stock levels)
+- [x] Purchases & Payments tab
+  - [x] Purchase Requests list (item, supplier, amount, account, status: Pending/Paid)
+  - [x] Payment History (ref, item, amount, account, method, date)
+- [x] "+ Record Purchase" modal (item, supplier, amount, pay-from account, date)
+- [x] "Process Payment" modal (purchase, amount, from account, method, beneficiary)
+- [ ] Backend: purchase ledger + payment-to-account processing + receipts
+
+---
+
+## Calendar: Add Events
+
+**Status:** Built (frontend live)
+**Module:** Calendar
+**Type:** Feature
+
+### Summary
+Institution Admin can add events to the institution calendar.
+
+### Requirements
+- [x] "+ Add Event" button + modal (title, type, date, time, audience) on:
+  - [x] Institution Admin calendar (`/institution/calendar`)
+  - [x] Principal calendar (`/principal/calendar`)
+- [ ] Backend: event persistence + calendar sync
+
+---

@@ -1,0 +1,631 @@
+02 — Platform Architecture
+1. Overview
+
+The Educational Institution ERP Platform is a multi-tenant, configurable SaaS platform designed to support one or many educational institutions under a single platform.
+
+The architecture separates platform management from institution management while allowing institutions to independently configure their academic, administrative, financial, and operational structures.
+
+2. Architecture Hierarchy
+Platform
+│
+├── Organization (Optional)
+│   │
+│   ├── Institution
+│   │   ├── Campus (Future)
+│   │   ├── Academic Structure
+│   │   ├── Staff
+│   │   ├── Students
+│   │   ├── Parents
+│   │   ├── Applicants
+│   │   ├── Visitors
+│   │   ├── Clinic
+│   │   └── Modules
+│   │
+│   └── Institution
+│
+└── Independent Institution
+3. Platform Layer
+
+Managed by Platform Administrators.
+
+Responsibilities:
+
+Manage subscriptions
+Manage organizations
+Manage institutions
+Platform analytics
+Module licensing
+Billing
+Global templates
+Platform announcements
+Platform surveys
+Global integrations
+Support management
+System monitoring
+
+Platform administrators cannot access institution data unless explicitly authorized through a secure support access process.
+
+4. Organization Layer
+
+Organizations allow one entity to manage multiple institutions.
+
+Examples:
+
+School Groups
+Educational Trusts
+Religious Organizations
+Government Education Boards
+Private Education Companies
+
+An organization can manage:
+
+One institution
+Many institutions
+
+Features:
+
+Institution directory
+Shared reports
+Cross-institution analytics
+Shared branding (optional)
+Shared policies (optional)
+Central administration
+
+Institutions remain operationally independent.
+
+5. Institution Layer
+
+The institution is the primary operational unit.
+
+Every institution has its own:
+
+Users
+Academic structure
+Branding
+Fee structure
+Staff
+Students
+Parents
+Subjects
+Departments
+Workflows
+Automation rules
+Notification settings
+Templates
+Website
+Reports
+
+Institutions cannot access data belonging to another institution.
+
+6. Campus Layer (Future)
+
+Institutions may operate multiple campuses.
+
+Each campus may have:
+
+Buildings
+Departments
+Staff
+Students
+Timetables
+Resources
+
+Institution administrators choose whether operations are centralized or campus-specific.
+
+7. Multi-Tenant Architecture
+
+Every institution is an isolated tenant.
+
+Isolation applies to:
+
+Users
+Authentication
+Academic data
+Finance
+Reports
+Files
+Notifications
+Branding
+APIs
+Automation
+Permissions
+
+Institution data must never be visible to another tenant.
+
+8. User Architecture
+
+Each user has one identity.
+
+A user may have multiple roles.
+
+Example:
+
+John Doe
+
+Parent
+
+Finance Officer
+
+Teacher
+
+Permissions are calculated from assigned roles.
+
+Institutions decide whether multiple roles are allowed.
+
+9. Role Hierarchy
+Platform Super Admin
+
+↓
+
+Organization Administrator
+
+↓
+
+Institution Administrator
+
+↓
+
+Principal
+
+↓
+
+Vice Principal
+
+↓
+
+Head of Department
+
+↓
+
+Class Teacher/Subject Teacher
+
+↓
+Non-Teaching Staff
+↓
+
+Students / Parents / Applicants
+
+This hierarchy defines reporting relationships, not automatic permissions.
+
+Permissions are assigned independently.
+
+10. Default Roles
+
+Platform
+
+Platform Super Admin
+
+Organization
+
+Organization Administrator
+
+Institution
+
+School Administrator
+Principal
+Vice Principal
+Head of Department
+Subject Teacher
+Class Teacher
+Finance Officer
+HR Officer
+Admissions Officer
+Secretary
+Reception Officer
+Security Officer
+Clinic Staff
+Librarian
+Hostel Officer
+Transport Officer
+Inventory Officer
+ICT Officer
+
+Portal Users
+
+Student
+Parent
+Applicant
+
+Future
+
+Guidance Counselor
+Alumni Officer
+Facility Manager
+11. Custom Roles
+
+Institutions can create unlimited custom roles.
+
+Each custom role defines:
+
+Name
+Description
+Dashboard
+Workspace access
+Module access
+Page permissions
+Approval authority
+Reporting relationships
+
+Examples:
+
+Examination Officer
+Dean
+House Master
+Laboratory Manager
+Welfare Officer
+Sports Coordinator
+12. Permission Model
+
+Permissions are granular.
+
+Supported actions include:
+
+View
+Create
+Edit
+Delete
+Approve
+Reject
+Publish
+Export
+Import
+Archive
+Restore
+Assign
+Configure
+Manage
+
+Permissions are assigned:
+
+Individually
+Through roles
+Through permission groups
+13. Data Scope
+
+Permissions also define data visibility.
+
+Examples:
+
+Teacher
+
+Assigned students only
+
+Class Teacher
+
+Assigned class
+
+HOD
+
+Department
+
+Vice Principal
+
+Assigned responsibility
+
+Principal
+
+Entire institution
+
+Organization Administrator
+
+Organization institutions only
+
+Platform Administrator
+
+Platform management only
+
+## Entity Lifecycles
+
+Major entities progress through defined lifecycle stages.
+
+Student
+
+Applicant → Admitted → Enrolled → Active → Graduated/Transferred → Archived
+
+Staff
+
+Applicant → Employed → Active → On Leave (Optional) → Resigned/Retired → Archived
+
+Institution records are retained for historical reporting and auditing even after archival.
+
+14. Approval Hierarchy
+
+Approval workflows are configurable.
+
+Example:
+
+Teacher
+
+↓
+
+HOD
+
+↓
+
+Principal
+
+↓
+
+Approved
+
+or
+
+Teacher
+
+↓
+
+Principal
+
+↓
+
+Approved
+
+or
+
+Teacher
+
+↓
+
+School Administrator
+
+↓
+
+Approved
+
+Institutions define:
+
+Approval levels
+Approval order
+Approval conditions
+Delegation
+Escalation
+15. Module Architecture
+
+Modules operate independently.
+
+Examples:
+
+Students
+Finance
+Clinic
+Library
+Transport
+
+Shared platform services include:
+
+Authentication
+Notifications
+Automation
+Audit Logs
+Reporting
+Search
+File Storage
+
+This avoids duplicated functionality.
+
+16. Configuration Architecture
+
+Institution-specific behavior is configuration-driven.
+
+Examples:
+
+Academic levels
+Terms
+Sessions
+Subjects
+Departments
+Fees
+Grading
+Timetables
+Report cards
+Roles
+Approval workflows
+Notifications
+
+No institution-specific configuration should be hardcoded.
+
+## Core Entity Model
+
+The platform is built around a small set of core business entities.
+
+Platform
+│
+├── Organization
+│
+├── Institution
+│
+├── Campus (Optional)
+│
+├── Users
+│   ├── Staff
+│   ├── Students
+│   ├── Parents
+│   └── Applicants
+│
+├── Academic Structure
+│
+├── Programs & Groups
+│
+├── Finance
+│
+├── Requests
+│
+├── Approvals
+│
+├── Documents
+│
+├── Notifications
+│
+└── Reports
+
+Relationships between these entities are maintained consistently across all modules.
+
+17. Communication Architecture
+
+Unified communication engine.
+
+Channels:
+
+Email
+SMS
+Push Notifications
+WhatsApp
+In-App Notifications
+
+Modules send events.
+
+The communication engine determines:
+
+Delivery channel
+Template
+Audience
+Retry policy
+18. Automation Architecture
+
+Every module can publish events.
+
+Examples:
+
+Invoice Created
+
+↓
+
+Automation Engine
+
+↓
+
+Notify Parent
+
+↓
+
+Create Reminder
+
+↓
+
+Update Dashboard
+
+Another:
+
+Student Absent
+
+↓
+
+Automation Engine
+
+↓
+
+Notify Parent
+
+↓
+
+Notify Class Teacher
+
+↓
+
+Create Welfare Case
+
+Automation is event-driven and configurable without code.
+
+19. Reporting Architecture
+
+Every module contributes to a centralized reporting system.
+
+Reports support:
+
+Institution-wide analytics
+Department reports
+Role-based dashboards
+Scheduled reports
+Exports
+Historical trends
+20. Audit Architecture
+
+Every significant action is logged.
+
+Audit entries include:
+
+User
+Action
+Module
+Record
+Timestamp
+IP Address
+Device (where available)
+Previous Value
+New Value
+
+Audit logs are immutable.
+
+21. Search Architecture
+
+Global search is available based on permissions.
+
+Users can search:
+
+Students
+Staff
+Parents
+Applicants
+Classes
+Subjects
+Documents
+Payments
+Visitors
+Learning Content
+Reports
+
+Search results respect role permissions and data scope.
+
+22. Platform Principles
+Multi-tenant by design.
+Configuration over customization.
+Role-based access control.
+Modular architecture.
+Shared platform services.
+Event-driven automation.
+Consistent user experience across web and mobile.
+Institution data isolation.
+Scalable from a single institution to large organizations.
+Ready for future expansion, including AI, CIAM, RFID, biometrics, and smart campus integrations.
+Before moving on
+
+This is one enhancement I strongly recommend adding because it will simplify both implementation and future maintenance:
+
+Workspace Architecture
+
+Instead of jumping directly into role workspaces, define a standard workspace structure that every role follows.
+
+For example:
+
+Workspace
+│
+├── Dashboard
+├── Modules
+├── Quick Actions
+├── Notifications
+├── Tasks
+├── Reports
+├── Calendar
+├── Profile
+└── Settings (if permitted)
+
+Every role—School Admin, Principal, Teacher, Finance, Clinic, Reception, Parent, Student, etc.—would inherit this structure and only differ in the modules, permissions, and available actions.
+
+## Module Dependencies
+
+Modules are designed to operate independently where possible while sharing common platform services.
+
+Examples:
+
+| Module | Primary Dependencies |
+|---------|----------------------|
+| Admissions | Applicants |
+| Student Information | Admissions |
+| Academics | Students, Subjects |
+| Attendance | Academics |
+| Finance | Students |
+| Clinic | Students, Staff |
+| Library | Students, Staff |
+| Student Support | Students |
+| Transport | Students |
+| Hostel | Students |
