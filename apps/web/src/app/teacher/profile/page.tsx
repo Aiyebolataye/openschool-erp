@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Modal } from "@/components/ui/modal";
-import { Field, TextInput, TextArea, SelectField } from "@/components/ui/form";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,26 +15,17 @@ const sections = [
 ];
 
 export default function ProfilePage() {
-  const [editOpen, setEditOpen] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [roomDept, setRoomDept] = useState("");
-  const [bio, setBio] = useState("");
-
   return (
     <div className="max-w-[900px] mx-auto">
-      <PageHeader title="My Profile" subtitle="Manage your profile and preferences" />
-
-      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit Profile" footer={<><Button variant="secondary" onClick={() => setEditOpen(false)}>Cancel</Button><Button onClick={() => setEditOpen(false)}>Save</Button></>}>
-        <div className="space-y-4">
-          <Field label="Full Name" required><TextInput placeholder="Enter full name" value={fullName} onChange={(e) => setFullName(e.target.value)} /></Field>
-          <Field label="Email" required><TextInput type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} /></Field>
-          <Field label="Phone" required><TextInput placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} /></Field>
-          <SelectField label="Room/Department" required options={["Biology", "Chemistry", "Physics", "Mathematics", "Science Lab"]} value={roomDept} onChange={(e) => setRoomDept(e.target.value)} placeholder="Select room/department" />
-          <Field label="Bio"><TextArea placeholder="Write a short bio..." rows={4} value={bio} onChange={(e) => setBio(e.target.value)} /></Field>
-        </div>
-      </Modal>
+      <PageHeader
+        title="My Profile"
+        subtitle="Manage your profile and preferences"
+        actions={
+          <Link href="/teacher/profile/edit">
+            <Button>Edit Profile</Button>
+          </Link>
+        }
+      />
 
       <Card className="p-6 mb-6 flex items-center gap-4">
         <div className="w-16 h-16 rounded-full bg-primary-light flex items-center justify-center">
@@ -55,7 +44,9 @@ export default function ProfilePage() {
               <p className="text-sm font-medium text-text-dark">{s.title}</p>
               <p className="text-xs text-text-muted mt-0.5">{s.description}</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setEditOpen(true)}>Edit</Button>
+            <Link href="/teacher/profile/edit">
+              <Button variant="ghost" size="sm">Edit</Button>
+            </Link>
           </div>
         ))}
       </Card>

@@ -12,6 +12,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { Modal } from "@/components/ui/modal";
 import { Field, TextInput, SelectField } from "@/components/ui/form";
 import { useState } from "react";
+import Link from "next/link";
 
 const kpis = [
   { label: "Total Students", value: "12,450", detail: "", detailColor: "muted" as const },
@@ -21,11 +22,11 @@ const kpis = [
 ];
 
 const data = [
-  { student: { text: "Chidi Eze", variant: "muted" as const }, id: "STU-21401", class: "SS1 Science", guardian: "Mr. Eze", status: { text: "Active", variant: "green" as const }, actions: "View" },
-  { student: { text: "Amara Okafor", variant: "muted" as const }, id: "STU-21402", class: "JSS2 B", guardian: "Mrs. Okafor", status: { text: "Active", variant: "green" as const }, actions: "View" },
-  { student: { text: "Tom Wallace", variant: "muted" as const }, id: "STU-21403", class: "SS3 Art", guardian: "Mr. Wallace", status: { text: "Active", variant: "green" as const }, actions: "View" },
-  { student: { text: "Grace Lim", variant: "muted" as const }, id: "STU-21404", class: "SS2 Science", guardian: "Mrs. Lim", status: { text: "Suspended", variant: "red" as const }, actions: "View" },
-  { student: { text: "Daniel Smith", variant: "muted" as const }, id: "STU-21405", class: "JSS1 A", guardian: "Mrs. Smith", status: { text: "Active", variant: "green" as const }, actions: "View" },
+  { student: { text: "Chidi Eze", variant: "muted" as const }, id: "STU-21401", class: "SS1 Science", guardian: "Mr. Eze", status: { text: "Active", variant: "green" as const }, actions: <Link href="/teacher/students/STU-21401" className="text-sm font-medium text-primary hover:underline">View</Link> },
+  { student: { text: "Amara Okafor", variant: "muted" as const }, id: "STU-21402", class: "JSS2 B", guardian: "Mrs. Okafor", status: { text: "Active", variant: "green" as const }, actions: <Link href="/teacher/students/STU-21402" className="text-sm font-medium text-primary hover:underline">View</Link> },
+  { student: { text: "Tom Wallace", variant: "muted" as const }, id: "STU-21403", class: "SS3 Art", guardian: "Mr. Wallace", status: { text: "Active", variant: "green" as const }, actions: <Link href="/teacher/students/STU-21403" className="text-sm font-medium text-primary hover:underline">View</Link> },
+  { student: { text: "Grace Lim", variant: "muted" as const }, id: "STU-21404", class: "SS2 Science", guardian: "Mrs. Lim", status: { text: "Suspended", variant: "red" as const }, actions: <Link href="/teacher/students/STU-21404" className="text-sm font-medium text-primary hover:underline">View</Link> },
+  { student: { text: "Daniel Smith", variant: "muted" as const }, id: "STU-21405", class: "JSS1 A", guardian: "Mrs. Smith", status: { text: "Active", variant: "green" as const }, actions: <Link href="/teacher/students/STU-21405" className="text-sm font-medium text-primary hover:underline">View</Link> },
 ];
 
 const columns = [

@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Modal } from "@/components/ui/modal";
-import { Field, TextInput, TextArea, SelectField } from "@/components/ui/form";
+import Link from "next/link";
 import { StatCard } from "@/components/ui/stat-card";
 import { ListCard } from "@/components/ui/list-card";
 import { Badge } from "@/components/ui/badge";
@@ -44,19 +42,6 @@ const curriculum = [
 ];
 
 export default function TeacherDashboardPage() {
-  const [lessonNoteOpen, setLessonNoteOpen] = useState(false);
-  const [assignmentOpen, setAssignmentOpen] = useState(false);
-  const [lnSubject, setLnSubject] = useState("");
-  const [lnClass, setLnClass] = useState("");
-  const [lnTopic, setLnTopic] = useState("");
-  const [lnNotes, setLnNotes] = useState("");
-  const [lnDate, setLnDate] = useState("");
-  const [asSubject, setAsSubject] = useState("");
-  const [asClass, setAsClass] = useState("");
-  const [asTitle, setAsTitle] = useState("");
-  const [asDueDate, setAsDueDate] = useState("");
-  const [asInstructions, setAsInstructions] = useState("");
-
   return (
     <div className="max-w-[1200px] mx-auto">
       <PageHeader
@@ -64,31 +49,15 @@ export default function TeacherDashboardPage() {
         subtitle="Here's your teaching overview for today · Term 3 2026"
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={() => setLessonNoteOpen(true)}>+ Lesson Note</Button>
-            <Button onClick={() => setAssignmentOpen(true)}>+ Assignment</Button>
+            <Link href="/teacher/lesson-notes/new">
+              <Button variant="secondary">+ Lesson Note</Button>
+            </Link>
+            <Link href="/teacher/assignments/new">
+              <Button>+ Assignment</Button>
+            </Link>
           </div>
         }
       />
-
-      <Modal open={lessonNoteOpen} onClose={() => setLessonNoteOpen(false)} title="Add Lesson Note" footer={<><Button variant="secondary" onClick={() => setLessonNoteOpen(false)}>Cancel</Button><Button onClick={() => setLessonNoteOpen(false)}>Save</Button></>}>
-        <div className="space-y-4">
-          <SelectField label="Subject" required options={["Biology", "Chemistry", "Physics", "Mathematics"]} value={lnSubject} onChange={(e) => setLnSubject(e.target.value)} placeholder="Select subject" />
-          <SelectField label="Class" required options={["SS1 Science", "SS2 Science"]} value={lnClass} onChange={(e) => setLnClass(e.target.value)} placeholder="Select class" />
-          <Field label="Topic" required><TextInput placeholder="Enter topic" value={lnTopic} onChange={(e) => setLnTopic(e.target.value)} /></Field>
-          <Field label="Notes" required><TextArea placeholder="Write lesson notes..." rows={5} value={lnNotes} onChange={(e) => setLnNotes(e.target.value)} /></Field>
-          <Field label="Date" required><TextInput type="date" value={lnDate} onChange={(e) => setLnDate(e.target.value)} /></Field>
-        </div>
-      </Modal>
-
-      <Modal open={assignmentOpen} onClose={() => setAssignmentOpen(false)} title="Create Assignment" footer={<><Button variant="secondary" onClick={() => setAssignmentOpen(false)}>Cancel</Button><Button onClick={() => setAssignmentOpen(false)}>Create</Button></>}>
-        <div className="space-y-4">
-          <SelectField label="Subject" required options={["Biology", "Chemistry", "Physics", "Mathematics"]} value={asSubject} onChange={(e) => setAsSubject(e.target.value)} placeholder="Select subject" />
-          <SelectField label="Class" required options={["SS1 Science", "SS2 Science"]} value={asClass} onChange={(e) => setAsClass(e.target.value)} placeholder="Select class" />
-          <Field label="Title" required><TextInput placeholder="Enter assignment title" value={asTitle} onChange={(e) => setAsTitle(e.target.value)} /></Field>
-          <Field label="Due Date" required><TextInput type="date" value={asDueDate} onChange={(e) => setAsDueDate(e.target.value)} /></Field>
-          <Field label="Instructions" required><TextArea placeholder="Write instructions..." rows={5} value={asInstructions} onChange={(e) => setAsInstructions(e.target.value)} /></Field>
-        </div>
-      </Modal>
 
       <div className="grid grid-cols-6 gap-4 mb-6">
         {kpis.map((k) => (

@@ -82,7 +82,7 @@ function GenericList({ rows, actionLabel }: { rows: { title: string; sub: string
           </div>
           <div className="flex items-center gap-3">
             {r.status && <StatusBadge status={r.status} />}
-            <Button variant="ghost" size="sm">{actionLabel}</Button>
+            <Button variant="ghost" size="sm">{actionLabel || "Open"}</Button>
           </div>
         </div>
       ))}
@@ -230,7 +230,6 @@ export default function OperationsPage() {
           <Field label="Amount" required>
             <TextInput type="number" placeholder="0.00" />
           </Field>
-          <SelectField label="Pay From Account" required placeholder="Select account" options={["Procurement Account", "General Account", "Petty Cash"]} />
           <Field label="Purchase Date" required>
             <TextInput type="date" />
           </Field>

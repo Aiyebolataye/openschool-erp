@@ -40,6 +40,9 @@ const columns = [
 export default function StudentsPage() {
   const [enrollOpen, setEnrollOpen] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState(true);
+  const [notifySms, setNotifySms] = useState(true);
+  const [parentTitle, setParentTitle] = useState("");
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -91,15 +94,27 @@ export default function StudentsPage() {
           </Field>
           <SelectField label="Gender" required placeholder="Select gender" options={["Male", "Female"]} />
           <SelectField label="Class" required placeholder="Select class" options={["JSS1 A", "JSS1 B", "SS1 Science", "SS2 Art", "SS1 Business"]} />
+          <SelectField label="Parent Title" required placeholder="Select title" options={["Mr", "Mrs", "Ms", "Dr", "Prof", "Chief", "Alhaji"]} />
           <Field label="Guardian Name" required>
             <TextInput placeholder="Enter guardian name" />
           </Field>
-          <Field label="Guardian Email">
+          <Field label="Guardian Email" required>
             <TextInput type="email" placeholder="guardian@example.com" />
           </Field>
-          <Field label="Guardian Phone">
+          <Field label="Guardian Phone" required>
             <TextInput type="tel" placeholder="+234 xxx xxx xxxx" />
           </Field>
+          <div className="flex items-center gap-2">
+            <input type="checkbox" id="notify-email" checked={notifyEmail} onChange={(e) => setNotifyEmail(e.target.checked)} className="rounded border-border-light" />
+            <label htmlFor="notify-email" className="text-sm text-text-dark">Send enrollment email to parent</label>
+          </div>
+          <div className="flex items-center gap-2">
+            <input type="checkbox" id="notify-sms" checked={notifySms} onChange={(e) => setNotifySms(e.target.checked)} className="rounded border-border-light" />
+            <label htmlFor="notify-sms" className="text-sm text-text-dark">Send enrollment SMS to parent</label>
+          </div>
+          <p className="text-xs text-text-muted">
+            Parent will receive login credentials and the school portal link via {notifyEmail && notifySms ? "email and SMS" : notifyEmail ? "email" : notifySms ? "SMS" : "no channel"}.
+          </p>
         </div>
       </Modal>
 

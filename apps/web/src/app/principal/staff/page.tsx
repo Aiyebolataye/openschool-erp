@@ -41,6 +41,20 @@ function List({ rows }: { rows: { title: string; sub: string; status: { text: st
 
 export default function PrincipalStaffPage() {
   const [addOpen, setAddOpen] = useState(false);
+  const [createdEmail, setCreatedEmail] = useState("");
+  const [showCreated, setShowCreated] = useState(false);
+
+  const handleSave = () => {
+    const schoolEmail = (document.getElementById("school-email") as HTMLInputElement)?.value || "newstaff@school.com";
+    setCreatedEmail(schoolEmail);
+    setShowCreated(true);
+  };
+
+  const handleClose = () => {
+    setAddOpen(false);
+    setShowCreated(false);
+    setCreatedEmail("");
+  };
 
   return (
     <div className="max-w-[1100px] mx-auto">
@@ -60,31 +74,57 @@ export default function PrincipalStaffPage() {
 
       <Modal
         open={addOpen}
-        onClose={() => setAddOpen(false)}
+        onClose={handleClose}
         title="Add Staff"
         footer={
-          <>
-            <Button variant="secondary" onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button onClick={() => setAddOpen(false)}>Save</Button>
-          </>
+          showCreated ? (
+            <Button onClick={handleClose}>Done</Button>
+          ) : (
+            <>
+              <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleSave}>Save</Button>
+            </>
+          )
         }
       >
-        <div className="flex flex-col gap-4">
-          <Field label="Full Name" required>
-            <TextInput placeholder="Enter full name" />
-          </Field>
-          <SelectField label="Role" required placeholder="Select role" options={["Teacher", "Admin", "Accounts", "Librarian", "Nurse", "Transport"]} />
-          <SelectField label="Department" required placeholder="Select department" options={["Sciences", "Arts", "Commerce", "Administration", "Medical", "Transport"]} />
-          <Field label="Email" required>
-            <TextInput type="email" placeholder="staff@school.com" />
-          </Field>
-          <Field label="Phone">
-            <TextInput type="tel" placeholder="+234 xxx xxx xxxx" />
-          </Field>
-          <Field label="Employment Date" required>
-            <TextInput type="date" />
-          </Field>
-        </div>
+        {showCreated ? (
+          <div className="flex flex-col gap-4">
+            <div className="rounded-lg bg-primary-light/60 border border-primary/30 px-4 py-4">
+              <p className="text-sm font-medium text-text-dark">
+                Account created. Login credentials sent to {createdEmail}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs font-medium text-text-muted">Temporary Password</p>
+              <div className="rounded-md bg-primary-light/60 border border-primary/30 px-4 py-3">
+                <code className="text-sm font-semibold text-text-dark tracking-wide">TempPwd@2026</code>
+              </div>
+            </div>
+            <p className="text-xs text-text-muted leading-relaxed">
+              The staff member must change this password on their first login.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <Field label="Full Name" required>
+              <TextInput placeholder="Enter full name" />
+            </Field>
+            <SelectField label="Role" required placeholder="Select role" options={["Teacher", "Admin", "Accounts", "Librarian", "Nurse", "Transport"]} />
+            <SelectField label="Department" required placeholder="Select department" options={["Sciences", "Arts", "Commerce", "Administration", "Medical", "Transport"]} />
+            <Field label="Personal Email" required>
+              <TextInput type="email" placeholder="personal@email.com" />
+            </Field>
+            <Field label="School Email" required>
+              <TextInput id="school-email" type="email" placeholder="name@school.com" />
+            </Field>
+            <Field label="Phone">
+              <TextInput type="tel" placeholder="+234 xxx xxx xxxx" />
+            </Field>
+            <Field label="Employment Date" required>
+              <TextInput type="date" />
+            </Field>
+          </div>
+        )}
       </Modal>
     </div>
   );

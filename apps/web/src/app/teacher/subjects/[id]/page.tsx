@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs } from "@/components/ui/tabs";
-import { Modal } from "@/components/ui/modal";
-import { Field, TextInput, TextArea, SelectField } from "@/components/ui/form";
+import { Field, TextInput, SelectField } from "@/components/ui/form";
+import { uid } from "@/lib/app-store";
+import { DataTable } from "@/components/ui/data-table";
 import { useParams } from "next/navigation";
-import { useSubjectNotes, useDiscCases } from "@/lib/app-store";
+import { useSubjectNotes, useSubjectAssignments, useSubjectAssessments, useSubjectPerformance, useDiscCases } from "@/lib/app-store";
 
 const SUBJECTS: Record<string, { name: string; dept: string; classes: string[]; teacher: string; overview: string }> = {
   biology: {
@@ -18,16 +19,14 @@ const SUBJECTS: Record<string, { name: string; dept: string; classes: string[]; 
     dept: "Sciences",
     classes: ["SS1 Science", "SS2 Science", "SS3 Science"],
     teacher: "Dr. Okon",
-    overview:
-      "This course covers the structure and function of living organisms, cell biology, genetics, ecology and practical laboratory work across the three science classes. Emphasis is placed on the West African Senior School Certificate (WASSCE) syllabus and inquiry-based practicals.",
+    overview: "This course covers the structure and function of living organisms, cell biology, genetics, ecology and practical laboratory work across the three science classes.",
   },
   "integrated-science": {
     name: "Integrated Science",
     dept: "Sciences",
     classes: ["SS1 Science", "SS2 Science"],
     teacher: "Dr. Okon",
-    overview:
-      "An interdisciplinary introduction to the physical and life sciences combining physics, chemistry and biology concepts for JSS/SS students, with a focus on hands-on experimentation and everyday applications.",
+    overview: "An interdisciplinary introduction to the physical and life sciences combining physics, chemistry and biology concepts.",
   },
 };
 
@@ -50,38 +49,45 @@ const students = [
   { name: "Grace Lim", id: "STU-21405", cls: "SS2 Science", status: { text: "Active", variant: "green" as const } },
 ];
 
-const initialAssignments = [
-  { title: "Biology Essay #3", cls: "SS1 Science", submissions: "40 / 42", due: "Aug 4", status: { text: "Grading", variant: "orange" as const } },
-  { title: "Genetics Worksheet", cls: "SS2 Science", submissions: "0 / 40", due: "Aug 6", status: { text: "Active", variant: "green" as const } },
-];
-
-const initialAssessments = [
-  { title: "Mid-term Quiz — Cell Bio", cls: "SS1 Science", type: { text: "Quiz", variant: "blue" as const }, status: { text: "Published", variant: "green" as const }, date: "Aug 3" },
-  { title: "Practical — Microscopy", cls: "SS2 Science", type: { text: "Practical", variant: "purple" as const }, status: { text: "Scheduled", variant: "orange" as const }, date: "Aug 8" },
-  { title: "CA Test 2 — Genetics", cls: "SS3 Science", type: { text: "CA", variant: "muted" as const }, status: { text: "Draft", variant: "muted" as const }, date: "Aug 12" },
-];
-
 export default function SubjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const subject = SUBJECTS[id] ?? SUBJECTS["biology"];
   const scheme = SCHEME[id] ?? SCHEME["biology"];
 
   const [notes, setNotes] = useSubjectNotes(subject.name);
+  const [assignments, setAssignments] = useSubjectAssignments(subject.name);
+  const [assessments, setAssessments] = useSubjectAssessments(subject.name);
+  const [performance, setPerformance] = useSubjectPerformance(subject.name);
   const [cases] = useDiscCases();
 
-  const [assignmentOpen, setAssignmentOpen] = useState(false);
-  const [assessmentOpen, setAssessmentOpen] = useState(false);
-  const [assignmentTitle, setAssignmentTitle] = useState("");
-  const [assignmentCls, setAssignmentCls] = useState("");
-  const [assignmentDue, setAssignmentDue] = useState("");
-  const [assessmentTitle, setAssessmentTitle] = useState("");
-  const [assessmentCls, setAssessmentCls] = useState("");
-  const [assessmentType, setAssessmentType] = useState("");
-  const [assessmentDate, setAssessmentDate] = useState("");
-  const [savedAssignments, setSavedAssignments] = useState<{ title: string; cls: string; submissions: string; due: string; status: { text: string; variant: "green" | "orange" | "muted" | "red" | "blue" | "purple" } }[]>(initialAssignments);
-  const [savedAssessments, setSavedAssessments] = useState<{ title: string; cls: string; type: { text: string; variant: "green" | "orange" | "muted" | "red" | "blue" | "purple" }; status: { text: string; variant: "green" | "orange" | "muted" | "red" | "blue" | "purple" }; date: string }[]>(initialAssessments);
-
   const noteByModule = new Map(notes.map((n) => [n.module, n]));
+
+  const [perfKind, setPerfKind] = useState("Assignment");
+  const [perfTitle, setPerfTitle] = useState("");
+  const [perfScores, setPerfScores] = useState<Record<string, string>>({});
+
+  const addPerformance = () => {
+    if (!perfTitle) return;
+    const date = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const records = students
+      .filter((s) => perfScores[s.id])
+      .map((s) => ({
+        id: uid(),
+        subject: subject.name,
+        studentName: s.name,
+        studentId: s.id,
+        className: s.cls,
+        kind: perfKind as "Assignment" | "Assessment" | "Exam",
+        title: perfTitle,
+        score: perfScores[s.id] || "",
+        date,
+      }));
+    if (records.length > 0) {
+      setPerformance([...performance, ...records]);
+      setPerfTitle("");
+      setPerfScores({});
+    }
+  };
 
   return (
     <div className="max-w-[1100px] mx-auto">
@@ -136,9 +142,7 @@ export default function SubjectDetailPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <Badge variant={s.status.variant as "green"}>{s.status.text}</Badge>
-                      <Button variant="ghost" size="sm">
-                        <Link href={`/teacher/students/${s.id}`}>Profile</Link>
-                      </Button>
+                      <Link href={`/teacher/students/${s.id}`} className="text-sm font-medium text-primary hover:underline">Profile</Link>
                     </div>
                   </div>
                 ))}
@@ -150,10 +154,11 @@ export default function SubjectDetailPage() {
             label: "Scheme of Work",
             content: (
               <div className="space-y-4">
-                <p className="text-xs text-text-muted">Scheme of work — the full list of topics for Term 3. Add a note to cover a module; approved notes become part of the scheme.</p>
+                <p className="text-xs text-text-muted">Scheme of work — the full list of topics for Term 3. Notes become part of the scheme once approved by the head teacher.</p>
                 <Card className="divide-y divide-border-light">
                   {scheme.map((m) => {
                     const note = noteByModule.get(m.module);
+                    const approved = note?.approved;
                     return (
                       <div key={m.module} className="flex items-center justify-between px-5 py-4">
                         <div className="flex items-center gap-4">
@@ -164,19 +169,27 @@ export default function SubjectDetailPage() {
                             <p className="text-sm font-medium text-text-dark">{m.topic}</p>
                             <p className="text-xs text-text-muted mt-0.5">{m.week}</p>
                             {note && (
-                              <p className="text-xs text-primary mt-1">Note: {note.title}</p>
+                              <p className="text-xs text-primary mt-1">
+                                Note: {note.title}
+                                {approved && <span className="ml-2 text-green font-medium">(Approved)</span>}
+                                {!approved && <span className="ml-2 text-orange font-medium">(Pending approval)</span>}
+                              </p>
                             )}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           {note ? (
-                            <Badge variant="green">Covered</Badge>
+                            <Badge variant={approved ? "green" : "orange"}>{approved ? "Covered" : "Draft"}</Badge>
                           ) : (
                             <Badge variant="muted">Not covered</Badge>
                           )}
-                          <Link href={`/teacher/subjects/${id}/notes/new?module=${m.module}`}>
-                            <Button variant="secondary" size="sm">{note ? "Edit Note" : "Add Note"}</Button>
-                          </Link>
+                          {approved ? (
+                            <span className="text-xs text-text-muted italic px-3 py-1.5">Locked</span>
+                          ) : (
+                            <Link href={`/teacher/subjects/${id}/notes/new?module=${m.module}`}>
+                              <Button variant="secondary" size="sm">{note ? "Edit Note" : "Add Note"}</Button>
+                            </Link>
+                          )}
                         </div>
                       </div>
                     );
@@ -191,16 +204,21 @@ export default function SubjectDetailPage() {
             content: (
               <div className="space-y-3">
                 <div className="flex justify-end">
-                  <Button onClick={() => setAssignmentOpen(true)}>+ New Assignment</Button>
+                  <Link href="/teacher/assignments/new">
+                    <Button>+ New Assignment</Button>
+                  </Link>
                 </div>
                 <Card className="divide-y divide-border-light">
-                  {savedAssignments.map((a) => (
-                    <div key={a.title} className="flex items-center justify-between px-5 py-4">
+                  {assignments.length === 0 && (
+                    <div className="px-5 py-8 text-center text-sm text-text-muted">No assignments yet.</div>
+                  )}
+                  {assignments.map((a) => (
+                    <div key={a.id} className="flex items-center justify-between px-5 py-4">
                       <div>
                         <p className="text-sm font-medium text-text-dark">{a.title}</p>
-                        <p className="text-xs text-text-muted mt-0.5">{a.cls} · {a.submissions} · due {a.due}</p>
+                        <p className="text-xs text-text-muted mt-0.5">{a.cls} · due {a.due || "TBD"}</p>
                       </div>
-                      <Badge variant={a.status.variant as "orange"}>{a.status.text}</Badge>
+                      <Badge variant={a.status === "approved" ? "green" : "orange"}>{a.status === "approved" ? "Approved" : "Pending"}</Badge>
                     </div>
                   ))}
                 </Card>
@@ -213,72 +231,98 @@ export default function SubjectDetailPage() {
             content: (
               <div className="space-y-3">
                 <div className="flex justify-end">
-                  <Button onClick={() => setAssessmentOpen(true)}>+ New Assessment</Button>
+                  <Link href="/teacher/assessments/new">
+                    <Button>+ New Assessment</Button>
+                  </Link>
                 </div>
                 <Card className="divide-y divide-border-light">
-                  {savedAssessments.map((a) => (
-                    <div key={a.title} className="flex items-center justify-between px-5 py-4">
+                  {assessments.length === 0 && (
+                    <div className="px-5 py-8 text-center text-sm text-text-muted">No assessments yet.</div>
+                  )}
+                  {assessments.map((a) => (
+                    <div key={a.id} className="flex items-center justify-between px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <Badge variant={a.type.variant as "blue"}>{a.type.text}</Badge>
+                        <Badge variant="blue">{a.type}</Badge>
                         <div>
                           <p className="text-sm font-medium text-text-dark">{a.title}</p>
                           <p className="text-xs text-text-muted mt-0.5">{a.cls} · {a.date}</p>
                         </div>
                       </div>
-                      <Badge variant={a.status.variant as "green"}>{a.status.text}</Badge>
+                      <Badge variant={a.status === "approved" ? "green" : "orange"}>{a.status === "approved" ? "Approved" : "Pending"}</Badge>
                     </div>
                   ))}
                 </Card>
               </div>
             ),
           },
+          {
+            id: "performance",
+            label: "Performance",
+            content: (
+              <div className="space-y-4">
+                <Card className="p-5">
+                  <h3 className="text-sm font-semibold text-text-dark mb-3">Record Performance</h3>
+                  <p className="text-xs text-text-muted mb-4">Enter scores for all students in this subject at once. Scores not entered will be left blank.</p>
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <SelectField label="Type" required options={["Assignment", "Assessment", "Exam"]} value={perfKind} onChange={(e) => setPerfKind(e.target.value)} />
+                    <div className="col-span-2">
+                      <Field label="Title" required><TextInput placeholder="e.g. Assignment 1, Mid-term Exam" value={perfTitle} onChange={(e) => setPerfTitle(e.target.value)} /></Field>
+                    </div>
+                  </div>
+                  <div className="space-y-0 border border-border-light rounded-lg overflow-hidden">
+                    <div className="grid grid-cols-[1fr_80px] gap-0 bg-surface px-4 py-2 border-b border-border-light">
+                      <span className="text-xs font-semibold text-text-muted uppercase">Student</span>
+                      <span className="text-xs font-semibold text-text-muted uppercase">Score</span>
+                    </div>
+                    {students.map((s) => (
+                      <div key={s.id} className="grid grid-cols-[1fr_80px] gap-0 px-4 py-2 border-b border-border-light last:border-0">
+                        <div>
+                          <p className="text-sm text-text-dark">{s.name}</p>
+                          <p className="text-[11px] text-text-muted">{s.id} · {s.cls}</p>
+                        </div>
+                        <TextInput
+                          placeholder="—"
+                          value={perfScores[s.id] || ""}
+                          onChange={(e) => setPerfScores((prev) => ({ ...prev, [s.id]: e.target.value }))}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-end mt-3">
+                    <Button size="sm" onClick={addPerformance}>Save Scores</Button>
+                  </div>
+                </Card>
+
+                {performance.length > 0 && (
+                  <DataTable
+                    columns={[
+                      { key: "studentName", label: "STUDENT", width: "140px" },
+                      { key: "className", label: "CLASS", width: "110px" },
+                      { key: "kind", label: "TYPE", width: "100px" },
+                      { key: "title", label: "TITLE", width: "150px" },
+                      { key: "score", label: "SCORE", width: "80px" },
+                      { key: "date", label: "DATE", width: "100px" },
+                    ]}
+                    data={performance.map((p) => ({
+                      studentName: p.studentName,
+                      className: p.className,
+                      kind: { text: p.kind, variant: (p.kind === "Exam" ? "red" : p.kind === "Assessment" ? "purple" : "blue") as "red" | "purple" | "blue" },
+                      title: p.title,
+                      score: p.score,
+                      date: p.date,
+                    }))}
+                  />
+                )}
+                {performance.length === 0 && (
+                  <div className="rounded-xl border border-dashed border-border-light p-8 text-center">
+                    <p className="text-sm text-text-muted">No performance records yet for this subject.</p>
+                  </div>
+                )}
+              </div>
+            ),
+          },
         ]}
       />
-
-      <Modal
-        open={assignmentOpen}
-        onClose={() => setAssignmentOpen(false)}
-        title="New Assignment"
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setAssignmentOpen(false)}>Cancel</Button>
-            <Button onClick={() => { setSavedAssignments((p) => [...p, { title: assignmentTitle || "Untitled Assignment", cls: assignmentCls || subject.classes[0], submissions: "0 / —", due: assignmentDue || "TBD", status: { text: "Active", variant: "green" as const } }]); setAssignmentOpen(false); }}>Create Assignment</Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <Field label="Title" required>
-            <TextInput placeholder="e.g. Genetics Worksheet" value={assignmentTitle} onChange={(e) => setAssignmentTitle(e.target.value)} />
-          </Field>
-          <SelectField label="Class" required placeholder="Select class" options={subject.classes} value={assignmentCls} onChange={(e) => setAssignmentCls(e.target.value)} />
-          <Field label="Due Date" required>
-            <TextInput type="date" value={assignmentDue} onChange={(e) => setAssignmentDue(e.target.value)} />
-          </Field>
-        </div>
-      </Modal>
-
-      <Modal
-        open={assessmentOpen}
-        onClose={() => setAssessmentOpen(false)}
-        title="New Assessment"
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setAssessmentOpen(false)}>Cancel</Button>
-            <Button onClick={() => { setSavedAssessments((p) => [...p, { title: assessmentTitle || "Untitled Assessment", cls: assessmentCls || subject.classes[0], type: { text: assessmentType || "Quiz", variant: "blue" as const }, status: { text: "Draft", variant: "muted" as const }, date: assessmentDate || "TBD" }]); setAssessmentOpen(false); }}>Create Assessment</Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <Field label="Title" required>
-            <TextInput placeholder="e.g. Mid-term Quiz" value={assessmentTitle} onChange={(e) => setAssessmentTitle(e.target.value)} />
-          </Field>
-          <SelectField label="Class" required placeholder="Select class" options={subject.classes} value={assessmentCls} onChange={(e) => setAssessmentCls(e.target.value)} />
-          <SelectField label="Type" required placeholder="Select type" options={["Quiz", "CA", "Practical", "Exam"]} value={assessmentType} onChange={(e) => setAssessmentType(e.target.value)} />
-          <Field label="Date" required>
-            <TextInput type="date" value={assessmentDate} onChange={(e) => setAssessmentDate(e.target.value)} />
-          </Field>
-        </div>
-      </Modal>
     </div>
   );
 }

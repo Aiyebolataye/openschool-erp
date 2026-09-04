@@ -63,7 +63,7 @@ export default function StudentSuccessPage() {
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={a.level.variant as "red"}>{a.level.text}</Badge>
-              <Button variant="secondary" size="sm">{a.action}</Button>
+              <Button variant="secondary" size="sm">{a.action || "View"}</Button>
             </div>
           </div>
         ))}

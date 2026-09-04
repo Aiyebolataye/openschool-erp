@@ -12,6 +12,7 @@ import { Modal } from "@/components/ui/modal";
 import { Field, TextInput, TextArea, SelectField } from "@/components/ui/form";
 import { Chatbox } from "@/components/ui/chatbox";
 import { useDiscReports, useDiscCases, uid } from "@/lib/app-store";
+import { MessageSquare, Copy, Check } from "lucide-react";
 
 const STUDENTS: Record<string, { name: string; className: string; parent: string; guardianPhone: string; email: string; admission: string; dob: string; arm: string }> = {
   "STU-21401": { name: "Chidi Eze", className: "SS1 Science", parent: "Mr. Eze", guardianPhone: "+234 801 234 5678", email: "chidi@student.edu", admission: "2024-09-01", dob: "2010-03-12", arm: "Science" },
@@ -24,6 +25,14 @@ const STUDENTS: Record<string, { name: string; className: string; parent: string
 export default function StudentProfilePage() {
   const { studentId } = useParams<{ studentId: string }>();
   const student = STUDENTS[studentId] ?? { name: "Student", className: "—", parent: "Guardian", guardianPhone: "—", email: "—", admission: "—", dob: "—", arm: "—" };
+  const [copied, setCopied] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+
+  const copyPhone = () => {
+    navigator.clipboard.writeText(student.guardianPhone).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const [reports, setReports] = useDiscReports();
   const [cases] = useDiscCases();
@@ -83,7 +92,15 @@ export default function StudentProfilePage() {
         <Card className="p-4">
           <p className="text-[11px] text-text-muted mb-1">Guardian</p>
           <p className="text-sm font-semibold text-text-dark">{student.parent}</p>
-          <p className="text-xs text-text-muted mt-0.5">{student.guardianPhone}</p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <p className="text-xs text-text-muted">{student.guardianPhone}</p>
+            <button onClick={copyPhone} className="text-text-muted hover:text-primary" title="Copy phone number">
+              {copied ? <Check className="w-3.5 h-3.5 text-green" /> : <Copy className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+          <Button variant="ghost" size="sm" className="mt-2" onClick={() => setChatOpen(true)}>
+            <MessageSquare className="w-3.5 h-3.5" /> Message
+          </Button>
         </Card>
         <Card className="p-4">
           <p className="text-[11px] text-text-muted mb-1">Date of Birth</p>
@@ -204,6 +221,19 @@ export default function StudentProfilePage() {
             <TextArea rows={4} placeholder="Describe what happened..." value={reportDetails} onChange={(e) => setReportDetails(e.target.value)} />
           </Field>
         </div>
+      </Modal>
+      {/* Chat modal for guardian */}
+      <Modal
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+        title={`Message ${student.parent}`}
+        subtitle={`Parent of ${student.name}`}
+      >
+        <Chatbox
+          title={student.parent}
+          subtitle={`Parent of ${student.name} · ${student.className}`}
+          initial={[]}
+        />
       </Modal>
     </div>
   );

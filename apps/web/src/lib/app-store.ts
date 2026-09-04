@@ -33,12 +33,50 @@ export interface SubjectNote {
   content: string;
   assignment?: string;
   date: string;
+  approved?: boolean;
+}
+
+export interface SubjectAssignment {
+  id: string;
+  subject: string;
+  title: string;
+  cls: string;
+  due: string;
+  instructions?: string;
+  questions?: { type: string; text: string; marks: string }[];
+  status: "pending" | "approved";
+  date: string;
+}
+
+export interface SubjectAssessment {
+  id: string;
+  subject: string;
+  title: string;
+  cls: string;
+  type: string;
+  date: string;
+  status: "pending" | "approved";
+}
+
+export interface SubjectPerformance {
+  id: string;
+  subject: string;
+  studentName: string;
+  studentId: string;
+  className: string;
+  kind: "Assignment" | "Assessment" | "Exam";
+  title: string;
+  score: string;
+  date: string;
 }
 
 const KEYS = {
   reports: "sms.discReports",
   cases: "sms.discCases",
   notes: "sms.subjectNotes",
+  assignments: "sms.subjectAssignments",
+  assessments: "sms.subjectAssessments",
+  performance: "sms.subjectPerformance",
 };
 
 function read<T>(key: string, fallback: T): T {
@@ -112,6 +150,27 @@ export function useSubjectNotes(subject: string) {
     });
   };
   return [subjectNotes, setSubjectNotes] as const;
+}
+
+function useSubjectList<T extends { subject: string }>(key: string, subject: string): [T[], (next: T[]) => void] {
+  const [all, setAll] = useStore<T[]>(key, []);
+  const list = all.filter((x) => x.subject === subject);
+  const setList = (next: T[]) => {
+    setAll((prev) => [...prev.filter((x) => x.subject !== subject), ...next]);
+  };
+  return [list, setList];
+}
+
+export function useSubjectAssignments(subject: string) {
+  return useSubjectList<SubjectAssignment>(KEYS.assignments, subject);
+}
+
+export function useSubjectAssessments(subject: string) {
+  return useSubjectList<SubjectAssessment>(KEYS.assessments, subject);
+}
+
+export function useSubjectPerformance(subject: string) {
+  return useSubjectList<SubjectPerformance>(KEYS.performance, subject);
 }
 
 export function uid() {

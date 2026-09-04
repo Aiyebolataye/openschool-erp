@@ -188,7 +188,24 @@ export default function FinancePage() {
             <TextInput type="number" placeholder="0.00" />
           </Field>
           <SelectField label="Frequency" required placeholder="Select frequency" options={["Per term", "One-time", "Per session", "Monthly"]} />
-          <SelectField label="Status" required placeholder="Select status" options={["Active", "Draft", "Inactive"]} />
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-dark">Notification Channels</label>
+            <div className="flex items-center gap-5">
+              <label className="flex items-center gap-2 text-sm text-text-dark cursor-pointer">
+                <input type="checkbox" className="h-4 w-4 rounded border-border-default text-primary accent-primary" defaultChecked={false} />
+                Email
+              </label>
+              <label className="flex items-center gap-2 text-sm text-text-dark cursor-pointer">
+                <input type="checkbox" className="h-4 w-4 rounded border-border-default text-primary accent-primary" defaultChecked={false} />
+                SMS
+              </label>
+              <label className="flex items-center gap-2 text-sm text-text-dark cursor-pointer">
+                <input type="checkbox" className="h-4 w-4 rounded border-border-default text-primary accent-primary" defaultChecked />
+                WhatsApp
+              </label>
+            </div>
+            <p className="text-xs text-text-muted">Parents will be notified about this fee via the selected channels</p>
+          </div>
           <Field label="Notes">
             <TextArea rows={2} placeholder="Optional notes about this fee" />
           </Field>

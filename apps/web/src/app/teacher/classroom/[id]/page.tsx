@@ -119,20 +119,46 @@ function AcademicsContent() {
 }
 
 function CommunicationContent() {
+  const [activeThread, setActiveThread] = useState<string | null>(null);
+  const threads = parents.map((p) => ({ ...p, id: p.student + p.parent }));
+
+  const active = threads.find((t) => t.id === activeThread);
+
   return (
-    <div className="space-y-4">
-      <Chatbox title="Mrs. Okafor" subtitle="Parent of Amara Okafor · SS2 Science" />
-      <Card className="divide-y divide-border-light">
-        {parents.map((p) => (
-          <Link key={p.student} href={`/teacher/students/STU-21402`} className="flex items-center justify-between px-5 py-4 hover:bg-surface/60 transition-colors">
-            <div>
-              <p className="text-sm font-medium text-text-dark">{p.student} · {p.parent}</p>
-              <p className="text-xs text-text-muted mt-0.5">{p.last}</p>
-            </div>
-            <Button variant="ghost" size="sm">Open Chat</Button>
-          </Link>
-        ))}
-      </Card>
+    <div className="grid grid-cols-[320px_1fr] gap-0 rounded-xl border border-border-light bg-card overflow-hidden" style={{ height: "520px" }}>
+      <div className="border-r border-border-light flex flex-col">
+        <div className="px-4 py-3 border-b border-border-light">
+          <p className="text-sm font-semibold text-text-dark">Parent Messages</p>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {threads.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setActiveThread(t.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                activeThread === t.id ? "bg-primary-light/50" : "hover:bg-surface"
+              }`}
+            >
+              <div className="w-9 h-9 rounded-full bg-primary-light flex items-center justify-center shrink-0">
+                <span className="text-primary text-xs font-semibold">{t.parent.split(" ").map((w) => w[0]).join("").slice(0, 2)}</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-text-dark truncate">{t.parent}</p>
+                <p className="text-[11px] text-text-muted truncate">{t.student}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col">
+        {active ? (
+          <Chatbox title={active.parent} subtitle={`${active.student} · SS1 Science`} />
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-surface/30">
+            <p className="text-sm text-text-muted">Select a parent conversation</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

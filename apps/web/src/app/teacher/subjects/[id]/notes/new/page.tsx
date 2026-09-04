@@ -52,6 +52,7 @@ export default function AddNotePage() {
       title: title || `${subject.name} — ${moduleTopic?.topic || module}`,
       content,
       assignment: assignment || undefined,
+      approved: existing?.approved ?? false,
       date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
     };
     if (existing) {

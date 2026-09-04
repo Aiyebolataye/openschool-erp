@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { StatCard } from "@/components/ui/stat-card";
 import { ListCard } from "@/components/ui/list-card";
 import { Badge } from "@/components/ui/badge";
@@ -22,10 +23,17 @@ const kpis = [
 ];
 
 const quickActions = [
-  { title: "Add Student", subtitle: "Enroll a new student" },
-  { title: "Add Staff", subtitle: "Create a staff account" },
-  { title: "Record Payment", subtitle: "Process a fee payment" },
-  { title: "Publish Announcement", subtitle: "Broadcast to parents" },
+  { title: "Add Student", subtitle: "Enroll a new student", href: "/institution/students" },
+  { title: "Add Staff", subtitle: "Create a staff account", href: "/institution/staff" },
+  { title: "Record Payment", subtitle: "Process a fee payment", href: "/institution/finance" },
+  { title: "Publish Announcement", subtitle: "Broadcast to parents", href: "/institution/communication" },
+];
+
+const modalActions = [
+  { label: "Enroll Student", desc: "Add a new student record", href: "/institution/students" },
+  { label: "Record Payment", desc: "Process a fee payment", href: "/institution/finance" },
+  { label: "Add Staff", desc: "Create a staff account", href: "/institution/staff" },
+  { label: "New Announcement", desc: "Broadcast to parents", href: "/institution/communication" },
 ];
 
 const pendingApprovals = [
@@ -52,9 +60,19 @@ const upEvents = [
   { title: "Sports Day", subtitle: "Aug 15" },
 ];
 
+const announcements = [
+  { title: "Term 3 Resumption", subtitle: "All classes resume Aug 3" },
+  { title: "New Fee Payment Deadline", subtitle: "Aug 15" },
+];
+
 export default function InstitutionDashboardPage() {
   const [quickOpen, setQuickOpen] = useState(false);
   const [subscriptionOpen, setSubscriptionOpen] = useState(false);
+  const [subPlan, setSubPlan] = useState("");
+  const [subCycle, setSubCycle] = useState("");
+  const [subAmount, setSubAmount] = useState("");
+  const [subStartDate, setSubStartDate] = useState("");
+  const [subEndDate, setSubEndDate] = useState("");
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -94,15 +112,15 @@ export default function InstitutionDashboardPage() {
             {pendingApprovals.map((a) => (
               <div key={a.t} className="flex items-center justify-between py-2 border-b border-border-light last:border-0">
                 <div>
-                  <p className="text-sm font-medium text-text-dark">{a.t}</p>
-                  <p className="text-xs text-text-muted">{a.subtitle}</p>
+                  <p className="text-sm font-medium text-text-dark">{a.t ?? "Untitled"}</p>
+                  <p className="text-xs text-text-muted">{a.subtitle ?? ""}</p>
                 </div>
-                <Badge variant={a.badge.variant as "orange"}>{a.badge.text}</Badge>
+                <Badge variant={a.badge.variant}>{a.badge.text}</Badge>
               </div>
             ))}
           </div>
         </Card>
-        <ListCard title="Upcoming Events" items={upEvents.map((e) => ({ title: e.title, subtitle: e.subtitle }))} />
+        <ListCard title="Upcoming Events" items={upEvents.map((e) => ({ title: e.title ?? "Untitled", subtitle: e.subtitle ?? "" }))} />
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -111,51 +129,59 @@ export default function InstitutionDashboardPage() {
           <h3 className="text-sm font-semibold text-text-dark mb-3">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-2">
             {quickActions.map((qa) => (
-              <button key={qa.title} className="rounded-lg border border-border-light p-3 text-left hover:bg-surface hover:border-primary/40 transition-colors">
+              <Link
+                key={qa.title}
+                href={qa.href}
+                className="rounded-lg border border-border-light p-3 text-left hover:bg-surface hover:border-primary/40 transition-colors"
+              >
                 <p className="text-sm font-medium text-text-dark">{qa.title}</p>
                 <p className="text-xs text-text-muted mt-0.5">{qa.subtitle}</p>
-              </button>
+              </Link>
             ))}
           </div>
         </Card>
-        <ListCard title="Institution Announcements" items={[
-          { title: "Term 3 Resumption", subtitle: "All classes resume Aug 3" },
-          { title: "New Fee Payment Deadline", subtitle: "Aug 15" },
-        ]} />
+        <ListCard title="Institution Announcements" items={announcements.map((a) => ({ title: a.title ?? "Untitled", subtitle: a.subtitle ?? "" }))} />
       </div>
 
       <Modal open={quickOpen} onClose={() => setQuickOpen(false)} title="Quick Actions">
         <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: "Enroll Student", desc: "Add a new student record" },
-            { label: "Record Payment", desc: "Process a fee payment" },
-            { label: "Add Staff", desc: "Create a staff account" },
-            { label: "New Announcement", desc: "Broadcast to parents" },
-          ].map((a) => (
-            <button
+          {modalActions.map((a) => (
+            <Link
               key={a.label}
+              href={a.href}
               onClick={() => setQuickOpen(false)}
               className="rounded-lg border border-border-light p-4 text-left hover:bg-surface hover:border-primary/40 transition-colors"
             >
               <p className="text-sm font-medium text-text-dark">{a.label}</p>
               <p className="text-xs text-text-muted mt-0.5">{a.desc}</p>
-            </button>
+            </Link>
           ))}
         </div>
       </Modal>
 
-      <Modal open={subscriptionOpen} onClose={() => setSubscriptionOpen(false)} title="Add Subscription" subtitle="Manage this institution's plan and billing cycle" footer={<><Button variant="secondary" onClick={() => setSubscriptionOpen(false)}>Cancel</Button><Button onClick={() => setSubscriptionOpen(false)}>Add Subscription</Button></>}>
+      <Modal
+        open={subscriptionOpen}
+        onClose={() => setSubscriptionOpen(false)}
+        title="Add Subscription"
+        subtitle="Manage this institution's plan and billing cycle"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setSubscriptionOpen(false)}>Cancel</Button>
+            <Button onClick={() => setSubscriptionOpen(false)}>Add Subscription</Button>
+          </>
+        }
+      >
         <div className="space-y-4">
-          <SelectField label="Plan" required placeholder="Select plan" options={["Starter", "Growth", "Enterprise"]} value="" onChange={() => {}} />
-          <SelectField label="Billing Cycle" required placeholder="Select billing cycle" options={["Monthly", "Annual"]} value="" onChange={() => {}} />
+          <SelectField label="Plan" required placeholder="Select plan" options={["Starter", "Growth", "Enterprise"]} value={subPlan} onChange={(e) => setSubPlan(e.target.value)} />
+          <SelectField label="Billing Cycle" required placeholder="Select billing cycle" options={["Monthly", "Annual"]} value={subCycle} onChange={(e) => setSubCycle(e.target.value)} />
           <Field label="Amount" required>
-            <TextInput type="number" placeholder="e.g. 1200" />
+            <TextInput type="number" placeholder="e.g. 1200" value={subAmount} onChange={(e) => setSubAmount(e.target.value)} />
           </Field>
           <Field label="Start Date" required>
-            <TextInput type="date" />
+            <TextInput type="date" value={subStartDate} onChange={(e) => setSubStartDate(e.target.value)} />
           </Field>
           <Field label="End Date" required>
-            <TextInput type="date" />
+            <TextInput type="date" value={subEndDate} onChange={(e) => setSubEndDate(e.target.value)} />
           </Field>
         </div>
       </Modal>

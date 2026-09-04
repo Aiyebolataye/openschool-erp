@@ -75,7 +75,7 @@ export default function PrincipalProfilePage() {
             <TextInput placeholder="Enter your name" />
           </Field>
           <Field label="School Email" required>
-            <TextInput type="email" placeholder="you@school.edu" />
+            <TextInput type="email" value="d.okon@greenfield.edu" disabled className="opacity-60 cursor-not-allowed" />
           </Field>
           <Field label="Personal Email" required>
             <TextInput type="email" placeholder="you@example.com" />
