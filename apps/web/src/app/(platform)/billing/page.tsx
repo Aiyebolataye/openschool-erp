@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { SearchInput } from "@/components/ui/search-input";
 import { Select } from "@/components/ui/select";
 import { Pagination } from "@/components/ui/pagination";
+import { Modal } from "@/components/ui/modal";
 
 const kpis = [
   { label: "MONTHLY REVENUE", value: "$284,200", detail: "+12% vs last month", detailColor: "green" as const },
@@ -16,12 +19,12 @@ const kpis = [
   { label: "COLLECTION RATE", value: "96.2%", detail: "Up 1.8% from last quarter", detailColor: "green" as const },
 ];
 
-const data = [
-  { invoice: "INV-2026-0742", tenant: "Greenfield Academy", amount: "$2,400", status: { text: "Pending", variant: "orange" as const }, date: "Jul 1, 2026", dueDate: "Jul 31, 2026", actions: "View" },
-  { invoice: "INV-2026-0741", tenant: "Metropolitan Schools", amount: "$1,200", status: { text: "Pending", variant: "orange" as const }, date: "Jul 1, 2026", dueDate: "Jul 31, 2026", actions: "View" },
-  { invoice: "INV-2026-0740", tenant: "Coastal Education", amount: "$800", status: { text: "Overdue", variant: "red" as const }, date: "Jun 15, 2026", dueDate: "Jul 15, 2026", actions: "View" },
-  { invoice: "INV-2026-0739", tenant: "Pinnacle Learning", amount: "$400", status: { text: "Paid", variant: "green" as const }, date: "Jul 1, 2026", dueDate: "Jul 31, 2026", actions: "View" },
-  { invoice: "INV-2026-0738", tenant: "Sunrise International", amount: "$3,600", status: { text: "Pending", variant: "orange" as const }, date: "Jul 15, 2026", dueDate: "Aug 14, 2026", actions: "View" },
+const rows = [
+  { invoice: "INV-2026-0742", tenant: "Greenfield Academy", amount: "$2,400", status: { text: "Pending", variant: "orange" as const }, date: "Jul 1, 2026", dueDate: "Jul 31, 2026" },
+  { invoice: "INV-2026-0741", tenant: "Metropolitan Schools", amount: "$1,200", status: { text: "Pending", variant: "orange" as const }, date: "Jul 1, 2026", dueDate: "Jul 31, 2026" },
+  { invoice: "INV-2026-0740", tenant: "Coastal Education", amount: "$800", status: { text: "Overdue", variant: "red" as const }, date: "Jun 15, 2026", dueDate: "Jul 15, 2026" },
+  { invoice: "INV-2026-0739", tenant: "Pinnacle Learning", amount: "$400", status: { text: "Paid", variant: "green" as const }, date: "Jul 1, 2026", dueDate: "Jul 31, 2026" },
+  { invoice: "INV-2026-0738", tenant: "Sunrise International", amount: "$3,600", status: { text: "Pending", variant: "orange" as const }, date: "Jul 15, 2026", dueDate: "Aug 14, 2026" },
 ];
 
 const columns = [
@@ -35,6 +38,17 @@ const columns = [
 ];
 
 export default function BillingPage() {
+  const [selected, setSelected] = useState<typeof rows[number] | null>(null);
+
+  const data = rows.map((row) => ({
+    ...row,
+    actions: (
+      <Button variant="ghost" size="sm" onClick={() => setSelected(row)}>
+        View
+      </Button>
+    ),
+  }));
+
   return (
     <div className="max-w-[1200px] mx-auto">
       <PageHeader
@@ -57,6 +71,40 @@ export default function BillingPage() {
 
       <DataTable columns={columns} data={data} />
       <Pagination currentPage={1} totalPages={5} />
+
+      <Modal
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title={`Invoice ${selected?.invoice ?? ""}`}
+        footer={
+          <Button variant="secondary" onClick={() => setSelected(null)}>Close</Button>
+        }
+      >
+        {selected && (
+          <div className="flex flex-col gap-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-text-muted">Tenant</span>
+              <span className="font-medium text-text-dark">{selected.tenant}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-text-muted">Amount</span>
+              <span className="font-medium text-text-dark">{selected.amount}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-text-muted">Status</span>
+              <Badge variant={selected.status.variant}>{selected.status.text}</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-text-muted">Invoice Date</span>
+              <span className="font-medium text-text-dark">{selected.date}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-text-muted">Due Date</span>
+              <span className="font-medium text-text-dark">{selected.dueDate}</span>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

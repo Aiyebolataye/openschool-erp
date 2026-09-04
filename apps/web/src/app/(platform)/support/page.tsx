@@ -21,11 +21,11 @@ const kpis = [
 ];
 
 const data = [
-  { ticket: "TKT-1042", subject: "Integration not syncing", org: "Greenfield Academy", priority: { text: "URGENT", variant: "red" as const }, status: { text: "Open", variant: "orange" as const }, assignee: "Maria Garcia", created: "1 hr ago", actions: "View" },
-  { ticket: "TKT-1041", subject: "Billing question", org: "Pacific Academy", priority: { text: "NORMAL", variant: "muted" as const }, status: { text: "In Progress", variant: "blue" as const }, assignee: "James Wilson", created: "3 hrs ago", actions: "View" },
-  { ticket: "TKT-1040", subject: "SSO configuration help", org: "Metropolitan Schools", priority: { text: "NORMAL", variant: "muted" as const }, status: { text: "Open", variant: "orange" as const }, assignee: "Unassigned", created: "5 hrs ago", actions: "View" },
-  { ticket: "TKT-1039", subject: "Data export request", org: "Sunrise International", priority: { text: "LOW", variant: "muted" as const }, status: { text: "Resolved", variant: "green" as const }, assignee: "Dr. Sarah Chen", created: "1 day ago", actions: "View" },
-  { ticket: "TKT-1038", subject: "Feature request: Bulk import", org: "Coastal Education", priority: { text: "NORMAL", variant: "muted" as const }, status: { text: "Resolved", variant: "green" as const }, assignee: "Aisha Patel", created: "2 days ago", actions: "View" },
+  { ticket: "TKT-1042", subject: "Integration not syncing", org: "Greenfield Academy", priority: { text: "URGENT", variant: "red" as const }, status: { text: "Open", variant: "orange" as const }, assignee: "Maria Garcia", created: "1 hr ago" },
+  { ticket: "TKT-1041", subject: "Billing question", org: "Pacific Academy", priority: { text: "NORMAL", variant: "muted" as const }, status: { text: "In Progress", variant: "blue" as const }, assignee: "James Wilson", created: "3 hrs ago" },
+  { ticket: "TKT-1040", subject: "SSO configuration help", org: "Metropolitan Schools", priority: { text: "NORMAL", variant: "muted" as const }, status: { text: "Open", variant: "orange" as const }, assignee: "Unassigned", created: "5 hrs ago" },
+  { ticket: "TKT-1039", subject: "Data export request", org: "Sunrise International", priority: { text: "LOW", variant: "muted" as const }, status: { text: "Resolved", variant: "green" as const }, assignee: "Dr. Sarah Chen", created: "1 day ago" },
+  { ticket: "TKT-1038", subject: "Feature request: Bulk import", org: "Coastal Education", priority: { text: "NORMAL", variant: "muted" as const }, status: { text: "Resolved", variant: "green" as const }, assignee: "Aisha Patel", created: "2 days ago" },
 ];
 
 const columns = [
@@ -41,6 +41,19 @@ const columns = [
 
 export default function SupportPage() {
   const [open, setOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<typeof data[number] | null>(null);
+  const [category, setCategory] = useState("");
+  const [priority, setPriority] = useState("");
+
+  const dataWithActions = data.map((row) => ({
+    ...row,
+    actions: (
+      <Button variant="ghost" size="sm" onClick={() => { setSelectedTicket(row); setDetailOpen(true); }}>
+        View
+      </Button>
+    ),
+  }));
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -64,7 +77,7 @@ export default function SupportPage() {
         </div>
       </Card>
 
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={dataWithActions} />
       <Pagination currentPage={1} totalPages={5} />
 
       <Modal
@@ -82,12 +95,56 @@ export default function SupportPage() {
           <Field label="Subject" required>
             <TextInput placeholder="e.g. SSO configuration help" />
           </Field>
-          <SelectField label="Category" required options={["Billing", "Technical", "Account", "Feature Request"]} placeholder="Select category" value="" onChange={() => {}} />
-          <SelectField label="Priority" required options={["Low", "Medium", "High", "Urgent"]} placeholder="Select priority" value="" onChange={() => {}} />
+          <SelectField label="Category" required options={["Billing", "Technical", "Account", "Feature Request"]} placeholder="Select category" value={category} onChange={(e) => setCategory(e.target.value)} />
+          <SelectField label="Priority" required options={["Low", "Medium", "High", "Urgent"]} placeholder="Select priority" value={priority} onChange={(e) => setPriority(e.target.value)} />
           <Field label="Description" required>
             <TextArea rows={5} placeholder="Describe the issue in detail..." />
           </Field>
         </div>
+      </Modal>
+
+      <Modal
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        title="Ticket Details"
+        footer={
+          <Button variant="secondary" onClick={() => setDetailOpen(false)}>Close</Button>
+        }
+      >
+        {selectedTicket && (
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Ticket</span>
+                <span className="text-sm text-text-dark">{selectedTicket.ticket}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Status</span>
+                <Badge variant={selectedTicket.status.variant}>{selectedTicket.status.text}</Badge>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Subject</span>
+                <span className="text-sm text-text-dark">{selectedTicket.subject}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Priority</span>
+                <Badge variant={selectedTicket.priority.variant}>{selectedTicket.priority.text}</Badge>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Organization</span>
+                <span className="text-sm text-text-dark">{selectedTicket.org}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Assignee</span>
+                <span className="text-sm text-text-dark">{selectedTicket.assignee}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Created</span>
+                <span className="text-sm text-text-dark">{selectedTicket.created}</span>
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

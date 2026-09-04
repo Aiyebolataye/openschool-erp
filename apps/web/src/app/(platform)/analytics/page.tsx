@@ -46,6 +46,9 @@ function BarChart({ data }: { data: typeof barData }) {
 
 export default function AnalyticsPage() {
   const [open, setOpen] = useState(false);
+  const [dataRange, setDataRange] = useState("");
+  const [reportFormat, setReportFormat] = useState("");
+  const [include, setInclude] = useState("");
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -107,9 +110,9 @@ export default function AnalyticsPage() {
         }
       >
         <div className="flex flex-col gap-4">
-          <SelectField label="Data Range" required options={["This Week", "This Month", "Quarter", "Year"]} placeholder="Select data range" value="" onChange={() => {}} />
-          <SelectField label="Report Format" required options={["PDF", "Excel", "CSV"]} placeholder="Select format" value="" onChange={() => {}} />
-          <SelectField label="Include" required options={["All Metrics", "Core Metrics"]} placeholder="Select inclusion" value="" onChange={() => {}} />
+          <SelectField label="Data Range" required options={["This Week", "This Month", "Quarter", "Year"]} placeholder="Select data range" value={dataRange} onChange={(e) => setDataRange(e.target.value)} />
+          <SelectField label="Report Format" required options={["PDF", "Excel", "CSV"]} placeholder="Select format" value={reportFormat} onChange={(e) => setReportFormat(e.target.value)} />
+          <SelectField label="Include" required options={["All Metrics", "Core Metrics"]} placeholder="Select inclusion" value={include} onChange={(e) => setInclude(e.target.value)} />
           <p className="text-xs text-text-muted">The export will be sent to your email when ready.</p>
         </div>
       </Modal>

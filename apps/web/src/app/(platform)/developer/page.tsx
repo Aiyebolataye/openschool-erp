@@ -41,6 +41,7 @@ const methodColor: Record<string, string> = {
 
 export default function DeveloperPage() {
   const [open, setOpen] = useState(false);
+  const [expires, setExpires] = useState("");
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -68,7 +69,7 @@ export default function DeveloperPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant={apiKey.status.variant}>{apiKey.status.text}</Badge>
-                  <Button variant="ghost" size="sm"><Copy className="w-3 h-3" /></Button>
+                  <Button variant="ghost" size="sm" onClick={() => navigator.clipboard.writeText(apiKey.key)}><Copy className="w-3 h-3" /></Button>
                 </div>
               </div>
             ))}
@@ -113,7 +114,7 @@ export default function DeveloperPage() {
           <Field label="Scopes">
             <TextInput placeholder="e.g. read:orgs, write:users" />
           </Field>
-          <SelectField label="Expires" required options={["30 days", "90 days", "1 year", "Never"]} placeholder="Select expiry" value="" onChange={() => {}} />
+          <SelectField label="Expires" required options={["30 days", "90 days", "1 year", "Never"]} placeholder="Select expiry" value={expires} onChange={(e) => setExpires(e.target.value)} />
           <div className="rounded-lg bg-orange-light border border-orange/20 px-4 py-3">
             <p className="text-xs text-orange font-medium">Important: Copy your API key immediately after generation. It will not be shown again.</p>
           </div>

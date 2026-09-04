@@ -45,6 +45,13 @@ const sections = [
 
 export default function PlatformConfigPage() {
   const [open, setOpen] = useState(false);
+  const [defaultPlan, setDefaultPlan] = useState("");
+  const [enableSignups, setEnableSignups] = useState("");
+  const [sessionTimeout, setSessionTimeout] = useState("");
+  const [defaultTimezone, setDefaultTimezone] = useState("");
+  const [twoFactorAuth, setTwoFactorAuth] = useState("");
+  const [ipWhitelisting, setIpWhitelisting] = useState("");
+  const [storageProvider, setStorageProvider] = useState("");
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -83,16 +90,16 @@ export default function PlatformConfigPage() {
         }
       >
         <div className="flex flex-col gap-4">
-          <SelectField label="Default Plan" required options={["Starter", "Growth", "Enterprise"]} placeholder="Select default plan" value="" onChange={() => {}} />
+          <SelectField label="Default Plan" required options={["Starter", "Growth", "Enterprise"]} placeholder="Select default plan" value={defaultPlan} onChange={(e) => setDefaultPlan(e.target.value)} />
           <Field label="Max Users Limit" required>
             <TextInput type="number" placeholder="e.g. 5000" />
           </Field>
-          <SelectField label="Enable Signups" required options={["On", "Off"]} placeholder="Select option" value="" onChange={() => {}} />
-          <SelectField label="Session Timeout" required options={["15 minutes", "30 minutes", "1 hour", "2 hours", "Never"]} placeholder="Select timeout" value="" onChange={() => {}} />
-          <SelectField label="Default Timezone" required options={["UTC"]} placeholder="Select timezone" value="" onChange={() => {}} />
-          <SelectField label="Two-Factor Auth" required options={["Required for Admins", "Optional", "Disabled"]} placeholder="Select option" value="" onChange={() => {}} />
-          <SelectField label="IP Whitelisting" required options={["Enabled", "Disabled"]} placeholder="Select option" value="" onChange={() => {}} />
-          <SelectField label="Storage Provider" required options={["AWS S3", "Google Cloud", "Azure Blob"]} placeholder="Select provider" value="" onChange={() => {}} />
+          <SelectField label="Enable Signups" required options={["On", "Off"]} placeholder="Select option" value={enableSignups} onChange={(e) => setEnableSignups(e.target.value)} />
+          <SelectField label="Session Timeout" required options={["15 minutes", "30 minutes", "1 hour", "2 hours", "Never"]} placeholder="Select timeout" value={sessionTimeout} onChange={(e) => setSessionTimeout(e.target.value)} />
+          <SelectField label="Default Timezone" required options={["UTC"]} placeholder="Select timezone" value={defaultTimezone} onChange={(e) => setDefaultTimezone(e.target.value)} />
+          <SelectField label="Two-Factor Auth" required options={["Required for Admins", "Optional", "Disabled"]} placeholder="Select option" value={twoFactorAuth} onChange={(e) => setTwoFactorAuth(e.target.value)} />
+          <SelectField label="IP Whitelisting" required options={["Enabled", "Disabled"]} placeholder="Select option" value={ipWhitelisting} onChange={(e) => setIpWhitelisting(e.target.value)} />
+          <SelectField label="Storage Provider" required options={["AWS S3", "Google Cloud", "Azure Blob"]} placeholder="Select provider" value={storageProvider} onChange={(e) => setStorageProvider(e.target.value)} />
         </div>
       </Modal>
     </div>

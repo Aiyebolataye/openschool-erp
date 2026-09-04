@@ -12,11 +12,11 @@ import { Modal } from "@/components/ui/modal";
 import { Field, TextInput, TextArea } from "@/components/ui/form";
 
 const data = [
-  { role: "Platform Admin", description: "Full platform administration access", users: "8", permissions: "42", status: { text: "Active", variant: "green" as const }, actions: "View" },
-  { role: "Institution Admin", description: "Institution-level management and config", users: "24", permissions: "35", status: { text: "Active", variant: "green" as const }, actions: "View" },
-  { role: "Support Agent", description: "Customer support operations", users: "12", permissions: "18", status: { text: "Active", variant: "green" as const }, actions: "View" },
-  { role: "Billing Manager", description: "Billing and subscription management", users: "4", permissions: "12", status: { text: "Inactive", variant: "muted" as const }, actions: "View" },
-  { role: "Auditor", description: "Read-only audit log access", users: "6", permissions: "8", status: { text: "Draft", variant: "muted" as const }, actions: "View" },
+  { role: "Platform Admin", description: "Full platform administration access", users: "8", permissions: "42", status: { text: "Active", variant: "green" as const } },
+  { role: "Institution Admin", description: "Institution-level management and config", users: "24", permissions: "35", status: { text: "Active", variant: "green" as const } },
+  { role: "Support Agent", description: "Customer support operations", users: "12", permissions: "18", status: { text: "Active", variant: "green" as const } },
+  { role: "Billing Manager", description: "Billing and subscription management", users: "4", permissions: "12", status: { text: "Inactive", variant: "muted" as const } },
+  { role: "Auditor", description: "Read-only audit log access", users: "6", permissions: "8", status: { text: "Draft", variant: "muted" as const } },
 ];
 
 const columns = [
@@ -39,13 +39,32 @@ const permissions = [
   "Manage Surveys",
 ];
 
+const rolePermissions: Record<string, string[]> = {
+  "Platform Admin": permissions,
+  "Institution Admin": permissions.slice(0, 4),
+  "Support Agent": ["Manage Support Tickets", "View Analytics"],
+  "Billing Manager": ["Manage Billing", "View Analytics"],
+  "Auditor": ["View Analytics"],
+};
+
 export default function RolesPage() {
   const [open, setOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<typeof data[number] | null>(null);
   const [selectedPerms, setSelectedPerms] = useState<Record<string, boolean>>({});
 
   const togglePerm = (perm: string) => {
     setSelectedPerms((prev) => ({ ...prev, [perm]: !prev[perm] }));
   };
+
+  const dataWithActions = data.map((row) => ({
+    ...row,
+    actions: (
+      <Button variant="ghost" size="sm" onClick={() => { setSelectedRole(row); setDetailOpen(true); }}>
+        View
+      </Button>
+    ),
+  }));
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -59,7 +78,7 @@ export default function RolesPage() {
         <SearchInput placeholder="Search roles..." className="max-w-sm" />
       </div>
 
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={dataWithActions} />
       <Pagination currentPage={1} totalPages={3} />
 
       <Modal
@@ -97,6 +116,49 @@ export default function RolesPage() {
             </div>
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        title="Role Details"
+        footer={
+          <Button variant="secondary" onClick={() => setDetailOpen(false)}>Close</Button>
+        }
+      >
+        {selectedRole && (
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Role Name</span>
+                <span className="text-sm text-text-dark">{selectedRole.role}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Status</span>
+                <Badge variant={selectedRole.status.variant}>{selectedRole.status.text}</Badge>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Users</span>
+                <span className="text-sm text-text-dark">{selectedRole.users}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-medium text-text-muted mb-1">Description</span>
+                <span className="text-sm text-text-dark">{selectedRole.description}</span>
+              </div>
+            </div>
+            <div>
+              <span className="block text-xs font-medium text-text-muted mb-2">Permissions</span>
+              <div className="flex flex-col gap-1.5">
+                {(rolePermissions[selectedRole.role] ?? []).map((perm) => (
+                  <div key={perm} className="flex items-center gap-2 text-sm text-text-dark">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    {perm}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

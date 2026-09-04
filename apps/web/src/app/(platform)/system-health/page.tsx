@@ -38,6 +38,7 @@ const columns = [
 
 export default function SystemHealthPage() {
   const [open, setOpen] = useState(false);
+  const [diagnosticsScope, setDiagnosticsScope] = useState("");
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -68,7 +69,7 @@ export default function SystemHealthPage() {
         }
       >
         <div className="flex flex-col gap-4">
-          <SelectField label="Diagnostics scope" required options={["Full Run", "API Only", "DB Only", "Cache Only"]} placeholder="Select scope" value="" onChange={() => {}} />
+          <SelectField label="Diagnostics scope" required options={["Full Run", "API Only", "DB Only", "Cache Only"]} placeholder="Select scope" value={diagnosticsScope} onChange={(e) => setDiagnosticsScope(e.target.value)} />
           <p className="text-xs text-text-muted">This may take a few minutes</p>
         </div>
       </Modal>

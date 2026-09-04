@@ -29,6 +29,9 @@ const reports = [
 
 export default function ReportsPage() {
   const [open, setOpen] = useState(false);
+  const [reportType, setReportType] = useState("");
+  const [scope, setScope] = useState("");
+  const [format, setFormat] = useState("");
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -63,7 +66,7 @@ export default function ReportsPage() {
             </div>
             <div className="flex items-center gap-3">
               <Badge variant={report.status.variant}>{report.status.text}</Badge>
-              <Button variant="ghost" size="sm"><Download className="w-4 h-4" /></Button>
+              <Button variant="ghost" size="sm" onClick={() => alert("Report download started")}><Download className="w-4 h-4" /></Button>
             </div>
           </div>
         ))}
@@ -81,12 +84,12 @@ export default function ReportsPage() {
         }
       >
         <div className="flex flex-col gap-4">
-          <SelectField label="Report Type" required options={["Revenue", "User Growth", "Institution Performance", "Support", "Subscription Churn", "Usage"]} placeholder="Select report type" value="" onChange={() => {}} />
-          <SelectField label="Scope" required options={["All Organizations", "Single Organization", "Platform-wide"]} placeholder="Select scope" value="" onChange={() => {}} />
+          <SelectField label="Report Type" required options={["Revenue", "User Growth", "Institution Performance", "Support", "Subscription Churn", "Usage"]} placeholder="Select report type" value={reportType} onChange={(e) => setReportType(e.target.value)} />
+          <SelectField label="Scope" required options={["All Organizations", "Single Organization", "Platform-wide"]} placeholder="Select scope" value={scope} onChange={(e) => setScope(e.target.value)} />
           <Field label="Period" required>
             <TextInput placeholder="e.g. July 2026" />
           </Field>
-          <SelectField label="Format" required options={["PDF", "Excel"]} placeholder="Select format" value="" onChange={() => {}} />
+          <SelectField label="Format" required options={["PDF", "Excel"]} placeholder="Select format" value={format} onChange={(e) => setFormat(e.target.value)} />
         </div>
       </Modal>
     </div>

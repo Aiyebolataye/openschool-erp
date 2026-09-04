@@ -49,6 +49,8 @@ const sections = [
 
 export default function SettingsPage() {
   const [open, setOpen] = useState(false);
+  const [defaultLanguage, setDefaultLanguage] = useState("");
+  const [maintenanceMode, setMaintenanceMode] = useState("");
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -93,8 +95,8 @@ export default function SettingsPage() {
           <Field label="Support Email" required>
             <TextInput type="email" placeholder="e.g. support@openschool.io" />
           </Field>
-          <SelectField label="Default Language" required options={["English", "Spanish", "French", "Arabic", "Hindi"]} placeholder="Select language" value="" onChange={() => {}} />
-          <SelectField label="Maintenance Mode" required options={["Off", "On"]} placeholder="Select mode" value="" onChange={() => {}} />
+          <SelectField label="Default Language" required options={["English", "Spanish", "French", "Arabic", "Hindi"]} placeholder="Select language" value={defaultLanguage} onChange={(e) => setDefaultLanguage(e.target.value)} />
+          <SelectField label="Maintenance Mode" required options={["Off", "On"]} placeholder="Select mode" value={maintenanceMode} onChange={(e) => setMaintenanceMode(e.target.value)} />
           <Field label="About">
             <TextArea rows={3} placeholder="Brief description about the platform..." />
           </Field>

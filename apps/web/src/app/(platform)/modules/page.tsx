@@ -18,16 +18,16 @@ const kpis = [
   { label: "OPTIONAL MODULES", value: "6", detail: "per-plan", detailColor: "muted" as const },
 ];
 
-const data = [
-  { module: "Academics", key: "academics", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All", actions: "Configure" },
-  { module: "Attendance", key: "attendance", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All", actions: "Configure" },
-  { module: "Finance & Billing", key: "finance", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All", actions: "Configure" },
-  { module: "Summer School", key: "summer-school", tier: { text: "Optional", variant: "purple" as const }, status: { text: "Per-plan", variant: "orange" as const }, appliesTo: "Enterprise+", actions: "Configure" },
-  { module: "Assignments", key: "assignments", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All", actions: "Configure" },
-  { module: "Student Welfare", key: "student-welfare", tier: { text: "Optional", variant: "purple" as const }, status: { text: "Per-plan", variant: "orange" as const }, appliesTo: "Pro+", actions: "Configure" },
-  { module: "Calendar", key: "calendar", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All", actions: "Configure" },
-  { module: "Communication", key: "communication", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All", actions: "Configure" },
-  { module: "Reports & Analytics", key: "reports", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All", actions: "Configure" },
+const rows = [
+  { module: "Academics", key: "academics", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
+  { module: "Attendance", key: "attendance", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
+  { module: "Finance & Billing", key: "finance", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
+  { module: "Summer School", key: "summer-school", tier: { text: "Optional", variant: "purple" as const }, status: { text: "Per-plan", variant: "orange" as const }, appliesTo: "Enterprise+" },
+  { module: "Assignments", key: "assignments", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
+  { module: "Student Welfare", key: "student-welfare", tier: { text: "Optional", variant: "purple" as const }, status: { text: "Per-plan", variant: "orange" as const }, appliesTo: "Pro+" },
+  { module: "Calendar", key: "calendar", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
+  { module: "Communication", key: "communication", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
+  { module: "Reports & Analytics", key: "reports", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
 ];
 
 const columns = [
@@ -41,6 +41,18 @@ const columns = [
 
 export default function ModulesPage() {
   const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<typeof rows[number] | null>(null);
+  const [tier, setTier] = useState("");
+  const [status, setStatus] = useState("");
+
+  const data = rows.map((row) => ({
+    ...row,
+    actions: (
+      <Button variant="ghost" size="sm" onClick={() => setSelected(row)}>
+        Configure
+      </Button>
+    ),
+  }));
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -84,12 +96,42 @@ export default function ModulesPage() {
           <Field label="Module Key" required>
             <TextInput placeholder="e.g. virtual-classroom" />
           </Field>
-          <SelectField label="Tier" required placeholder="Select tier" options={["Core", "Optional"]} value="" onChange={() => {}} />
-          <SelectField label="Status" required placeholder="Select status" options={["Enabled by default", "Per-plan / Optional"]} value="" onChange={() => {}} />
+          <SelectField label="Tier" required placeholder="Select tier" options={["Core", "Optional"]} value={tier} onChange={(e) => setTier(e.target.value)} />
+          <SelectField label="Status" required placeholder="Select status" options={["Enabled by default", "Per-plan / Optional"]} value={status} onChange={(e) => setStatus(e.target.value)} />
           <Field label="Short Description">
             <TextArea rows={3} placeholder="What this module does..." />
           </Field>
         </div>
+      </Modal>
+
+      <Modal
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title={selected?.module ?? "Module Configuration"}
+        footer={
+          <Button variant="secondary" onClick={() => setSelected(null)}>Close</Button>
+        }
+      >
+        {selected && (
+          <div className="flex flex-col gap-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-text-muted">Key</span>
+              <span className="font-mono font-medium text-text-dark">{selected.key}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-text-muted">Tier</span>
+              <Badge variant={selected.tier.variant}>{selected.tier.text}</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-text-muted">Status</span>
+              <Badge variant={selected.status.variant}>{selected.status.text}</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-text-muted">Applies To</span>
+              <span className="font-medium text-text-dark">{selected.appliesTo}</span>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );
