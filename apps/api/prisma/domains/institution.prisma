@@ -1,0 +1,80 @@
+model Tenant {
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String        @unique
+  subdomain     String?       @unique
+  logoUrl       String?
+  primaryColor  String?       @default("#2563EB")
+  subscription  String        @default("free")
+  status        UserRoleStatus @default(ACTIVE)
+  maxStudents   Int           @default(500)
+  maxStaff      Int           @default(100)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  institutions   Institution[]
+  users          User[]
+  featureFlags   FeatureFlag[]
+  auditLogs      AuditLog[]
+
+  @@index([slug])
+  @@map("tenants")
+}
+
+model Institution {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid
+  name            String
+  code            String
+  logoUrl         String?
+  address         String?
+  city            String?
+  state           String?
+  country         String   @default("NG")
+  phone           String?
+  email           String?
+  website         String?
+  motto           String?
+  timezone        String   @default("Africa/Lagos")
+  currency        String   @default("NGN")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  tenant          Tenant          @relation(fields: [tenantId], references: [id])
+  departments     Department[]
+  academicYears   AcademicYear[]
+  students        Student[]
+  staff           Staff[]
+  classes         Class[]
+  curricula       Curriculum[]
+  subjects        Subject[]
+  feeStructures   FeeStructure[]
+  transportRoutes TransportRoute[]
+  hostels         Hostel[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@map("institutions")
+}
+
+model Department {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid
+  institutionId   String   @db.Uuid
+  name            String
+  code            String
+  description     String?
+  headStaffId     String?  @db.Uuid
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  institution     Institution @relation(fields: [institutionId], references: [id])
+  subjects        Subject[]
+
+  @@unique([tenantId, institutionId, code])
+  @@index([tenantId, institutionId])
+  @@map("departments")
+}

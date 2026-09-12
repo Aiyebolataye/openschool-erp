@@ -1,0 +1,143 @@
+model Document {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  studentId     String?      @db.Uuid
+  uploadedBy    String?      @db.Uuid
+  name          String
+  type          DocumentType @default(OTHER)
+  fileUrl       String
+  fileSize      Int?
+  mimeType      String?
+  folder        String?
+  tags          String[]
+  isPublic      Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  student       Student?     @relation(fields: [studentId], references: [id])
+
+  @@index([tenantId, studentId])
+  @@index([tenantId, type])
+  @@map("documents")
+}
+
+model Assignment {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  classId       String   @db.Uuid
+  studentId     String?  @db.Uuid
+  academicYearId String  @db.Uuid
+  title         String
+  description   String?
+  dueDate       DateTime
+  totalMarks    Int      @default(100)
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  class         Class         @relation(fields: [classId], references: [id])
+  student       Student?      @relation(fields: [studentId], references: [id])
+  academicYear  AcademicYear  @relation(fields: [academicYearId], references: [id])
+  submissions   Submission[]
+
+  @@index([tenantId, classId])
+  @@index([tenantId, studentId])
+  @@map("assignments")
+}
+
+model Submission {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  assignmentId  String   @db.Uuid
+  studentId     String   @db.Uuid
+  classId       String   @db.Uuid
+  content       String?
+  fileUrl       String?
+  grade         Int?
+  feedback      String?
+  status        UserRoleStatus @default(ACTIVE)
+  submittedAt   DateTime @default(now())
+  gradedAt      DateTime?
+  gradedBy      String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  assignment    Assignment @relation(fields: [assignmentId], references: [id])
+  student       Student    @relation(fields: [studentId], references: [id])
+  class         Class      @relation(fields: [classId], references: [id])
+
+  @@unique([assignmentId, studentId])
+  @@index([tenantId, studentId])
+  @@map("submissions")
+}
+
+model LibraryBook {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  isbn          String?
+  title         String
+  author        String
+  publisher     String?
+  category      String
+  edition       String?
+  totalCopies   Int      @default(1)
+  availableCopies Int    @default(1)
+  location      String?
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  copies        LibraryBookCopy[]
+  loans         BookLoan[]
+
+  @@unique([tenantId, isbn])
+  @@index([tenantId, title])
+  @@map("library_books")
+}
+
+model LibraryBookCopy {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  bookId        String   @db.Uuid
+  classId       String?  @db.Uuid
+  barcode       String
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  book          LibraryBook @relation(fields: [bookId], references: [id])
+  class         Class?      @relation(fields: [classId], references: [id])
+
+  @@unique([tenantId, barcode])
+  @@index([tenantId, bookId])
+  @@map("library_book_copies")
+}
+
+model BookLoan {
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @db.Uuid
+  bookId        String      @db.Uuid
+  studentId     String      @db.Uuid
+  termId        String?     @db.Uuid
+  loanDate      DateTime    @default(now())
+  dueDate       DateTime
+  returnedAt    DateTime?
+  status        LoanStatus  @default(BORROWED)
+  fine          Decimal?    @db.Decimal(8, 2)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+
+  book          LibraryBook @relation(fields: [bookId], references: [id])
+  student       Student     @relation(fields: [studentId], references: [id])
+  term          Term?       @relation(fields: [termId], references: [id])
+
+  @@index([tenantId, studentId])
+  @@index([tenantId, status])
+  @@map("book_loans")
+}

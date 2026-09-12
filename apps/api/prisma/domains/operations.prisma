@@ -1,0 +1,201 @@
+model Attendance {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  classId       String           @db.Uuid
+  studentId     String           @db.Uuid
+  termId        String           @db.Uuid
+  date          DateTime         @db.Date
+  status        AttendanceStatus @default(PRESENT)
+  remarks       String?
+  recordedBy    String?          @db.Uuid
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  class         Class    @relation(fields: [classId], references: [id])
+  student       Student  @relation(fields: [studentId], references: [id])
+  term          Term     @relation(fields: [termId], references: [id])
+
+  @@unique([classId, studentId, date])
+  @@index([tenantId, classId, date])
+  @@index([tenantId, studentId])
+  @@map("attendance")
+}
+
+model Hostel {
+  id              String      @id @default(uuid()) @db.Uuid
+  tenantId        String      @db.Uuid
+  institutionId   String      @db.Uuid
+  name            String
+  code            String
+  gender          HostelGender
+  capacity        Int
+  wardenStaffId   String?     @db.Uuid
+  phone           String?
+  status          UserRoleStatus @default(ACTIVE)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+
+  institution     Institution @relation(fields: [institutionId], references: [id])
+  allocations     HostelAllocation[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId, institutionId])
+  @@map("hostels")
+}
+
+model HostelAllocation {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  hostelId      String   @db.Uuid
+  studentId     String   @db.Uuid
+  roomNumber    String
+  bedNumber     String?
+  startDate     DateTime @default(now())
+  endDate       DateTime?
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  hostel        Hostel   @relation(fields: [hostelId], references: [id])
+  student       Student  @relation(fields: [studentId], references: [id])
+
+  @@unique([hostelId, roomNumber, bedNumber])
+  @@index([tenantId, hostelId])
+  @@index([tenantId, studentId])
+  @@map("hostel_allocations")
+}
+
+model TransportRoute {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  name          String
+  code          String
+  description   String?
+  stops         String[]
+  distance      Decimal? @db.Decimal(8, 2)
+  estimatedTime Int?
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  allocations   TransportAllocation[]
+  vehicles      Vehicle[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId, institutionId])
+  @@map("transport_routes")
+}
+
+model Vehicle {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  routeId       String?  @db.Uuid
+  plateNumber   String
+  type          String
+  capacity      Int
+  driverName    String?
+  driverPhone   String?
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  route         TransportRoute? @relation(fields: [routeId], references: [id])
+
+  @@unique([tenantId, plateNumber])
+  @@index([tenantId])
+  @@map("vehicles")
+}
+
+model TransportAllocation {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  routeId       String   @db.Uuid
+  studentId     String   @db.Uuid
+  startDate     DateTime @default(now())
+  endDate       DateTime?
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  route         TransportRoute @relation(fields: [routeId], references: [id])
+  student       Student        @relation(fields: [studentId], references: [id])
+
+  @@unique([routeId, studentId])
+  @@index([tenantId, routeId])
+  @@map("transport_allocations")
+}
+
+model InventoryItem {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  name          String
+  category      String
+  description   String?
+  quantity      Int      @default(0)
+  unitPrice     Decimal? @db.Decimal(10, 2)
+  location      String?
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  @@unique([tenantId, institutionId, name])
+  @@index([tenantId, institutionId])
+  @@map("inventory_items")
+}
+
+model MaintenanceRequest {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  institutionId String       @db.Uuid
+  requestedBy   String?      @db.Uuid
+  assignedTo    String?      @db.Uuid
+  termId        String?      @db.Uuid
+  title         String
+  description   String?
+  priority      String       @default("medium")
+  status        TicketStatus @default(OPEN)
+  resolvedAt    DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  staff         Staff?     @relation(fields: [requestedBy], references: [id])
+  term          Term?      @relation(fields: [termId], references: [id])
+
+  @@index([tenantId, institutionId])
+  @@index([tenantId, status])
+  @@map("maintenance_requests")
+}
+
+model LeaveRequest {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  staffId       String       @db.Uuid
+  termId        String?      @db.Uuid
+  leaveType     String
+  startDate     DateTime     @db.Date
+  endDate       DateTime     @db.Date
+  reason        String
+  status        TicketStatus @default(OPEN)
+  approvedBy    String?      @db.Uuid
+  approvedAt    DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  staff         Staff    @relation(fields: [staffId], references: [id])
+  term          Term?    @relation(fields: [termId], references: [id])
+
+  @@index([tenantId, staffId])
+  @@index([tenantId, status])
+  @@map("leave_requests")
+}

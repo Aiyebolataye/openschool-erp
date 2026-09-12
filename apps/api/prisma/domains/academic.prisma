@@ -1,0 +1,205 @@
+model AcademicYear {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  name          String
+  startYear     Int
+  endYear       Int
+  isCurrent     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  terms         Term[]
+  curricula     Curriculum[]
+  enrollments   Enrollment[]
+  results       Result[]
+  feeStructures FeeStructure[]
+  invoices      Invoice[]
+  assignments   Assignment[]
+
+  @@unique([tenantId, startYear])
+  @@index([tenantId, institutionId])
+  @@map("academic_years")
+}
+
+model Term {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid
+  academicYearId  String   @db.Uuid
+  name            String
+  startDate       DateTime
+  endDate         DateTime
+  isCurrent       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  academicYear    AcademicYear @relation(fields: [academicYearId], references: [id])
+  attendance      Attendance[]
+  results         Result[]
+  grades          Grade[]
+  invoices        Invoice[]
+  feeStructures   FeeStructure[]
+  libraryLoans    BookLoan[]
+  maintenanceRequests MaintenanceRequest[]
+  leaveRequests   LeaveRequest[]
+
+  @@unique([academicYearId, name])
+  @@index([tenantId, academicYearId])
+  @@map("terms")
+}
+
+model Curriculum {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  academicYearId String  @db.Uuid
+  name          String
+  description   String?
+  version       String   @default("1.0")
+  status        UserRoleStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  academicYear  AcademicYear @relation(fields: [academicYearId], references: [id])
+  subjects      Subject[]
+
+  @@unique([tenantId, academicYearId, name])
+  @@index([tenantId])
+  @@map("curricula")
+}
+
+model Subject {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  curriculumId  String   @db.Uuid
+  departmentId  String?  @db.Uuid
+  code          String
+  name          String
+  description   String?
+  creditHours   Int      @default(1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  curriculum    Curriculum @relation(fields: [curriculumId], references: [id])
+  department    Department? @relation(fields: [departmentId], references: [id])
+  classes       Class[]
+  grades        Grade[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId, curriculumId])
+  @@map("subjects")
+}
+
+model Class {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid
+  institutionId   String   @db.Uuid
+  subjectId       String   @db.Uuid
+  academicYearId  String?  @db.Uuid
+  name            String
+  section         String?
+  capacity        Int      @default(40)
+  teacherStaffId  String?  @db.Uuid
+  classTeacherId  String?  @db.Uuid
+  room            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  institution     Institution @relation(fields: [institutionId], references: [id])
+  subject         Subject     @relation(fields: [subjectId], references: [id])
+  teacher         Staff?      @relation("ClassTeacher", fields: [teacherStaffId], references: [id])
+  classTeacher    Staff?      @relation(fields: [classTeacherId], references: [id])
+  enrollments     Enrollment[]
+  attendance      Attendance[]
+  assignments     Assignment[]
+  submissions     Submission[]
+  libraryBookCopies LibraryBookCopy[]
+
+  @@unique([tenantId, subjectId, name, academicYearId])
+  @@index([tenantId, institutionId])
+  @@map("classes")
+}
+
+model Enrollment {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  studentId     String           @db.Uuid
+  classId       String           @db.Uuid
+  academicYearId String          @db.Uuid
+  status        EnrollmentStatus @default(ACTIVE)
+  enrolledAt    DateTime         @default(now())
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
+
+  student       Student  @relation(fields: [studentId], references: [id])
+  class         Class    @relation(fields: [classId], references: [id])
+  academicYear  AcademicYear @relation(fields: [academicYearId], references: [id])
+  grades        Grade[]
+  results       Result[]
+
+  @@unique([studentId, classId, academicYearId])
+  @@index([tenantId, studentId])
+  @@index([tenantId, classId])
+  @@map("enrollments")
+}
+
+model Grade {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  enrollmentId  String   @db.Uuid
+  subjectId     String   @db.Uuid
+  staffId       String?  @db.Uuid
+  termId        String   @db.Uuid
+  assessment    Decimal  @default(0) @db.Decimal(5, 2)
+  exam          Decimal  @default(0) @db.Decimal(5, 2)
+  total         Decimal  @default(0) @db.Decimal(5, 2)
+  grade         String?
+  remark        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enrollment    Enrollment @relation(fields: [enrollmentId], references: [id])
+  subject       Subject    @relation(fields: [subjectId], references: [id])
+  staff         Staff?     @relation(fields: [staffId], references: [id])
+  term          Term       @relation(fields: [termId], references: [id])
+
+  @@unique([enrollmentId, subjectId, termId])
+  @@index([tenantId, enrollmentId])
+  @@map("grades")
+}
+
+model Result {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid
+  enrollmentId    String   @db.Uuid
+  academicYearId  String   @db.Uuid
+  termId          String   @db.Uuid
+  termAverage     Decimal? @db.Decimal(5, 2)
+  classPosition   Int?
+  totalScore      Decimal  @default(0) @db.Decimal(8, 2)
+  averageScore    Decimal  @default(0) @db.Decimal(5, 2)
+  grade           String?
+  status          UserRoleStatus @default(ACTIVE)
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  enrollment      Enrollment @relation(fields: [enrollmentId], references: [id])
+  academicYear    AcademicYear @relation(fields: [academicYearId], references: [id])
+  term            Term       @relation(fields: [termId], references: [id])
+
+  @@unique([enrollmentId, academicYearId, termId])
+  @@index([tenantId, academicYearId])
+  @@map("results")
+}

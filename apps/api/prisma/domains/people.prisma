@@ -1,0 +1,119 @@
+model Student {
+  id              String          @id @default(uuid()) @db.Uuid
+  tenantId        String          @db.Uuid
+  institutionId   String          @db.Uuid
+  userId          String?         @unique @db.Uuid
+  studentNumber   String
+  firstName       String
+  lastName        String
+  middleName      String?
+  dateOfBirth     DateTime?
+  gender          Gender
+  bloodGroup      String?
+  nationality     String?         @default("Nigerian")
+  stateOfOrigin   String?
+  address         String?
+  phone           String?
+  admissionDate   DateTime        @default(now())
+  status          EnrollmentStatus @default(ACTIVE)
+  profileImageUrl String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+
+  institution     Institution     @relation(fields: [institutionId], references: [id])
+  user            User?           @relation(fields: [userId], references: [id])
+  enrollments     Enrollment[]
+  invoices        Invoice[]
+  attendance      Attendance[]
+  submissions     Submission[]
+  documents       Document[]
+  relationships   StudentGuardianRelationship[]
+  libraryLoans    BookLoan[]
+  hostelAllocations HostelAllocation[]
+  transportAllocations TransportAllocation[]
+  assignments     Assignment[]
+
+  @@unique([tenantId, studentNumber])
+  @@index([tenantId, institutionId])
+  @@index([tenantId, status])
+  @@map("students")
+}
+
+model Staff {
+  id              String          @id @default(uuid()) @db.Uuid
+  tenantId        String          @db.Uuid
+  institutionId   String          @db.Uuid
+  userId          String?         @unique @db.Uuid
+  staffNumber     String
+  firstName       String
+  lastName        String
+  middleName      String?
+  dateOfBirth     DateTime?
+  gender          Gender
+  phone           String?
+  email           String?
+  qualification   String?
+  specialization  String?
+  hireDate        DateTime        @default(now())
+  employmentType  String          @default("full_time")
+  department      String?
+  position        String?
+  status          UserRoleStatus  @default(ACTIVE)
+  profileImageUrl String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+
+  institution     Institution     @relation(fields: [institutionId], references: [id])
+  user            User?           @relation(fields: [userId], references: [id])
+  classes         Class[]
+  classTeacherOf  Class[]         @relation("ClassTeacher")
+  grades          Grade[]
+  maintenanceRequests MaintenanceRequest[]
+  leaveRequests   LeaveRequest[]
+
+  @@unique([tenantId, staffNumber])
+  @@index([tenantId, institutionId])
+  @@map("staff")
+}
+
+model Guardian {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  userId        String?  @unique @db.Uuid
+  firstName     String
+  lastName      String
+  email         String
+  phone         String
+  address       String?
+  occupation    String?
+  relationship  String
+  isPrimary     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  user          User?    @relation(fields: [userId], references: [id])
+  relationships StudentGuardianRelationship[]
+
+  @@index([tenantId])
+  @@map("guardians")
+}
+
+model StudentGuardianRelationship {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @db.Uuid
+  studentId   String   @db.Uuid
+  guardianId  String   @db.Uuid
+  relationship String
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  student     Student  @relation(fields: [studentId], references: [id])
+  guardian    Guardian @relation(fields: [guardianId], references: [id])
+
+  @@unique([studentId, guardianId])
+  @@index([tenantId])
+  @@map("student_guardian_relationships")
+}
