@@ -1,12 +1,14 @@
 "use client";
 
 import { StatCard } from "@/components/ui/stat-card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { SearchInput } from "@/components/ui/search-input";
 import { Select } from "@/components/ui/select";
+import { Modal } from "@/components/ui/modal";
 import { useState } from "react";
 
 type Status = "present" | "absent" | "late";
@@ -18,19 +20,19 @@ const kpis = [
   { label: "Pending Corrections", value: "8", detail: "", detailColor: "orange" as const },
 ];
 
-const overviewData = [
-  { class: { text: "SS1 Science", variant: "muted" as const }, rate: "92%", present: "38", absent: "4", trend: { text: "Good", variant: "green" as const }, actions: "View" },
-  { class: { text: "JSS2 B", variant: "muted" as const }, rate: "85%", present: "38", absent: "7", trend: { text: "Monitor", variant: "orange" as const }, actions: "View" },
-  { class: { text: "SS3 Art", variant: "muted" as const }, rate: "76%", present: "32", absent: "10", trend: { text: "Low", variant: "red" as const }, actions: "View" },
+const overviewRows = [
+  { class: "SS1 Science", rate: "92%", present: "38", absent: "4", trend: { text: "Good", variant: "green" as const } },
+  { class: "JSS2 B", rate: "85%", present: "38", absent: "7", trend: { text: "Monitor", variant: "orange" as const } },
+  { class: "SS3 Art", rate: "76%", present: "32", absent: "10", trend: { text: "Low", variant: "red" as const } },
 ];
 
 const overviewColumns = [
-  { key: "class", label: "CLASS", width: "140px" },
+  { key: "class", label: "CLASS", width: "160px" },
   { key: "rate", label: "ATTENDANCE RATE", width: "130px" },
   { key: "present", label: "PRESENT", width: "90px" },
   { key: "absent", label: "ABSENT", width: "90px" },
   { key: "trend", label: "TREND", width: "90px" },
-  { key: "actions", label: "ACTIONS", width: "70px", align: "right" as const },
+  { key: "actions", label: "ACTIONS", width: "90px", align: "right" as const },
 ];
 
 const classOptions = [
@@ -160,8 +162,22 @@ function AttendanceForm({ classKey, students }: { classKey: string; students: { 
 }
 
 export default function PrincipalAttendancePage() {
+  const [search, setSearch] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
+  const [viewClass, setViewClass] = useState<typeof overviewRows[number] | null>(null);
   const students = selectedClass ? studentsByClass[selectedClass] ?? [] : [];
+
+  const q = search.trim().toLowerCase();
+  const visibleRows = overviewRows.filter((row) => !q || row.class.toLowerCase().includes(q));
+
+  const overviewData = visibleRows.map((row, i) => ({
+    class: { text: row.class, variant: "muted" as const },
+    rate: row.rate,
+    present: row.present,
+    absent: row.absent,
+    trend: row.trend,
+    actions: <Button variant="ghost" size="sm" onClick={() => setViewClass(row)}>View</Button>,
+  }));
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -185,7 +201,7 @@ export default function PrincipalAttendancePage() {
             placeholder="Select class to mark"
           />
           <Select options={[{ label: "Today", value: "today" }]} placeholder="Today" />
-          <SearchInput placeholder="Search class..." className="flex-1" />
+          <SearchInput placeholder="Search class..." className="flex-1" value={search} onChange={setSearch} />
         </div>
       </Card>
 
@@ -200,6 +216,42 @@ export default function PrincipalAttendancePage() {
       )}
 
       <DataTable columns={overviewColumns} data={overviewData} />
+
+      <Modal
+        open={!!viewClass}
+        onClose={() => setViewClass(null)}
+        title={viewClass ? `${viewClass.class} — Attendance` : "Attendance"}
+        footer={
+          <Button onClick={() => setViewClass(null)}>Close</Button>
+        }
+      >
+        {viewClass && (
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-text-muted">Attendance Rate</p>
+                <p className="text-lg font-semibold text-text-dark">{viewClass.rate}</p>
+              </div>
+              <div>
+                <p className="text-xs text-text-muted">Trend</p>
+                <Badge variant={viewClass.trend.variant as any}>{viewClass.trend.text}</Badge>
+              </div>
+              <div>
+                <p className="text-xs text-text-muted">Present</p>
+                <p className="text-lg font-semibold text-green">{viewClass.present}</p>
+              </div>
+              <div>
+                <p className="text-xs text-text-muted">Absent</p>
+                <p className="text-lg font-semibold text-red">{viewClass.absent}</p>
+              </div>
+            </div>
+            <div className="rounded-lg bg-surface p-4">
+              <p className="text-sm font-medium text-text-dark mb-2">Recent Issues</p>
+              <p className="text-xs text-text-muted">No recent attendance anomalies reported for this class.</p>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

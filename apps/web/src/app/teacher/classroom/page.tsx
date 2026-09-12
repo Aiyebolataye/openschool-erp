@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
+import { SearchInput } from "@/components/ui/search-input";
 
 const classrooms = [
   {
@@ -28,6 +30,11 @@ const classrooms = [
 ];
 
 export default function ClassroomPage() {
+  const [search, setSearch] = useState("");
+
+  const q = search.trim().toLowerCase();
+  const filtered = classrooms.filter((c) => !q || c.name.toLowerCase().includes(q));
+
   return (
     <div className="max-w-[1100px] mx-auto">
       <PageHeader
@@ -35,8 +42,14 @@ export default function ClassroomPage() {
         subtitle="Rooms you are the class teacher for — monitor students, take attendance, communicate with parents"
       />
 
+      <Card className="p-4 mb-6">
+        <div className="flex items-center gap-3">
+          <SearchInput placeholder="Search by class or subject..." className="flex-1" value={search} onChange={setSearch} />
+        </div>
+      </Card>
+
       <div className="grid grid-cols-2 gap-4">
-        {classrooms.map((c) => (
+        {filtered.map((c) => (
           <Card key={c.id} className="p-5 hover:border-primary/40 transition-colors cursor-pointer">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-semibold text-text-dark">{c.name}</h3>

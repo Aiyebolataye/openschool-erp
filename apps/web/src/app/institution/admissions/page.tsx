@@ -8,6 +8,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { SearchInput } from "@/components/ui/search-input";
 import { Select } from "@/components/ui/select";
+import Link from "next/link";
 import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Field, TextInput, TextArea, SelectField } from "@/components/ui/form";
@@ -19,11 +20,11 @@ const kpis = [
   { label: "Offer Sent", value: "120", detail: "", detailColor: "blue" as const },
 ];
 
-const data = [
-  { applicant: { text: "Ngozi Adeyemi", variant: "muted" as const }, stage: { text: "Review", variant: "orange" as const }, program: "SS1 Science", applied: "Jul 26, 2026", priority: { text: "NORMAL", variant: "muted" as const }, actions: "Review" },
-  { applicant: { text: "Kenji Sato", variant: "muted" as const }, stage: { text: "Assessment", variant: "blue" as const }, program: "JSS1 A", applied: "Jul 25, 2026", priority: { text: "URGENT", variant: "red" as const }, actions: "Review" },
-  { applicant: { text: "Mary Jones", variant: "muted" as const }, stage: { text: "Offer Sent", variant: "green" as const }, program: "SS2 Art", applied: "Jul 24, 2026", priority: { text: "NORMAL", variant: "muted" as const }, actions: "Review" },
-  { applicant: { text: "Omar Farouk", variant: "muted" as const }, stage: { text: "Enrolled", variant: "green" as const }, program: "SS1 Business", applied: "Jul 22, 2026", priority: { text: "NORMAL", variant: "muted" as const }, actions: "Review" },
+const initialApplicants = [
+  { id: "STU-21403", applicant: { text: "Ngozi Adeyemi", variant: "muted" as const }, stage: { text: "Review", variant: "orange" as const }, program: "SS1 Science", applied: "Jul 26, 2026", priority: { text: "NORMAL", variant: "muted" as const } },
+  { id: "STU-21407", applicant: { text: "Kenji Sato", variant: "muted" as const }, stage: { text: "Assessment", variant: "blue" as const }, program: "JSS1 A", applied: "Jul 25, 2026", priority: { text: "URGENT", variant: "red" as const } },
+  { id: "STU-21408", applicant: { text: "Mary Jones", variant: "muted" as const }, stage: { text: "Offer Sent", variant: "green" as const }, program: "SS2 Art", applied: "Jul 24, 2026", priority: { text: "NORMAL", variant: "muted" as const } },
+  { id: "STU-21406", applicant: { text: "Omar Farouk", variant: "muted" as const }, stage: { text: "Enrolled", variant: "green" as const }, program: "SS1 Business", applied: "Jul 22, 2026", priority: { text: "NORMAL", variant: "muted" as const } },
 ];
 
 const columns = [
@@ -37,6 +38,32 @@ const columns = [
 
 export default function AdmissionsPage() {
   const [appOpen, setAppOpen] = useState(false);
+  const [applicants] = useState(initialApplicants);
+  const [search, setSearch] = useState("");
+
+  const q = search.trim().toLowerCase();
+  const visibleApplicants = q
+    ? applicants.filter(
+        (a) =>
+          a.applicant.text.toLowerCase().includes(q) ||
+          a.id.toLowerCase().includes(q) ||
+          a.program.toLowerCase().includes(q) ||
+          a.stage.text.toLowerCase().includes(q)
+      )
+    : applicants;
+
+  const rows = visibleApplicants.map((a) => ({
+    applicant: a.applicant,
+    stage: a.stage,
+    program: a.program,
+    applied: a.applied,
+    priority: a.priority,
+    actions: (
+      <Link href={`/teacher/students/${a.id}`}>
+        <Button variant="ghost" size="sm">View</Button>
+      </Link>
+    ),
+  }));
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -56,11 +83,11 @@ export default function AdmissionsPage() {
         <div className="flex items-center gap-3">
           <Select options={[{ label: "All Stages", value: "all" }]} placeholder="All Stages" />
           <Select options={[{ label: "All Programs", value: "all" }]} placeholder="All Programs" />
-          <SearchInput placeholder="Search applicants..." className="flex-1" />
+          <SearchInput placeholder="Search applicants..." className="flex-1" value={search} onChange={setSearch} />
         </div>
       </Card>
 
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={rows} />
 
       <Modal
         open={appOpen}

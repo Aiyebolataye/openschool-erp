@@ -29,6 +29,21 @@ const initialData = [
   { institution: "Sunrise International School", slug: "sunrise-intl", organization: "Standalone", type: "Primary", status: { text: "Active", variant: "green" as const }, students: "4,210", staff: "312", plan: { text: "Enterprise", variant: "blue" as const }, created: "Aug 19, 2025", address: "22 Sunrise Blvd, Enugu", phone: "+234 805 678 9012", email: "admin@sunrise-intl.edu" },
 ];
 
+type InstRow = {
+  institution: string;
+  slug: string;
+  organization: string;
+  type: string;
+  status: { text: string; variant: "green" | "red" | "orange" };
+  students: string;
+  staff: string;
+  plan: { text: string; variant: "blue" | "muted" };
+  created: string;
+  address: string;
+  phone: string;
+  email: string;
+};
+
 const columns = [
   { key: "institution", label: "INSTITUTION", width: "200px" },
   { key: "organization", label: "ORGANIZATION", width: "180px" },
@@ -37,7 +52,7 @@ const columns = [
   { key: "staff", label: "STAFF", width: "80px" },
   { key: "plan", label: "PLAN", width: "100px" },
   { key: "created", label: "CREATED", width: "120px" },
-  { key: "actions", label: "ACTIONS", width: "80px", align: "right" as const },
+  { key: "actions", label: "ACTIONS", width: "180px", align: "right" as const },
 ];
 
 function slugify(name: string) {
@@ -52,9 +67,11 @@ function generateTempPassword() {
 }
 
 export default function InstitutionsPage() {
+  const [institutions, setInstitutions] = useState<InstRow[]>(initialData);
   const [createOpen, setCreateOpen] = useState(false);
-  const [viewItem, setViewItem] = useState<typeof initialData[number] | null>(null);
+  const [viewItem, setViewItem] = useState<InstRow | null>(null);
   const [confirmItem, setConfirmItem] = useState<{ name: string; email: string; password: string } | null>(null);
+  const [confirmSuspend, setConfirmSuspend] = useState<InstRow | null>(null);
   const [search, setSearch] = useState("");
   const [orgFilter, setOrgFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -76,20 +93,40 @@ export default function InstitutionsPage() {
   const displayEmail = formEmail || generatedEmail;
 
   const filteredData = useMemo(() => {
-    return initialData.filter((row) => {
+    return institutions.filter((row) => {
       if (search && !row.institution.toLowerCase().includes(search.toLowerCase())) return false;
       if (orgFilter !== "all" && row.organization !== orgFilter) return false;
       if (statusFilter !== "all" && row.status.text.toLowerCase() !== statusFilter) return false;
       return true;
     });
-  }, [search, orgFilter, statusFilter]);
+  }, [institutions, search, orgFilter, statusFilter]);
 
   const tableData = useMemo(() => {
     return filteredData.map((row) => ({
       ...row,
-      actions: <Button variant="ghost" size="sm" onClick={() => setViewItem(row)}>View</Button>,
+      actions: (
+        <div className="flex items-center justify-end gap-2">
+          <Button variant="ghost" size="sm" onClick={() => setViewItem(row)}>View</Button>
+          <Button variant="ghost" size="sm" onClick={() => setConfirmSuspend(row)}>
+            {row.status.text === "Suspended" ? "Activate" : "Suspend"}
+          </Button>
+        </div>
+      ),
     }));
   }, [filteredData]);
+
+  function toggleSuspension() {
+    if (!confirmSuspend) return;
+    const suspended = confirmSuspend.status.text === "Suspended";
+    setInstitutions((prev) =>
+      prev.map((i) =>
+        i.slug === confirmSuspend.slug
+          ? { ...i, status: suspended ? { text: "Active", variant: "green" } : { text: "Suspended", variant: "red" } }
+          : i
+      )
+    );
+    setConfirmSuspend(null);
+  }
 
   function resetForm() {
     setFormName("");
@@ -252,6 +289,25 @@ export default function InstitutionsPage() {
             </div>
           </div>
         )}
+      </Modal>
+
+      <Modal
+        open={!!confirmSuspend}
+        onClose={() => setConfirmSuspend(null)}
+        title={confirmSuspend?.status.text === "Suspended" ? "Activate Institution" : "Suspend Institution"}
+        subtitle={confirmSuspend?.institution}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setConfirmSuspend(null)}>Cancel</Button>
+            <Button variant={confirmSuspend?.status.text === "Suspended" ? "primary" : "danger"} onClick={toggleSuspension}>
+              {confirmSuspend?.status.text === "Suspended" ? "Activate" : "Suspend"}
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-text-dark">
+          Are you sure you want to {confirmSuspend?.status.text === "Suspended" ? "activate" : "suspend"} <span className="font-medium">{confirmSuspend?.institution}</span>? This action can be reversed at any time.
+        </p>
       </Modal>
     </div>
   );

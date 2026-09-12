@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
+import { SearchInput } from "@/components/ui/search-input";
 
 const subjects = [
   { id: "biology", name: "Biology", dept: "Sciences", curriculum: "82% covered", lessons: "24", assessments: "6", results: "Published", status: { text: "Teaching", variant: "green" as const } },
@@ -12,12 +14,25 @@ const subjects = [
 ];
 
 export default function MySubjectsPage() {
+  const [search, setSearch] = useState("");
+
+  const q = search.trim().toLowerCase();
+  const filtered = subjects.filter(
+    (s) => !q || s.name.toLowerCase().includes(q) || s.dept.toLowerCase().includes(q)
+  );
+
   return (
     <div className="max-w-[900px] mx-auto">
       <PageHeader title="My Subjects" subtitle="Select a subject to manage content, assignments, assessments, and results" />
 
+      <Card className="p-4 mb-6">
+        <div className="flex items-center gap-3">
+          <SearchInput placeholder="Search by name or department..." className="flex-1" value={search} onChange={setSearch} />
+        </div>
+      </Card>
+
       <div className="grid grid-cols-2 gap-4">
-        {subjects.map((s) => (
+        {filtered.map((s) => (
           <Card key={s.id} className="p-5 hover:border-primary/40 transition-colors cursor-pointer">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-semibold text-text-dark">{s.name}</h3>

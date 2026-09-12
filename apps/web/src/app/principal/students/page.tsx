@@ -39,7 +39,18 @@ const columns = [
 ];
 
 export default function PrincipalStudentsPage() {
+  const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const q = search.trim().toLowerCase();
+  const filtered = data.filter(
+    (d) =>
+      !q ||
+      d.student.text.toLowerCase().includes(q) ||
+      d.id.toLowerCase().includes(q) ||
+      d.class.toLowerCase().includes(q) ||
+      d.guardian.toLowerCase().includes(q)
+  );
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -59,11 +70,11 @@ export default function PrincipalStudentsPage() {
         <div className="flex items-center gap-3">
           <Select options={[{ label: "All Classes", value: "all" }]} placeholder="All Classes" />
           <Select options={[{ label: "All Statuses", value: "all" }]} placeholder="All Statuses" />
-          <SearchInput placeholder="Search by name or ID..." className="flex-1" />
+          <SearchInput placeholder="Search by name or ID..." className="flex-1" value={search} onChange={setSearch} />
         </div>
       </Card>
 
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={filtered} />
       <Pagination currentPage={1} totalPages={5} />
 
       <Modal

@@ -4,6 +4,7 @@ export const principalNav: NavItem[] = [
   { label: "Dashboard", href: "/principal" },
   { label: "Students", href: "/principal/students" },
   { label: "Academics & Content", href: "/principal/academics" },
+  { label: "Timetable", href: "/principal/timetable" },
   { label: "Assignments", href: "/principal/assignments" },
   { label: "Results", href: "/principal/results" },
   { label: "Portfolio", href: "/principal/portfolio" },

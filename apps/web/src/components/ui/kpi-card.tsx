@@ -19,13 +19,13 @@ export function KpiCard({ label, value, detail, detailColor = "muted", className
   return (
     <div
       className={cn(
-        "bg-card rounded-xl border border-border-light p-6 flex flex-col gap-1",
+        "bg-card rounded-xl border border-border-light p-4 sm:p-6 flex flex-col gap-1",
         className
       )}
     >
-      <span className="text-sm text-text-muted font-medium">{label}</span>
-      <span className="text-3xl font-bold text-text-dark font-display">{value}</span>
-      <span className={cn("text-sm", detailColorMap[detailColor])}>{detail}</span>
+      <span className="text-xs sm:text-sm text-text-muted font-medium">{label}</span>
+      <span className="text-2xl sm:text-3xl font-bold text-text-dark font-display">{value}</span>
+      <span className={cn("text-xs sm:text-sm", detailColorMap[detailColor])}>{detail}</span>
     </div>
   );
 }

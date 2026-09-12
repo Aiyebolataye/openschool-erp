@@ -7,6 +7,7 @@ export interface ListItem {
   subtitle?: string;
   right?: React.ReactNode;
   action?: React.ReactNode;
+  onClick?: () => void;
 }
 
 const avatarColorMap = {
@@ -44,7 +45,11 @@ export function ListCard({ title, subtitle, badge, headerAction, items, classNam
         {items.map((item, i) => (
           <div
             key={i}
-            className="flex items-center justify-between py-3 border-b border-border-light last:border-0"
+            onClick={item.onClick}
+            className={cn(
+              "flex items-center justify-between py-3 border-b border-border-light last:border-0",
+              item.onClick && "cursor-pointer hover:bg-surface/50 transition-colors"
+            )}
           >
             <div className="flex items-center gap-3 min-w-0">
               {item.avatar && (

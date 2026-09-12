@@ -71,13 +71,22 @@ export default function PrincipalAssignmentsPage() {
             content: (
               <Card className="divide-y divide-border-light">
                 {performance.map((p) => (
-                  <div key={p.subject} className="flex items-center justify-between px-5 py-4">
+                  <Link
+                    key={p.subject}
+                    href={`/principal/assignments/performance/${p.subject}`}
+                    className="flex items-center justify-between px-5 py-4 hover:bg-surface-secondary transition-colors cursor-pointer"
+                  >
                     <div>
                       <p className="text-sm font-medium text-text-dark">{p.subject}</p>
                       <p className="text-xs text-text-muted mt-0.5">Average: {p.avg} · Top: {p.top} · At Risk: {p.atRisk}</p>
                     </div>
-                    <Badge variant={p.flag.variant as "green"}>{p.flag.text}</Badge>
-                  </div>
+                    <div className="flex items-center gap-3">
+                      <Badge variant={p.flag.variant as "green"}>{p.flag.text}</Badge>
+                      <svg className="w-4 h-4 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </Link>
                 ))}
               </Card>
             ),

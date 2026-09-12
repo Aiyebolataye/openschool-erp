@@ -18,7 +18,7 @@ const kpis = [
   { label: "OPTIONAL MODULES", value: "6", detail: "per-plan", detailColor: "muted" as const },
 ];
 
-const rows = [
+const initialRows = [
   { module: "Academics", key: "academics", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
   { module: "Attendance", key: "attendance", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
   { module: "Finance & Billing", key: "finance", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
@@ -29,6 +29,14 @@ const rows = [
   { module: "Communication", key: "communication", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
   { module: "Reports & Analytics", key: "reports", tier: { text: "Core", variant: "blue" as const }, status: { text: "Enabled by default", variant: "green" as const }, appliesTo: "All" },
 ];
+
+type ModuleRow = {
+  module: string;
+  key: string;
+  tier: { text: string; variant: "blue" | "purple" };
+  status: { text: string; variant: "green" | "orange" };
+  appliesTo: string;
+};
 
 const columns = [
   { key: "module", label: "MODULE", width: "180px" },
@@ -41,11 +49,28 @@ const columns = [
 
 export default function ModulesPage() {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<typeof rows[number] | null>(null);
+  const [selected, setSelected] = useState<ModuleRow | null>(null);
   const [tier, setTier] = useState("");
   const [status, setStatus] = useState("");
+  const [rows, setRows] = useState<ModuleRow[]>(initialRows);
+  const [search, setSearch] = useState("");
+  const [tierFilter, setTierFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const data = rows.map((row) => ({
+  const q = search.trim().toLowerCase();
+  const filtered = rows.filter((row) => {
+    const matchesSearch =
+      !q ||
+      row.module.toLowerCase().includes(q) ||
+      row.key.toLowerCase().includes(q) ||
+      row.tier.text.toLowerCase().includes(q) ||
+      row.status.text.toLowerCase().includes(q);
+    const matchesTier = !tierFilter || row.tier.text === tierFilter;
+    const matchesStatus = !statusFilter || row.status.text === statusFilter;
+    return matchesSearch && matchesTier && matchesStatus;
+  });
+
+  const data = filtered.map((row) => ({
     ...row,
     actions: (
       <Button variant="ghost" size="sm" onClick={() => setSelected(row)}>
@@ -62,6 +87,10 @@ export default function ModulesPage() {
         actions={<Button onClick={() => setOpen(true)}>+ New Module</Button>}
       />
 
+      <div className="rounded-lg bg-primary-light/40 border border-primary/20 px-4 py-3 text-xs text-text-dark leading-relaxed mb-6">
+        Modules are the feature building-blocks of the platform. Every institution gets the Core modules by default; Optional modules are switched on per subscription plan (e.g. Summer School, Student Welfare). Turn a module on/off to control which features an institution can use.
+      </div>
+
       <div className="grid grid-cols-3 gap-4 mb-6">
         {kpis.map((m) => (
           <KpiCard key={m.label} {...m} />
@@ -70,9 +99,9 @@ export default function ModulesPage() {
 
       <Card className="p-4 mb-6">
         <div className="flex items-center gap-3">
-          <Select options={[{ label: "All Tiers", value: "all" }]} placeholder="All Tiers" />
-          <Select options={[{ label: "All Statuses", value: "all" }]} placeholder="All Statuses" />
-          <SearchInput placeholder="Search modules..." className="flex-1" />
+          <Select options={[{ label: "Core", value: "Core" }, { label: "Optional", value: "Optional" }]} placeholder="All Tiers" value={tierFilter} onChange={setTierFilter} />
+          <Select options={[{ label: "Enabled by default", value: "Enabled by default" }, { label: "Per-plan", value: "Per-plan" }]} placeholder="All Statuses" value={statusFilter} onChange={setStatusFilter} />
+          <SearchInput placeholder="Search modules..." className="flex-1" value={search} onChange={setSearch} />
         </div>
       </Card>
 

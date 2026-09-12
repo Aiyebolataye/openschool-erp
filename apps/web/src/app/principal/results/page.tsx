@@ -77,6 +77,7 @@ function gradeColor(g: string) {
 
 function DetailView({ row, onBack }: { row: ResultRow; onBack: () => void }) {
   const [students, setStudents] = useState<StudentGrade[]>(row.students);
+  const [comments, setComments] = useState<Record<string, string>>({});
 
   function approveAll() {
     setStudents((s) => s.map((st) => ({ ...st, approved: true })));
@@ -131,6 +132,7 @@ function DetailView({ row, onBack }: { row: ResultRow; onBack: () => void }) {
                 <th className="px-5 py-3 font-medium text-right">Exam</th>
                 <th className="px-5 py-3 font-medium text-right">Total</th>
                 <th className="px-5 py-3 font-medium text-center">Grade</th>
+                <th className="px-5 py-3 font-medium">Comments</th>
                 <th className="px-5 py-3 font-medium text-right">Action</th>
               </tr>
             </thead>
@@ -147,6 +149,14 @@ function DetailView({ row, onBack }: { row: ResultRow; onBack: () => void }) {
                   <td className="px-5 py-3 text-center">
                     <Badge variant={gradeColor(s.grade) as any}>{s.grade}</Badge>
                   </td>
+                  <td className="px-5 py-3">
+                    <input
+                      value={comments[s.id] ?? ""}
+                      onChange={(e) => setComments((prev) => ({ ...prev, [s.id]: e.target.value }))}
+                      placeholder="Add comment..."
+                      className="w-40 px-2 py-1 rounded-md border border-border-light text-xs text-text-dark bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    />
+                  </td>
                   <td className="px-5 py-3 text-right">
                     {s.approved === null && (
                       <div className="flex items-center justify-end gap-2">
@@ -161,6 +171,19 @@ function DetailView({ row, onBack }: { row: ResultRow; onBack: () => void }) {
               ))}
             </tbody>
           </table>
+        </div>
+      </Card>
+
+      <Card className="p-5 mt-4">
+        <h3 className="text-sm font-semibold text-text-dark mb-2">Batch Comments</h3>
+        <p className="text-xs text-text-muted mb-3">Comments shown to all stakeholders for this result set.</p>
+        <textarea
+          placeholder="Add a comment for this batch of results..."
+          className="w-full px-3 py-2 rounded-lg border border-border-light bg-card text-sm text-text-dark placeholder:text-text-muted/70 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+          rows={3}
+        />
+        <div className="flex justify-end mt-3">
+          <Button size="sm">Save Comments</Button>
         </div>
       </Card>
     </div>

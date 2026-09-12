@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
-import { DataTable } from "@/components/ui/data-table";
 import { PageHeader } from "@/components/ui/page-header";
 import { Select } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
@@ -13,69 +12,181 @@ import { Field, TextInput, TextArea, SelectField } from "@/components/ui/form";
 import { useState } from "react";
 
 const kpis = [
-  { label: "Revenue This Month", value: "$284K", detail: "+6.2%", detailColor: "green" as const },
-  { label: "Outstanding Fees", value: "$92K", detail: "312 overdue", detailColor: "orange" as const },
+  { label: "Revenue This Month", value: "₦284K", detail: "+6.2%", detailColor: "green" as const },
+  { label: "Outstanding Fees", value: "₦92K", detail: "312 overdue", detailColor: "orange" as const },
   { label: "Fees Configured", value: "12", detail: "", detailColor: "muted" as const },
   { label: "Overdue Invoices", value: "42", detail: "", detailColor: "red" as const },
 ];
 
-const fees = [
-  { name: "Tuition — SS1", type: { text: "Tuition", variant: "blue" as const }, target: "SS1 (Science, Art, Business)", amount: "$420", freq: "Per term", status: { text: "Active", variant: "green" as const } },
-  { name: "Tuition — JSS1", type: { text: "Tuition", variant: "blue" as const }, target: "JSS1 (A, B)", amount: "$380", freq: "Per term", status: { text: "Active", variant: "green" as const } },
-  { name: "Boarding Fee", type: { text: "Boarding", variant: "purple" as const }, target: "Boarding students", amount: "$520", freq: "Per term", status: { text: "Active", variant: "green" as const } },
-  { name: "PTA Levy", type: { text: "Ad-hoc", variant: "orange" as const }, target: "All students", amount: "$30", freq: "One-time", status: { text: "Active", variant: "green" as const } },
-  { name: "Lab Fee — Science", type: { text: "Ad-hoc", variant: "orange" as const }, target: "SS Science classes", amount: "$45", freq: "Per term", status: { text: "Draft", variant: "muted" as const } },
+const classOptions = [
+  "All Students",
+  "JSS1 A",
+  "JSS1 B",
+  "JSS2 A",
+  "JSS2 B",
+  "JSS3 A",
+  "JSS3 B",
+  "SS1 Science",
+  "SS1 Art",
+  "SS1 Business",
+  "SS2 Science",
+  "SS2 Art",
+  "SS2 Business",
+  "SS3 Science",
+  "SS3 Art",
+  "SS3 Business",
+  "Boarding Students Only",
+  "Day Students Only",
 ];
 
-const payments = [
-  { student: "Chidi Eze", term: "Term 3", total: "$420", paid: "$420", status: { text: "Clear", variant: "green" as const }, actions: "View" },
-  { student: "Amara Okafor", term: "Term 3", total: "$420", paid: "$300", status: { text: "Partial", variant: "orange" as const }, actions: "View" },
-  { student: "Grace Lim", term: "Term 3", total: "$120", paid: "$0", status: { text: "Overdue", variant: "red" as const }, actions: "View" },
+const initialFees = [
+  { id: 1, name: "Tuition — SS1 Science", type: "Tuition", typeVariant: "blue" as const, target: "SS1 Science", amount: "₦420", freq: "Per term", notes: "" },
+  { id: 2, name: "Tuition — JSS1 A", type: "Tuition", typeVariant: "blue" as const, target: "JSS1 A", amount: "₦380", freq: "Per term", notes: "" },
+  { id: 3, name: "Boarding Fee", type: "Boarding", typeVariant: "purple" as const, target: "Boarding Students Only", amount: "₦520", freq: "Per term", notes: "" },
+  { id: 4, name: "PTA Levy", type: "Ad-hoc", typeVariant: "orange" as const, target: "All Students", amount: "₦30", freq: "One-time", notes: "" },
+  { id: 5, name: "Lab Fee — Science", type: "Ad-hoc", typeVariant: "orange" as const, target: "SS2 Science", amount: "₦45", freq: "Per term", notes: "" },
 ];
 
-const feeColumns = [
-  { key: "name", label: "FEE", width: "140px" },
-  { key: "type", label: "TYPE", width: "90px" },
-  { key: "target", label: "APPLIES TO", width: "200px" },
-  { key: "amount", label: "AMOUNT", width: "90px" },
-  { key: "freq", label: "FREQUENCY", width: "100px" },
-  { key: "status", label: "STATUS", width: "90px" },
+const initialPayments = [
+  { id: 1, student: "Chidi Eze", term: "Term 3", total: 420, paid: 420, status: "Clear", statusVariant: "green" as const },
+  { id: 2, student: "Amara Okafor", term: "Term 3", total: 420, paid: 300, status: "Partial", statusVariant: "orange" as const },
+  { id: 3, student: "Grace Lim", term: "Term 3", total: 120, paid: 0, status: "Overdue", statusVariant: "red" as const },
 ];
 
-const paymentColumns = [
-  { key: "student", label: "STUDENT", width: "140px" },
-  { key: "term", label: "TERM", width: "90px" },
-  { key: "total", label: "TOTAL", width: "90px" },
-  { key: "paid", label: "PAID", width: "90px" },
-  { key: "status", label: "STATUS", width: "90px" },
-  { key: "actions", label: "ACTIONS", width: "70px", align: "right" as const },
-];
+function computePaymentStatus(paid: number, total: number): { text: string; variant: "green" | "orange" | "red" } {
+  if (paid >= total) return { text: "Clear", variant: "green" };
+  if (paid > 0) return { text: "Partial", variant: "orange" };
+  return { text: "Overdue", variant: "red" };
+}
 
-const classTuition = [
-  { cls: "JSS1 (A, B)", amount: "$380" },
-  { cls: "JSS2 (A, B)", amount: "$400" },
-  { cls: "JSS3 (A, B)", amount: "$400" },
-  { cls: "SS1", amount: "$420" },
-  { cls: "SS2", amount: "$440" },
-  { cls: "SS3", amount: "$440" },
-];
-
-function ClassTuitionTable() {
+function FeeTable({ data, onRowClick }: { data: typeof initialFees; onRowClick: (item: typeof initialFees[number]) => void }) {
+  const headers = ["FEE", "TYPE", "APPLIES TO", "AMOUNT", "FREQUENCY"];
   return (
-    <Card className="divide-y divide-border-light">
-      {classTuition.map((c) => (
-        <div key={c.cls} className="flex items-center justify-between px-5 py-4">
-          <p className="text-sm font-medium text-text-dark">{c.cls}</p>
-          <p className="text-sm text-text-muted">{c.amount} / term</p>
-        </div>
-      ))}
+    <Card className="overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-border-light">
+              {headers.map((h) => (
+                <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((f) => (
+              <tr
+                key={f.id}
+                onClick={() => onRowClick(f)}
+                className="border-b border-border-light last:border-0 hover:bg-surface/50 transition-colors cursor-pointer"
+              >
+                <td className="px-4 py-3 text-sm font-medium text-text-dark">{f.name}</td>
+                <td className="px-4 py-3"><Badge variant={f.typeVariant}>{f.type}</Badge></td>
+                <td className="px-4 py-3 text-sm text-text-muted">{f.target}</td>
+                <td className="px-4 py-3 text-sm text-text-dark">{f.amount}</td>
+                <td className="px-4 py-3 text-sm text-text-muted">{f.freq}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+}
+
+function PaymentTable({ data, onRowClick }: { data: typeof initialPayments; onRowClick: (item: typeof initialPayments[number]) => void }) {
+  const headers = ["STUDENT", "TERM", "TOTAL", "PAID", "STATUS", ""];
+  return (
+    <Card className="overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-border-light">
+              {headers.map((h) => (
+                <th key={h} className={`px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider ${h === "" ? "text-right" : "text-left"}`}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((p) => (
+              <tr
+                key={p.id}
+                onClick={() => onRowClick(p)}
+                className="border-b border-border-light last:border-0 hover:bg-surface/50 transition-colors cursor-pointer"
+              >
+                <td className="px-4 py-3 text-sm font-medium text-text-dark">{p.student}</td>
+                <td className="px-4 py-3 text-sm text-text-muted">{p.term}</td>
+                <td className="px-4 py-3 text-sm text-text-dark">₦{p.total}</td>
+                <td className="px-4 py-3 text-sm text-text-dark">₦{p.paid}</td>
+                <td className="px-4 py-3"><Badge variant={p.statusVariant}>{p.status}</Badge></td>
+                <td className="px-4 py-3 text-right"><Button variant="ghost" size="sm">View</Button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </Card>
   );
 }
 
 export default function FinancePage() {
+  const [fees, setFees] = useState(initialFees);
+  const [payments, setPayments] = useState(initialPayments);
+
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [feeOpen, setFeeOpen] = useState(false);
+
+  const [selectedFee, setSelectedFee] = useState<typeof initialFees[number] | null>(null);
+  const [feeModalOpen, setFeeModalOpen] = useState(false);
+  const [feeEditing, setFeeEditing] = useState(false);
+  const [feeForm, setFeeForm] = useState({ name: "", type: "", target: "", amount: "", freq: "" });
+
+  const [selectedPayment, setSelectedPayment] = useState<typeof initialPayments[number] | null>(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [paymentPaid, setPaymentPaid] = useState("");
+
+  function handleFeeRowClick(fee: typeof initialFees[number]) {
+    setSelectedFee(fee);
+    setFeeForm({ name: fee.name, type: fee.type, target: fee.target, amount: fee.amount.replace("₦", ""), freq: fee.freq });
+    setFeeEditing(false);
+    setFeeModalOpen(true);
+  }
+
+  function handleFeeSave() {
+    if (!selectedFee) return;
+    const amountNum = parseFloat(feeForm.amount);
+    const newAmount = isNaN(amountNum) ? selectedFee.amount : `₦${amountNum}`;
+    setFees((prev) =>
+      prev.map((f) =>
+        f.id === selectedFee.id
+          ? { ...f, name: feeForm.name, type: feeForm.type, target: feeForm.target, amount: newAmount, freq: feeForm.freq }
+          : f
+      )
+    );
+    setFeeEditing(false);
+    setFeeModalOpen(false);
+  }
+
+  function handlePaymentRowClick(p: typeof initialPayments[number]) {
+    setSelectedPayment(p);
+    setPaymentPaid(String(p.paid));
+    setPaymentModalOpen(true);
+  }
+
+  function handlePaymentSave() {
+    if (!selectedPayment) return;
+    const num = parseFloat(paymentPaid);
+    if (isNaN(num)) return;
+    const clamped = Math.min(num, selectedPayment.total);
+    const newStatus = computePaymentStatus(clamped, selectedPayment.total);
+    setPayments((prev) =>
+      prev.map((p) =>
+        p.id === selectedPayment.id
+          ? { ...p, paid: clamped, status: newStatus.text, statusVariant: newStatus.variant }
+          : p
+      )
+    );
+    setPaymentModalOpen(false);
+  }
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -106,17 +217,7 @@ export default function FinancePage() {
                 <p className="text-xs text-text-muted">
                   Configure fees and target who they apply to. Tuition can differ per class, and new / ad-hoc fees can be added and attached to all students, specific classes, or boarding/day students only.
                 </p>
-                <DataTable columns={feeColumns} data={fees} />
-              </div>
-            ),
-          },
-          {
-            id: "classTuition",
-            label: "Class Tuition",
-            content: (
-              <div className="space-y-4">
-                <p className="text-xs text-text-muted">Base tuition per class. These amounts are applied when the applicable tuition fee is billed.</p>
-                <ClassTuitionTable />
+                <FeeTable data={fees} onRowClick={handleFeeRowClick} />
               </div>
             ),
           },
@@ -131,7 +232,7 @@ export default function FinancePage() {
                     <Select options={[{ label: "All Statuses", value: "all" }]} placeholder="All Statuses" />
                   </div>
                 </Card>
-                <DataTable columns={paymentColumns} data={payments} />
+                <PaymentTable data={payments} onRowClick={handlePaymentRowClick} />
               </div>
             ),
           },
@@ -182,8 +283,7 @@ export default function FinancePage() {
             <TextInput placeholder="e.g. Tuition, Boarding, Lab Fee" />
           </Field>
           <SelectField label="Fee Type" required placeholder="Select type" options={["Tuition", "Boarding", "Ad-hoc", "PTA", "Exam"]} />
-          <SelectField label="Applies To" required placeholder="Select audience" options={["All Students", "Specific Class / Classes", "Boarding Students Only", "Day Students Only"]} />
-          <SelectField label="Class (if applying to a class)" placeholder="Select class" options={["JSS1 A", "JSS1 B", "JSS2 B", "SS1 Science", "SS1 Art", "SS1 Business", "SS2", "SS3"]} />
+          <SelectField label="Applies To" required placeholder="Select audience" options={classOptions} />
           <Field label="Amount" required>
             <TextInput type="number" placeholder="0.00" />
           </Field>
@@ -210,6 +310,110 @@ export default function FinancePage() {
             <TextArea rows={2} placeholder="Optional notes about this fee" />
           </Field>
         </div>
+      </Modal>
+
+      <Modal
+        open={feeModalOpen}
+        onClose={() => { setFeeModalOpen(false); setFeeEditing(false); }}
+        title={feeEditing ? "Edit Fee" : "Fee Details"}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => { setFeeModalOpen(false); setFeeEditing(false); }}>Cancel</Button>
+            {feeEditing ? (
+              <Button onClick={handleFeeSave}>Save Changes</Button>
+            ) : (
+              <Button onClick={() => setFeeEditing(true)}>Edit</Button>
+            )}
+          </>
+        }
+      >
+        {selectedFee && (
+          <div className="flex flex-col gap-4">
+            <Field label="Fee Name">
+              <TextInput
+                value={feeForm.name}
+                onChange={(e) => setFeeForm((p) => ({ ...p, name: e.target.value }))}
+                disabled={!feeEditing}
+              />
+            </Field>
+            <SelectField
+              label="Fee Type"
+              placeholder="Select type"
+              options={["Tuition", "Boarding", "Ad-hoc", "PTA", "Exam"]}
+              value={feeForm.type}
+              onChange={(e) => setFeeForm((p) => ({ ...p, type: e.target.value }))}
+              disabled={!feeEditing}
+            />
+            <SelectField
+              label="Applies To"
+              placeholder="Select class"
+              options={classOptions}
+              value={selectedFee.target}
+              onChange={(e) => setFeeForm((p) => ({ ...p, target: e.target.value }))}
+              disabled={!feeEditing}
+            />
+            <Field label="Amount">
+              <TextInput
+                type="number"
+                value={feeForm.amount}
+                onChange={(e) => setFeeForm((p) => ({ ...p, amount: e.target.value }))}
+                disabled={!feeEditing}
+              />
+            </Field>
+            <SelectField
+              label="Frequency"
+              placeholder="Select frequency"
+              options={["Per term", "One-time", "Per session", "Monthly"]}
+              value={feeForm.freq}
+              onChange={(e) => setFeeForm((p) => ({ ...p, freq: e.target.value }))}
+              disabled={!feeEditing}
+            />
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        title="Payment Details"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setPaymentModalOpen(false)}>Cancel</Button>
+            <Button onClick={handlePaymentSave}>Save Changes</Button>
+          </>
+        }
+      >
+        {selectedPayment && (
+          <div className="flex flex-col gap-4">
+            <Field label="Student">
+              <TextInput value={selectedPayment.student} disabled />
+            </Field>
+            <Field label="Term">
+              <TextInput value={selectedPayment.term} disabled />
+            </Field>
+            <Field label="Total">
+              <TextInput value={`₦${selectedPayment.total}`} disabled />
+            </Field>
+            <Field label="Paid Amount (₦)" required>
+              <TextInput
+                type="number"
+                value={paymentPaid}
+                onChange={(e) => setPaymentPaid(e.target.value)}
+              />
+            </Field>
+            <Field label="Balance">
+              <TextInput
+                value={`₦${Math.max(0, selectedPayment.total - parseFloat(paymentPaid || "0"))}`}
+                disabled
+              />
+            </Field>
+            <Field label="Status">
+              <Badge variant={computePaymentStatus(parseFloat(paymentPaid || "0"), selectedPayment.total).variant}>
+                {computePaymentStatus(parseFloat(paymentPaid || "0"), selectedPayment.total).text}
+              </Badge>
+            </Field>
+          </div>
+        )}
       </Modal>
     </div>
   );

@@ -30,6 +30,7 @@ export interface SubjectNote {
   subject: string;
   module: string;
   title: string;
+  subtopics?: { title: string; body: string }[];
   content: string;
   assignment?: string;
   date: string;

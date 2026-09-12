@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { KpiCard } from "@/components/ui/kpi-card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
@@ -21,11 +21,11 @@ const kpis = [
 ];
 
 const data = [
-  { survey: "Platform Satisfaction Q3", audience: "All Users", status: { text: "Active", variant: "green" as const }, responses: "1,240", rate: "68.2%", created: "Jul 1, 2026", closes: "Jul 31, 2026" },
-  { survey: "Feature Priority Survey", audience: "Org Admins", status: { text: "Active", variant: "green" as const }, responses: "420", rate: "72.1%", created: "Jul 10, 2026", closes: "Aug 10, 2026" },
-  { survey: "Onboarding Feedback", audience: "New Users", status: { text: "Active", variant: "green" as const }, responses: "890", rate: "54.3%", created: "Jun 15, 2026", closes: "Ongoing" },
-  { survey: "Support Quality Review", audience: "Ticket Submitters", status: { text: "Closed", variant: "muted" as const }, responses: "340", rate: "61.8%", created: "May 1, 2026", closes: "May 31, 2026" },
-  { survey: "NPS Assessment", audience: "All Users", status: { text: "Draft", variant: "muted" as const }, responses: "—", rate: "—", created: "Jul 25, 2026", closes: "Aug 25, 2026" },
+  { id: "platform-satisfaction-q3", survey: "Platform Satisfaction Q3", audience: "All Users", status: { text: "Active", variant: "green" as const }, responses: "1,240", rate: "68.2%", created: "Jul 1, 2026", closes: "Jul 31, 2026" },
+  { id: "feature-priority", survey: "Feature Priority Survey", audience: "Org Admins", status: { text: "Active", variant: "green" as const }, responses: "420", rate: "72.1%", created: "Jul 10, 2026", closes: "Aug 10, 2026" },
+  { id: "onboarding-feedback", survey: "Onboarding Feedback", audience: "New Users", status: { text: "Active", variant: "green" as const }, responses: "890", rate: "54.3%", created: "Jun 15, 2026", closes: "Ongoing" },
+  { id: "support-quality-review", survey: "Support Quality Review", audience: "Ticket Submitters", status: { text: "Closed", variant: "muted" as const }, responses: "340", rate: "61.8%", created: "May 1, 2026", closes: "May 31, 2026" },
+  { id: "nps-assessment", survey: "NPS Assessment", audience: "All Users", status: { text: "Draft", variant: "muted" as const }, responses: "—", rate: "—", created: "Jul 25, 2026", closes: "Aug 25, 2026" },
 ];
 
 const columns = [
@@ -41,16 +41,33 @@ const columns = [
 
 export default function SurveysPage() {
   const [open, setOpen] = useState(false);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedSurvey, setSelectedSurvey] = useState<typeof data[number] | null>(null);
   const [audience, setAudience] = useState("");
+  const [surveys, setSurveys] = useState(data);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const dataWithActions = data.map((row) => ({
+  const q = search.trim().toLowerCase();
+  const filtered = surveys.filter((row) => {
+    const matchesSearch =
+      !q ||
+      row.survey.toLowerCase().includes(q) ||
+      row.audience.toLowerCase().includes(q) ||
+      row.status.text.toLowerCase().includes(q);
+    const matchesStatus = !statusFilter || row.status.text === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const dataWithActions = filtered.map((row) => ({
     ...row,
+    survey: (
+      <Link href={`/surveys/${row.id}`} className="text-sm font-medium text-text-dark hover:text-primary transition-colors">
+        {row.survey}
+      </Link>
+    ),
     actions: (
-      <Button variant="ghost" size="sm" onClick={() => { setSelectedSurvey(row); setDetailOpen(true); }}>
-        View
-      </Button>
+      <Link href={`/surveys/${row.id}`}>
+        <Button variant="ghost" size="sm">View</Button>
+      </Link>
     ),
   }));
 
@@ -70,8 +87,8 @@ export default function SurveysPage() {
 
       <Card className="p-4 mb-6">
         <div className="flex items-center gap-3">
-          <Select options={[{ label: "All Statuses", value: "all" }]} placeholder="All Statuses" />
-          <SearchInput placeholder="Search surveys..." className="flex-1" />
+          <Select options={[{ label: "Active", value: "Active" }, { label: "Draft", value: "Draft" }, { label: "Closed", value: "Closed" }]} placeholder="All Statuses" value={statusFilter} onChange={setStatusFilter} />
+          <SearchInput placeholder="Search surveys..." className="flex-1" value={search} onChange={setSearch} />
         </div>
       </Card>
 
@@ -104,50 +121,6 @@ export default function SurveysPage() {
             <TextInput type="date" />
           </Field>
         </div>
-      </Modal>
-
-      <Modal
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        title="Survey Details"
-        footer={
-          <Button variant="secondary" onClick={() => setDetailOpen(false)}>Close</Button>
-        }
-      >
-        {selectedSurvey && (
-          <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="block text-xs font-medium text-text-muted mb-1">Survey</span>
-                <span className="text-sm text-text-dark">{selectedSurvey.survey}</span>
-              </div>
-              <div>
-                <span className="block text-xs font-medium text-text-muted mb-1">Status</span>
-                <Badge variant={selectedSurvey.status.variant}>{selectedSurvey.status.text}</Badge>
-              </div>
-              <div>
-                <span className="block text-xs font-medium text-text-muted mb-1">Audience</span>
-                <span className="text-sm text-text-dark">{selectedSurvey.audience}</span>
-              </div>
-              <div>
-                <span className="block text-xs font-medium text-text-muted mb-1">Responses</span>
-                <span className="text-sm text-text-dark">{selectedSurvey.responses}</span>
-              </div>
-              <div>
-                <span className="block text-xs font-medium text-text-muted mb-1">Response Rate</span>
-                <span className="text-sm text-text-dark">{selectedSurvey.rate}</span>
-              </div>
-              <div>
-                <span className="block text-xs font-medium text-text-muted mb-1">Created</span>
-                <span className="text-sm text-text-dark">{selectedSurvey.created}</span>
-              </div>
-              <div>
-                <span className="block text-xs font-medium text-text-muted mb-1">Closes</span>
-                <span className="text-sm text-text-dark">{selectedSurvey.closes}</span>
-              </div>
-            </div>
-          </div>
-        )}
       </Modal>
     </div>
   );

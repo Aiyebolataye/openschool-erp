@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
-import { Modal } from "@/components/ui/modal";
-import { Field, TextInput, TextArea, SelectField } from "@/components/ui/form";
-import { useState } from "react";
+import Link from "next/link";
 import { useDiscCases } from "@/lib/app-store";
 
 const kpis = [
@@ -47,7 +45,6 @@ function List({ rows }: { rows: { title: string; sub: string; status?: { text: s
 }
 
 export default function StudentWelfarePage() {
-  const [createOpen, setCreateOpen] = useState(false);
   const [cases, setCases] = useDiscCases();
   const openCases = cases.filter((c) => c.status === "open");
 
@@ -60,7 +57,6 @@ export default function StudentWelfarePage() {
       <PageHeader
         title="Student Welfare"
         subtitle="Student success, discipline, and portfolio management"
-        actions={<Button onClick={() => setCreateOpen(true)}>+ Create</Button>}
       />
 
       <div className="grid grid-cols-4 gap-4 mb-6">
@@ -80,11 +76,11 @@ export default function StudentWelfarePage() {
             {cases.length === 0 && <p className="px-5 py-8 text-center text-sm text-text-muted">No disciplinary cases on record.</p>}
             {cases.map((c) => (
               <div key={c.id} className="flex items-center justify-between px-5 py-4">
-                <div>
-                  <p className="text-sm font-medium text-text-dark">{c.reason}</p>
+                <Link href={`/institution/student-success/case/${c.id}`} className="flex-1 min-w-0 group">
+                  <p className="text-sm font-medium text-text-dark group-hover:text-primary">{c.reason}</p>
                   <p className="text-xs text-text-muted mt-0.5">{c.studentName} · {c.className} · {c.date}</p>
                   {c.resolvedBy && <p className="text-xs text-green mt-0.5">Resolved by {c.resolvedBy}</p>}
-                </div>
+                </Link>
                 <div className="flex items-center gap-3">
                   <Badge variant={c.status === "open" ? "orange" : "green"}>{c.status === "open" ? "Open" : "Resolved"}</Badge>
                   {c.status === "open" && (
@@ -97,32 +93,6 @@ export default function StudentWelfarePage() {
           { id: "portfolio", label: "Portfolios", content: <List rows={portfolio.map((p) => ({ title: p.student, sub: `${p.detail} · ${p.date}` }))} /> },
         ]}
       />
-
-      <Modal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        title="Create Student Success Record"
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button onClick={() => setCreateOpen(false)}>Save</Button>
-          </>
-        }
-      >
-        <div className="flex flex-col gap-4">
-          <SelectField label="Student" required placeholder="Select student" options={["Amara Okafor", "Tom Wallace", "Grace Lim", "Chidi Eze", "Daniel Smith"]} />
-          <SelectField label="Type" required placeholder="Select type" options={["Intervention", "Portfolio Item", "Certificate", "Discipline Record"]} />
-          <Field label="Title" required>
-            <TextInput placeholder="Enter record title" />
-          </Field>
-          <Field label="Details">
-            <TextArea rows={4} placeholder="Additional details" />
-          </Field>
-          <Field label="Date" required>
-            <TextInput type="date" />
-          </Field>
-        </div>
-      </Modal>
     </div>
   );
 }

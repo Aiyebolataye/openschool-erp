@@ -26,11 +26,13 @@ const navigation = [
   { label: "Settings", href: "/settings" },
 ];
 
+export { navigation };
+
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-60 bg-primary-deep shrink-0 overflow-y-auto">
+    <nav className="hidden lg:flex w-60 bg-primary-deep shrink-0 overflow-y-auto">
       <div className="py-4">
         {navigation.map((item) => {
           const isActive = pathname === item.href;

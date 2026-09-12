@@ -22,23 +22,34 @@ const kpis = [
 ];
 
 const initialData = [
-  { org: "Greenfield Academy", slug: "greenfield-academy", domain: "greenfield.edu", adminName: "Jane Doe", adminEmail: "admin@greenfield.edu", phone: "+1 (555) 100-2000", status: { text: "Active", variant: "green" as const }, institutions: "5", students: "12,450", plan: { text: "Enterprise", variant: "blue" as const }, created: "Jan 15, 2025", address: "123 Oak Street, Springfield, IL 62701" },
-  { org: "Metropolitan Schools", slug: "metropolitan-schools", domain: "metropolitan-schools.edu", adminName: "Robert Chen", adminEmail: "admin@metropolitan-schools.edu", phone: "+1 (555) 200-3000", status: { text: "Active", variant: "green" as const }, institutions: "3", students: "8,230", plan: { text: "Pro", variant: "blue" as const }, created: "Mar 22, 2025", address: "456 Main Ave, Chicago, IL 60601" },
-  { org: "Coastal Education Trust", slug: "coastal-ed-trust", domain: "coastaledtrust.edu", adminName: "Maria Santos", adminEmail: "admin@coastal-ed-trust.edu", phone: "+1 (555) 300-4000", status: { text: "Trial", variant: "orange" as const }, institutions: "2", students: "3,100", plan: { text: "Starter", variant: "muted" as const }, created: "Jun 8, 2025", address: "789 Beach Blvd, Miami, FL 33101" },
-  { org: "Pinnacle Learning Center", slug: "pinnacle-learning", domain: "pinnaclelearning.edu", adminName: "David Park", adminEmail: "admin@pinnacle-learning.edu", phone: "+1 (555) 400-5000", status: { text: "Suspended", variant: "red" as const }, institutions: "1", students: "1,840", plan: { text: "Basic", variant: "muted" as const }, created: "Nov 3, 2024", address: "321 Summit Dr, Denver, CO 80201" },
-  { org: "Sunrise International", slug: "sunrise-intl", domain: "sunriseintl.edu", adminName: "Aiko Tanaka", adminEmail: "admin@sunrise-intl.edu", phone: "+1 (555) 500-6000", status: { text: "Active", variant: "green" as const }, institutions: "8", students: "24,600", plan: { text: "Enterprise", variant: "blue" as const }, created: "Aug 19, 2025", address: "555 Global Way, San Francisco, CA 94102" },
+  { org: "Greenfield Academy", slug: "greenfield-academy", domain: "greenfield.edu", adminName: "Jane Doe", adminEmail: "admin@greenfield.edu", phone: "+1 (555) 100-2000", status: { text: "Active", variant: "green" as const }, institutions: "5", students: "12,450", created: "Jan 15, 2025", address: "123 Oak Street, Springfield, IL 62701" },
+  { org: "Metropolitan Schools", slug: "metropolitan-schools", domain: "metropolitan-schools.edu", adminName: "Robert Chen", adminEmail: "admin@metropolitan-schools.edu", phone: "+1 (555) 200-3000", status: { text: "Active", variant: "green" as const }, institutions: "3", students: "8,230", created: "Mar 22, 2025", address: "456 Main Ave, Chicago, IL 60601" },
+  { org: "Coastal Education Trust", slug: "coastal-ed-trust", domain: "coastaledtrust.edu", adminName: "Maria Santos", adminEmail: "admin@coastal-ed-trust.edu", phone: "+1 (555) 300-4000", status: { text: "Trial", variant: "orange" as const }, institutions: "2", students: "3,100", created: "Jun 8, 2025", address: "789 Beach Blvd, Miami, FL 33101" },
+  { org: "Pinnacle Learning Center", slug: "pinnacle-learning", domain: "pinnaclelearning.edu", adminName: "David Park", adminEmail: "admin@pinnacle-learning.edu", phone: "+1 (555) 400-5000", status: { text: "Suspended", variant: "red" as const }, institutions: "1", students: "1,840", created: "Nov 3, 2024", address: "321 Summit Dr, Denver, CO 80201" },
+  { org: "Sunrise International", slug: "sunrise-intl", domain: "sunriseintl.edu", adminName: "Aiko Tanaka", adminEmail: "admin@sunrise-intl.edu", phone: "+1 (555) 500-6000", status: { text: "Active", variant: "green" as const }, institutions: "8", students: "24,600", created: "Aug 19, 2025", address: "555 Global Way, San Francisco, CA 94102" },
 ];
 
-type OrgRow = typeof initialData[number];
+type OrgRow = {
+  org: string;
+  slug: string;
+  domain: string;
+  adminName: string;
+  adminEmail: string;
+  phone: string;
+  status: { text: string; variant: "green" | "red" | "orange" };
+  institutions: string;
+  students: string;
+  created: string;
+  address: string;
+};
 
 const columns = [
   { key: "org", label: "ORGANIZATION", width: "220px" },
   { key: "status", label: "STATUS", width: "100px" },
   { key: "institutions", label: "INSTITUTIONS", width: "100px" },
   { key: "students", label: "STUDENTS", width: "100px" },
-  { key: "plan", label: "PLAN", width: "100px" },
   { key: "created", label: "CREATED", width: "120px" },
-  { key: "actions", label: "ACTIONS", width: "80px", align: "right" as const },
+  { key: "actions", label: "ACTIONS", width: "100px", align: "right" as const },
 ];
 
 function toSlug(name: string) {
@@ -63,11 +74,11 @@ function generateDomain(name: string) {
 export default function OrganizationsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [created, setCreated] = useState(false);
-  const [viewOrg, setViewOrg] = useState<OrgRow | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [planFilter, setPlanFilter] = useState("all");
   const [page, setPage] = useState(1);
+  const [orgs, setOrgs] = useState<OrgRow[]>(initialData);
+  const [confirmOrg, setConfirmOrg] = useState<OrgRow | null>(null);
 
   const [formName, setFormName] = useState("");
   const [formDomain, setFormDomain] = useState("");
@@ -78,17 +89,16 @@ export default function OrganizationsPage() {
   const adminEmail = useMemo(() => generateEmail(formName), [formName]);
 
   const filteredData = useMemo(() => {
-    return initialData.filter((row) => {
+    return orgs.filter((row) => {
       const matchesSearch =
         !search ||
         row.org.toLowerCase().includes(search.toLowerCase()) ||
         row.slug.toLowerCase().includes(search.toLowerCase()) ||
         row.adminEmail.toLowerCase().includes(search.toLowerCase());
       const matchesStatus = statusFilter === "all" || row.status.text.toLowerCase() === statusFilter;
-      const matchesPlan = planFilter === "all" || row.plan.text.toLowerCase() === planFilter;
-      return matchesSearch && matchesStatus && matchesPlan;
+      return matchesSearch && matchesStatus;
     });
-  }, [search, statusFilter, planFilter]);
+  }, [orgs, search, statusFilter]);
 
   function resetForm() {
     setFormName("");
@@ -108,69 +118,29 @@ export default function OrganizationsPage() {
     setModalOpen(false);
   }
 
-  const detailModal = viewOrg && (
-    <Modal open={!!viewOrg} onClose={() => setViewOrg(null)} title={viewOrg.org} subtitle={viewOrg.domain}>
-      <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <span className="text-xs font-medium text-text-muted">Status</span>
-            <div className="mt-1"><Badge variant={viewOrg.status.variant}>{viewOrg.status.text}</Badge></div>
-          </div>
-          <div>
-            <span className="text-xs font-medium text-text-muted">Plan</span>
-            <div className="mt-1"><Badge variant={viewOrg.plan.variant}>{viewOrg.plan.text}</Badge></div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <span className="text-xs font-medium text-text-muted">Institutions</span>
-            <p className="text-sm text-text-dark mt-1">{viewOrg.institutions}</p>
-          </div>
-          <div>
-            <span className="text-xs font-medium text-text-muted">Students</span>
-            <p className="text-sm text-text-dark mt-1">{viewOrg.students}</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <span className="text-xs font-medium text-text-muted">Admin Name</span>
-            <p className="text-sm text-text-dark mt-1">{viewOrg.adminName}</p>
-          </div>
-          <div>
-            <span className="text-xs font-medium text-text-muted">Admin Email</span>
-            <p className="text-sm text-text-dark mt-1">{viewOrg.adminEmail}</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <span className="text-xs font-medium text-text-muted">Phone</span>
-            <p className="text-sm text-text-dark mt-1">{viewOrg.phone}</p>
-          </div>
-          <div>
-            <span className="text-xs font-medium text-text-muted">Created</span>
-            <p className="text-sm text-text-dark mt-1">{viewOrg.created}</p>
-          </div>
-        </div>
-        <div>
-          <span className="text-xs font-medium text-text-muted">Address</span>
-          <p className="text-sm text-text-dark mt-1">{viewOrg.address}</p>
-        </div>
-        <div className="flex gap-2 pt-2">
-          <Button size="sm" onClick={() => setViewOrg(null)}>Close</Button>
-        </div>
-      </div>
-    </Modal>
-  );
+  function toggleSuspension() {
+    if (!confirmOrg) return;
+    const suspended = confirmOrg.status.text === "Suspended";
+    setOrgs((prev) =>
+      prev.map((o) =>
+        o.slug === confirmOrg.slug
+          ? { ...o, status: suspended ? { text: "Active", variant: "green" } : { text: "Suspended", variant: "red" } }
+          : o
+      )
+    );
+    setConfirmOrg(null);
+  }
 
   const tableData = filteredData.map((row) => ({
     ...row,
     actions: (
-      <button
-        onClick={() => setViewOrg(row)}
-        className="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-primary-light text-primary text-xs font-medium hover:bg-primary hover:text-white transition-colors"
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setConfirmOrg(row)}
       >
-        View
-      </button>
+        {row.status.text === "Suspended" ? "Activate" : "Suspend"}
+      </Button>
     ),
   }));
 
@@ -200,18 +170,6 @@ export default function OrganizationsPage() {
             value={statusFilter}
             onChange={setStatusFilter}
             placeholder="All Statuses"
-          />
-          <Select
-            options={[
-              { label: "All Plans", value: "all" },
-              { label: "Enterprise", value: "enterprise" },
-              { label: "Pro", value: "pro" },
-              { label: "Starter", value: "starter" },
-              { label: "Basic", value: "basic" },
-            ]}
-            value={planFilter}
-            onChange={setPlanFilter}
-            placeholder="All Plans"
           />
           <SearchInput placeholder="Search by name, slug, or email..." className="flex-1" value={search} onChange={setSearch} />
         </div>
@@ -298,7 +256,6 @@ export default function OrganizationsPage() {
                 </button>
               </div>
             </Field>
-            <SelectField label="Plan" required options={["Starter", "Growth", "Enterprise"]} placeholder="Select plan" value={formPlan} onChange={(e) => setFormPlan(e.target.value)} />
             <Field label="Phone">
               <TextInput type="tel" placeholder="e.g. +1 (555) 123-4567" value={formPhone} onChange={(e) => setFormPhone(e.target.value)} />
             </Field>
@@ -306,7 +263,24 @@ export default function OrganizationsPage() {
         )}
       </Modal>
 
-      {detailModal}
+      <Modal
+        open={!!confirmOrg}
+        onClose={() => setConfirmOrg(null)}
+        title={confirmOrg?.status.text === "Suspended" ? "Activate Organization" : "Suspend Organization"}
+        subtitle={confirmOrg?.org}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setConfirmOrg(null)}>Cancel</Button>
+            <Button variant={confirmOrg?.status.text === "Suspended" ? "primary" : "danger"} onClick={toggleSuspension}>
+              {confirmOrg?.status.text === "Suspended" ? "Activate" : "Suspend"}
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-text-dark">
+          Are you sure you want to {confirmOrg?.status.text === "Suspended" ? "activate" : "suspend"} <span className="font-medium">{confirmOrg?.org}</span>? This action can be reversed at any time.
+        </p>
+      </Modal>
     </div>
   );
 }

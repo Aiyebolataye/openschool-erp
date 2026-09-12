@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { Modal } from "@/components/ui/modal";
-import { Field, TextInput, SelectField } from "@/components/ui/form";
+import { SearchInput } from "@/components/ui/search-input";
 import { useState } from "react";
 
 const kpis = [
@@ -40,28 +40,23 @@ function List({ rows }: { rows: { title: string; sub: string; status: { text: st
 }
 
 export default function PrincipalStaffPage() {
-  const [addOpen, setAddOpen] = useState(false);
-  const [createdEmail, setCreatedEmail] = useState("");
-  const [showCreated, setShowCreated] = useState(false);
+  const [search, setSearch] = useState("");
+  const [viewStaff, setViewStaff] = useState<(typeof staff)[number] | null>(null);
 
-  const handleSave = () => {
-    const schoolEmail = (document.getElementById("school-email") as HTMLInputElement)?.value || "newstaff@school.com";
-    setCreatedEmail(schoolEmail);
-    setShowCreated(true);
-  };
-
-  const handleClose = () => {
-    setAddOpen(false);
-    setShowCreated(false);
-    setCreatedEmail("");
-  };
+  const q = search.trim().toLowerCase();
+  const filtered = staff.filter(
+    (s) =>
+      !q ||
+      s.name.toLowerCase().includes(q) ||
+      s.role.toLowerCase().includes(q) ||
+      s.dept.toLowerCase().includes(q)
+  );
 
   return (
     <div className="max-w-[1100px] mx-auto">
       <PageHeader
         title="Staff"
-        subtitle="Manage teaching and non-teaching staff"
-        actions={<Button onClick={() => setAddOpen(true)}>+ Add Staff</Button>}
+        subtitle="View teaching and non-teaching staff"
       />
 
       <div className="grid grid-cols-4 gap-4 mb-6">
@@ -70,59 +65,52 @@ export default function PrincipalStaffPage() {
         ))}
       </div>
 
-      <List rows={staff.map((s) => ({ title: s.name, sub: `${s.role} · ${s.dept}`, status: s.status }))} />
+      <Card className="p-4 mb-6">
+        <div className="flex items-center gap-3">
+          <SearchInput placeholder="Search by name, role, or department..." className="flex-1" value={search} onChange={setSearch} />
+        </div>
+      </Card>
+
+      <Card className="divide-y divide-border-light">
+        {filtered.map((s) => (
+          <div key={s.name} className="flex items-center justify-between px-5 py-4">
+            <div>
+              <p className="text-sm font-medium text-text-dark">{s.name}</p>
+              <p className="text-xs text-text-muted mt-0.5">{s.role} · {s.dept}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant={s.status.variant}>{s.status.text}</Badge>
+              <Button variant="ghost" size="sm" onClick={() => setViewStaff(s)}>View</Button>
+            </div>
+          </div>
+        ))}
+      </Card>
 
       <Modal
-        open={addOpen}
-        onClose={handleClose}
-        title="Add Staff"
-        footer={
-          showCreated ? (
-            <Button onClick={handleClose}>Done</Button>
-          ) : (
-            <>
-              <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-              <Button onClick={handleSave}>Save</Button>
-            </>
-          )
-        }
+        open={!!viewStaff}
+        onClose={() => setViewStaff(null)}
+        title={viewStaff ? viewStaff.name : "Staff"}
+        footer={<Button onClick={() => setViewStaff(null)}>Close</Button>}
       >
-        {showCreated ? (
+        {viewStaff && (
           <div className="flex flex-col gap-4">
-            <div className="rounded-lg bg-primary-light/60 border border-primary/30 px-4 py-4">
-              <p className="text-sm font-medium text-text-dark">
-                Account created. Login credentials sent to {createdEmail}
-              </p>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <p className="text-xs font-medium text-text-muted">Temporary Password</p>
-              <div className="rounded-md bg-primary-light/60 border border-primary/30 px-4 py-3">
-                <code className="text-sm font-semibold text-text-dark tracking-wide">TempPwd@2026</code>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-text-muted">Role</p>
+                <p className="text-sm font-medium text-text-dark">{viewStaff.role}</p>
+              </div>
+              <div>
+                <p className="text-xs text-text-muted">Department</p>
+                <p className="text-sm font-medium text-text-dark">{viewStaff.dept}</p>
+              </div>
+              <div>
+                <p className="text-xs text-text-muted">Status</p>
+                <Badge variant={viewStaff.status.variant}>{viewStaff.status.text}</Badge>
               </div>
             </div>
-            <p className="text-xs text-text-muted leading-relaxed">
-              The staff member must change this password on their first login.
+            <p className="text-xs text-text-muted rounded-lg bg-surface p-3">
+              Contact the institution administrator to update staff details.
             </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            <Field label="Full Name" required>
-              <TextInput placeholder="Enter full name" />
-            </Field>
-            <SelectField label="Role" required placeholder="Select role" options={["Teacher", "Admin", "Accounts", "Librarian", "Nurse", "Transport"]} />
-            <SelectField label="Department" required placeholder="Select department" options={["Sciences", "Arts", "Commerce", "Administration", "Medical", "Transport"]} />
-            <Field label="Personal Email" required>
-              <TextInput type="email" placeholder="personal@email.com" />
-            </Field>
-            <Field label="School Email" required>
-              <TextInput id="school-email" type="email" placeholder="name@school.com" />
-            </Field>
-            <Field label="Phone">
-              <TextInput type="tel" placeholder="+234 xxx xxx xxxx" />
-            </Field>
-            <Field label="Employment Date" required>
-              <TextInput type="date" />
-            </Field>
           </div>
         )}
       </Modal>

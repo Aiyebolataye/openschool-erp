@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs } from "@/components/ui/tabs";
-import { Field, TextInput, SelectField } from "@/components/ui/form";
+import { Field, TextInput, TextArea, SelectField } from "@/components/ui/form";
 import { uid } from "@/lib/app-store";
 import { DataTable } from "@/components/ui/data-table";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSubjectNotes, useSubjectAssignments, useSubjectAssessments, useSubjectPerformance, useDiscCases } from "@/lib/app-store";
 
 const SUBJECTS: Record<string, { name: string; dept: string; classes: string[]; teacher: string; overview: string }> = {
@@ -51,6 +51,7 @@ const students = [
 
 export default function SubjectDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const subject = SUBJECTS[id] ?? SUBJECTS["biology"];
   const scheme = SCHEME[id] ?? SCHEME["biology"];
 
@@ -61,6 +62,18 @@ export default function SubjectDetailPage() {
   const [cases] = useDiscCases();
 
   const noteByModule = new Map(notes.map((n) => [n.module, n]));
+
+  const [overview, setOverview] = useState(subject.overview);
+  const [classes, setClasses] = useState(subject.classes);
+  const [editingOverview, setEditingOverview] = useState(false);
+  const [draftOverview, setDraftOverview] = useState(subject.overview);
+  const [draftClasses, setDraftClasses] = useState(subject.classes.join(", "));
+
+  const saveOverview = () => {
+    setOverview(draftOverview.trim());
+    setClasses(draftClasses.split(",").map((c) => c.trim()).filter(Boolean));
+    setEditingOverview(false);
+  };
 
   const [perfKind, setPerfKind] = useState("Assignment");
   const [perfTitle, setPerfTitle] = useState("");
@@ -109,13 +122,33 @@ export default function SubjectDetailPage() {
             content: (
               <div className="space-y-4">
                 <Card className="p-5">
-                  <h3 className="text-sm font-semibold text-text-dark mb-2">Subject Overview</h3>
-                  <p className="text-sm text-text-dark leading-relaxed">{subject.overview}</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-text-dark">Subject Overview</h3>
+                    {!editingOverview && (
+                      <Button variant="ghost" size="sm" onClick={() => { setDraftOverview(overview); setDraftClasses(classes.join(", ")); setEditingOverview(true); }}>
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                  {editingOverview ? (
+                    <div className="space-y-3">
+                      <TextArea rows={5} value={draftOverview} onChange={(e) => setDraftOverview(e.target.value)} placeholder="Describe the course overview..." />
+                      <Field label="Classes">
+                        <TextInput value={draftClasses} onChange={(e) => setDraftClasses(e.target.value)} placeholder="e.g. SS1 Science, SS2 Science, SS3 Science" />
+                      </Field>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" onClick={saveOverview}>Save</Button>
+                        <Button size="sm" variant="secondary" onClick={() => setEditingOverview(false)}>Cancel</Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-text-dark leading-relaxed">{overview}</p>
+                  )}
                 </Card>
                 <div className="grid grid-cols-3 gap-4">
                   <Card className="p-4">
                     <p className="text-[11px] text-text-muted mb-1">Classes</p>
-                    <p className="text-sm font-semibold text-text-dark">{subject.classes.join(", ")}</p>
+                    <p className="text-sm font-semibold text-text-dark">{classes.join(", ")}</p>
                   </Card>
                   <Card className="p-4">
                     <p className="text-[11px] text-text-muted mb-1">Students Enrolled</p>
@@ -135,15 +168,16 @@ export default function SubjectDetailPage() {
             content: (
               <Card className="divide-y divide-border-light">
                 {students.map((s) => (
-                  <div key={s.id} className="flex items-center justify-between px-5 py-4">
+                  <div
+                    key={s.id}
+                    onClick={() => router.push(`/teacher/students/${s.id}`)}
+                    className="flex items-center justify-between px-5 py-4 cursor-pointer transition-colors hover:bg-surface/50"
+                  >
                     <div>
                       <p className="text-sm font-medium text-text-dark">{s.name}</p>
                       <p className="text-xs text-text-muted mt-0.5">{s.id} · {s.cls}</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Badge variant={s.status.variant as "green"}>{s.status.text}</Badge>
-                      <Link href={`/teacher/students/${s.id}`} className="text-sm font-medium text-primary hover:underline">Profile</Link>
-                    </div>
+                    <Badge variant={s.status.variant as "green"}>{s.status.text}</Badge>
                   </div>
                 ))}
               </Card>
@@ -171,6 +205,7 @@ export default function SubjectDetailPage() {
                             {note && (
                               <p className="text-xs text-primary mt-1">
                                 Note: {note.title}
+                                {note.subtopics?.length ? ` · ${note.subtopics.length} subtopics` : ""}
                                 {approved && <span className="ml-2 text-green font-medium">(Approved)</span>}
                                 {!approved && <span className="ml-2 text-orange font-medium">(Pending approval)</span>}
                               </p>

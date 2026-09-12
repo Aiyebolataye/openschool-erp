@@ -5,9 +5,10 @@ interface DataTableProps {
   columns: TableColumn[];
   data: TableRow[];
   className?: string;
+  onRowClick?: (row: TableRow, index: number) => void;
 }
 
-export function DataTable({ columns, data, className }: DataTableProps) {
+export function DataTable({ columns, data, className, onRowClick }: DataTableProps) {
   return (
     <div className={cn("bg-card rounded-xl border border-border-light overflow-hidden", className)}>
       <div className="overflow-x-auto">
@@ -31,7 +32,13 @@ export function DataTable({ columns, data, className }: DataTableProps) {
           </thead>
           <tbody>
             {data.map((row, i) => (
-              <tr key={i} className="border-b border-border-light last:border-0 hover:bg-surface/50 transition-colors">
+              <tr
+                key={i}
+                onClick={onRowClick ? () => onRowClick(row, i) : undefined}
+                className={`border-b border-border-light last:border-0 transition-colors ${
+                  onRowClick ? "cursor-pointer hover:bg-surface/50" : "hover:bg-surface/50"
+                }`}
+              >
                 {columns.map((col) => {
                   const cell = row[col.key];
                   return (

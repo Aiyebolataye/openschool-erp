@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { StatCard } from "@/components/ui/stat-card";
 import { ListCard } from "@/components/ui/list-card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,7 @@ const kpis = [
   { label: "Total Staff", value: "1,245", detail: "+42 this year", detailColor: "green" as const },
   { label: "Total Parents", value: "14,210", detail: "", detailColor: "muted" as const },
   { label: "Active Users", value: "9,840", detail: "", detailColor: "muted" as const },
-  { label: "Outstanding Fees", value: "$186K", detail: "Aggregate across org", detailColor: "orange" as const },
+  { label: "Outstanding Fees", value: "₦186K", detail: "Aggregate across org", detailColor: "orange" as const },
   { label: "Open Support Tickets", value: "14", detail: "3 urgent", detailColor: "red" as const },
 ];
 
@@ -37,7 +38,7 @@ const pendingApprovals = [
 
 const recentActivity = [
   { avatar: "A", avatarColor: "green" as const, title: "Admission recorded", subtitle: "Greenfield Academy · 45 new students · 2h ago" },
-  { avatar: "F", avatarColor: "primary" as const, title: "Payment received", subtitle: "Metropolitan Schools · $12,400 · 5h ago" },
+  { avatar: "F", avatarColor: "primary" as const, title: "Payment received", subtitle: "Metropolitan Schools · ₦12,400 · 5h ago" },
   { avatar: "R", avatarColor: "purple" as const, title: "Results published", subtitle: "Coastal Education · SS2 term results · 1d ago" },
 ];
 
@@ -47,12 +48,41 @@ const upcomingEvents = [
   { title: "Regional Directors Training", subtitle: "Aug 12 · Online" },
 ];
 
+const plans = [
+  { name: "Starter", price: "₦250,000", amount: "250,000" },
+  { name: "Growth", price: "₦450,000", amount: "450,000" },
+  { name: "Enterprise", price: "₦900,000", amount: "900,000" },
+];
+
 export default function OrgAdminDashboardPage() {
+  const router = useRouter();
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewItem, setReviewItem] = useState("");
   const [addInstitutionOpen, setAddInstitutionOpen] = useState(false);
   const [newAnnouncementOpen, setNewAnnouncementOpen] = useState(false);
   const [subscriptionOpen, setSubscriptionOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const [subPlan, setSubPlan] = useState("");
+  const [subInstitution, setSubInstitution] = useState("");
+
+  const [instName, setInstName] = useState("");
+  const [instType, setInstType] = useState("");
+  const [instAddress, setInstAddress] = useState("");
+  const [instEmail, setInstEmail] = useState("");
+  const [instPhone, setInstPhone] = useState("");
+
+  const [annTitle, setAnnTitle] = useState("");
+  const [annAudience, setAnnAudience] = useState("");
+  const [annBody, setAnnBody] = useState("");
+  const [annSchedule, setAnnSchedule] = useState("");
+
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const selectedPlan = plans.find((p) => p.name === subPlan);
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -113,8 +143,8 @@ export default function OrgAdminDashboardPage() {
           title="Institutions"
           subtitle="Health and subscription status"
           badge={<Badge variant="blue">12</Badge>}
-          headerAction={<Button variant="ghost" size="sm">View All</Button>}
-          items={institutions}
+          headerAction={<Button variant="ghost" size="sm" onClick={() => showToast("Opening full institution list…")}>View All</Button>}
+          items={institutions.map((inst) => ({ ...inst, onClick: () => router.push("/org-admin/institutions") }))}
         />
         <div className="flex flex-col gap-4">
           <ListCard
@@ -142,7 +172,7 @@ export default function OrgAdminDashboardPage() {
           />
           <ListCard
             title="Recent Institution Activity"
-            items={recentActivity}
+            items={recentActivity.map((act) => ({ ...act, onClick: () => router.push("/org-admin/institutions") }))}
           />
         </div>
       </div>
@@ -154,8 +184,8 @@ export default function OrgAdminDashboardPage() {
         footer={
           <>
             <Button variant="secondary" onClick={() => setReviewOpen(false)}>Cancel</Button>
-            <Button variant="secondary" onClick={() => setReviewOpen(false)}>Reject</Button>
-            <Button onClick={() => setReviewOpen(false)}>Approve</Button>
+            <Button variant="secondary" onClick={() => { setReviewOpen(false); showToast("Request rejected"); }}>Reject</Button>
+            <Button onClick={() => { setReviewOpen(false); showToast("Request approved"); }}>Approve</Button>
           </>
         }
       >
@@ -172,23 +202,23 @@ export default function OrgAdminDashboardPage() {
         footer={
           <>
             <Button variant="secondary" onClick={() => setAddInstitutionOpen(false)}>Cancel</Button>
-            <Button onClick={() => setAddInstitutionOpen(false)}>Add Institution</Button>
+            <Button onClick={() => { setAddInstitutionOpen(false); setInstName(""); setInstType(""); setInstAddress(""); setInstEmail(""); setInstPhone(""); showToast("Institution added"); }}>Add Institution</Button>
           </>
         }
       >
         <div className="space-y-4">
           <Field label="Institution Name" required>
-            <TextInput placeholder="e.g. Riverside School" />
+            <TextInput placeholder="e.g. Riverside School" value={instName} onChange={(e) => setInstName(e.target.value)} />
           </Field>
-          <SelectField label="Type" required placeholder="Select type" options={["Primary", "Secondary", "Mixed"]} />
+          <SelectField label="Type" required placeholder="Select type" options={["Primary", "Secondary", "Mixed"]} value={instType} onChange={(e) => setInstType(e.target.value)} />
           <Field label="Address">
-            <TextInput placeholder="e.g. 123 Main St, City" />
+            <TextInput placeholder="e.g. 123 Main St, City" value={instAddress} onChange={(e) => setInstAddress(e.target.value)} />
           </Field>
           <Field label="Admin Email">
-            <TextInput type="email" placeholder="admin@institution.edu" />
+            <TextInput type="email" placeholder="admin@institution.edu" value={instEmail} onChange={(e) => setInstEmail(e.target.value)} />
           </Field>
           <Field label="Phone">
-            <TextInput type="tel" placeholder="+1 234 567 890" />
+            <TextInput type="tel" placeholder="+1 234 567 890" value={instPhone} onChange={(e) => setInstPhone(e.target.value)} />
           </Field>
         </div>
       </Modal>
@@ -200,20 +230,20 @@ export default function OrgAdminDashboardPage() {
         footer={
           <>
             <Button variant="secondary" onClick={() => setNewAnnouncementOpen(false)}>Cancel</Button>
-            <Button onClick={() => setNewAnnouncementOpen(false)}>Create Announcement</Button>
+            <Button onClick={() => { setNewAnnouncementOpen(false); setAnnTitle(""); setAnnAudience(""); setAnnBody(""); setAnnSchedule(""); showToast("Announcement scheduled"); }}>Create Announcement</Button>
           </>
         }
       >
         <div className="space-y-4">
           <Field label="Title" required>
-            <TextInput placeholder="e.g. End of Term Staff Briefing" />
+            <TextInput placeholder="e.g. End of Term Staff Briefing" value={annTitle} onChange={(e) => setAnnTitle(e.target.value)} />
           </Field>
-          <SelectField label="Audience" required placeholder="Select audience" options={["All Staff", "Institution Admins", "Principals", "Parents", "All"]} />
+          <SelectField label="Audience" required placeholder="Select audience" options={["All Staff", "Institution Admins", "Principals", "Parents", "All"]} value={annAudience} onChange={(e) => setAnnAudience(e.target.value)} />
           <Field label="Body" required>
-            <TextArea rows={4} placeholder="Write your announcement message..." />
+            <TextArea rows={4} placeholder="Write your announcement message..." value={annBody} onChange={(e) => setAnnBody(e.target.value)} />
           </Field>
           <Field label="Schedule">
-            <TextInput placeholder="e.g. Aug 10, 2026" />
+            <TextInput placeholder="e.g. Aug 10, 2026" value={annSchedule} onChange={(e) => setAnnSchedule(e.target.value)} />
           </Field>
         </div>
       </Modal>
@@ -222,29 +252,54 @@ export default function OrgAdminDashboardPage() {
         open={subscriptionOpen}
         onClose={() => setSubscriptionOpen(false)}
         title="Add Subscription"
-        subtitle="Choose a plan for an institution under your organization"
+        subtitle="Select an annual plan for an institution under your organization"
         footer={
           <>
             <Button variant="secondary" onClick={() => setSubscriptionOpen(false)}>Cancel</Button>
-            <Button onClick={() => setSubscriptionOpen(false)}>Add Subscription</Button>
+            <Button
+              disabled={!subPlan || !subInstitution}
+              onClick={() => {
+                const inst = subInstitution;
+                setSubscriptionOpen(false);
+                setSubPlan("");
+                setSubInstitution("");
+                showToast(`Subscription activated for ${inst}`);
+              }}
+            >
+              Add Subscription
+            </Button>
           </>
         }
       >
         <div className="space-y-4">
-          <SelectField label="Institution" required placeholder="Select institution" options={["Greenfield Academy", "Metropolitan Schools", "Coastal Education Trust", "Pinnacle Learning"]} value="" onChange={() => {}} />
-          <SelectField label="Plan" required placeholder="Select plan" options={["Starter", "Growth", "Enterprise"]} value="" onChange={() => {}} />
-          <SelectField label="Billing Cycle" required placeholder="Select billing cycle" options={["Monthly", "Annual"]} value="" onChange={() => {}} />
+          <Field label="Plan" required>
+            <div className="grid grid-cols-3 gap-3">
+              {plans.map((p) => (
+                <button
+                  key={p.name}
+                  type="button"
+                  onClick={() => setSubPlan(p.name)}
+                  className={`rounded-lg border p-3 text-left transition-colors ${subPlan === p.name ? "border-primary bg-primary-light/50" : "border-border-light hover:bg-surface"}`}
+                >
+                  <p className={`text-sm font-semibold ${subPlan === p.name ? "text-primary" : "text-text-dark"}`}>{p.name}</p>
+                  <p className="text-xs text-text-dark mt-1">{p.price}</p>
+                  <p className="text-[10px] text-text-muted mt-0.5">per year</p>
+                </button>
+              ))}
+            </div>
+          </Field>
           <Field label="Amount" required>
-            <TextInput type="number" placeholder="e.g. 1200" />
+            <TextInput value={selectedPlan ? `₦${selectedPlan.amount}` : ""} placeholder="Select a plan above" readOnly />
           </Field>
-          <Field label="Start Date" required>
-            <TextInput type="date" />
-          </Field>
-          <Field label="End Date" required>
-            <TextInput type="date" />
-          </Field>
+          <SelectField label="Institution" required placeholder="Select institution" options={["Greenfield Academy", "Metropolitan Schools", "Coastal Education Trust", "Pinnacle Learning"]} value={subInstitution} onChange={(e) => setSubInstitution(e.target.value)} />
         </div>
       </Modal>
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-green text-white px-5 py-3 rounded-lg shadow-lg text-sm font-medium">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

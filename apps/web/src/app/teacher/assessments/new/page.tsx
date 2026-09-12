@@ -23,9 +23,17 @@ interface Question {
 }
 
 const TYPE_LABEL: Record<QuestionType, string> = {
-  mcq: "Multiple Choice",
+  mcq: "MCQ",
   theory: "Theory",
-  truefalse: "True / False",
+  truefalse: "True or False",
+};
+
+const TYPE_OPTIONS = ["MCQ", "Theory", "True or False"];
+
+const typeToCode = (label: string): QuestionType => {
+  if (label === "MCQ") return "mcq";
+  if (label === "Theory") return "theory";
+  return "truefalse";
 };
 
 const ASSESSMENT_TYPES = ["Test", "Assessment", "Exam"];
@@ -116,9 +124,9 @@ export default function NewAssessmentPage() {
             <div className="flex-1">
               <SelectField
                 label="Question Type"
-                value={qType}
-                onChange={(e) => setQType(e.target.value as QuestionType)}
-                options={["mcq", "theory", "truefalse"]}
+                value={TYPE_LABEL[qType]}
+                onChange={(e) => setQType(typeToCode(e.target.value))}
+                options={TYPE_OPTIONS}
                 placeholder="Select type"
               />
             </div>
@@ -129,7 +137,7 @@ export default function NewAssessmentPage() {
 
           {questions.length === 0 && (
             <div className="rounded-xl border border-dashed border-border-light p-8 text-center">
-              <p className="text-sm text-text-muted">No questions yet. Add multiple choice, theory, or true/false questions above.</p>
+              <p className="text-sm text-text-muted">No questions yet. Add MCQ, Theory, or True or False questions above.</p>
             </div>
           )}
 

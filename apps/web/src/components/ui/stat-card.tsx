@@ -4,7 +4,7 @@ export interface Stat {
   label: string;
   value: string;
   detail?: string;
-  detailColor?: "green" | "red" | "orange" | "muted" | "blue";
+  detailColor?: "green" | "red" | "orange" | "muted" | "blue" | "purple";
 }
 
 const detailColorMap = {
@@ -13,6 +13,7 @@ const detailColorMap = {
   orange: "text-orange",
   muted: "text-text-muted",
   blue: "text-primary",
+  purple: "text-purple",
 };
 
 export function StatCard({ label, value, detail, detailColor = "muted", className }: Stat & { className?: string }) {

@@ -8,6 +8,17 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Modal } from "@/components/ui/modal";
 import { Field, TextInput, SelectField } from "@/components/ui/form";
 
+interface PlanPrice {
+  name: string;
+  price: string;
+}
+
+const initialPlans: PlanPrice[] = [
+  { name: "Starter", price: "250,000" },
+  { name: "Growth", price: "450,000" },
+  { name: "Enterprise", price: "900,000" },
+];
+
 const sections = [
   {
     title: "General Settings",
@@ -45,6 +56,9 @@ const sections = [
 
 export default function PlatformConfigPage() {
   const [open, setOpen] = useState(false);
+  const [plans, setPlans] = useState<PlanPrice[]>(initialPlans);
+  const [editingPlan, setEditingPlan] = useState<PlanPrice | null>(null);
+  const [planPrice, setPlanPrice] = useState("");
   const [defaultPlan, setDefaultPlan] = useState("");
   const [enableSignups, setEnableSignups] = useState("");
   const [sessionTimeout, setSessionTimeout] = useState("");
@@ -60,6 +74,37 @@ export default function PlatformConfigPage() {
         subtitle="Platform Admin / Platform Configuration"
         actions={<Button variant="secondary" onClick={() => setOpen(true)}>Edit Configuration</Button>}
       />
+
+      <div className="flex items-center gap-3 mb-6 bg-primary-light/40 text-primary border border-primary-light rounded-xl px-4 py-3 text-sm">
+        <span className="font-medium">Note:</span>
+        <span>Plans are billed annually and tied to institutions.</span>
+      </div>
+
+      <Card className="p-5 mb-6">
+        <h3 className="text-sm font-semibold text-text-dark mb-1">Plans &amp; Pricing (Annual)</h3>
+        <p className="text-xs text-text-muted mb-4">Set the annual price for each plan. Prices apply per institution.</p>
+        <div className="grid grid-cols-3 gap-4">
+          {plans.map((plan) => (
+            <div key={plan.name} className="flex flex-col gap-3 border border-border-light rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-text-dark">{plan.name}</span>
+                <Badge variant="blue">Annual</Badge>
+              </div>
+              <p className="text-xl font-bold text-text-dark font-display">₦{plan.price}/yr</p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setEditingPlan(plan);
+                  setPlanPrice(plan.price);
+                }}
+              >
+                Edit
+              </Button>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       <div className="grid grid-cols-2 gap-4">
         {sections.map((section) => (
@@ -100,6 +145,39 @@ export default function PlatformConfigPage() {
           <SelectField label="Two-Factor Auth" required options={["Required for Admins", "Optional", "Disabled"]} placeholder="Select option" value={twoFactorAuth} onChange={(e) => setTwoFactorAuth(e.target.value)} />
           <SelectField label="IP Whitelisting" required options={["Enabled", "Disabled"]} placeholder="Select option" value={ipWhitelisting} onChange={(e) => setIpWhitelisting(e.target.value)} />
           <SelectField label="Storage Provider" required options={["AWS S3", "Google Cloud", "Azure Blob"]} placeholder="Select provider" value={storageProvider} onChange={(e) => setStorageProvider(e.target.value)} />
+        </div>
+      </Modal>
+
+      <Modal
+        open={editingPlan !== null}
+        onClose={() => setEditingPlan(null)}
+        title={`Edit ${editingPlan?.name ?? ""} Price`}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setEditingPlan(null)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                if (editingPlan) {
+                  setPlans((prev) =>
+                    prev.map((p) => (p.name === editingPlan.name ? { ...p, price: planPrice || p.price } : p))
+                  );
+                }
+                setEditingPlan(null);
+              }}
+            >
+              Save Price
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          <Field label="Plan Name">
+            <TextInput value={editingPlan?.name ?? ""} disabled />
+          </Field>
+          <Field label="Annual Price (₦)" required>
+            <TextInput type="number" placeholder="e.g. 450000" value={planPrice} onChange={(e) => setPlanPrice(e.target.value)} />
+          </Field>
+          <p className="text-xs text-text-muted">Plan price applies per institution.</p>
         </div>
       </Modal>
     </div>
