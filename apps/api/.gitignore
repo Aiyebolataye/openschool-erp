@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+*.js
+!scripts/*.mjs
+!nest-cli.json
+!package.json
