@@ -11,10 +11,12 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class TenantRateLimitGuard implements CanActivate {
   private readonly redis: Redis;
-  private readonly windowMs = 1000;
-  private readonly maxRequests = 100;
+  private readonly windowMs: number;
+  private readonly maxRequests: number;
 
   constructor(config: ConfigService) {
+    this.windowMs = config.get<number>('throttle.ttl', 1000);
+    this.maxRequests = config.get<number>('throttle.limit', 100);
     this.redis = new Redis({
       host: config.get('redis.host', 'localhost'),
       port: config.get('redis.port', 6379),

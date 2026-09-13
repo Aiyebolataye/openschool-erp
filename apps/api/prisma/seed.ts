@@ -1,9 +1,26 @@
 import { PrismaClient, UserRole, Gender, EnrollmentStatus, InvoiceStatus, PaymentStatus, PaymentMethod, NotificationStatus, AttendanceStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { createHash } from 'crypto';
 
 const prisma = new PrismaClient();
 
 const DEFAULT_PASSWORD = 'Password@123';
+export const SEED_INVITATION_EMAIL = 'candidate@greenfield.edu.ng';
+export const SEED_INVITATION_RAW_TOKEN = 'seed-invitation-token-0001';
+export const SEED_ONBOARDING_EMAIL = 'provisioned.teacher@greenfield.edu.ng';
+export const SEED_ONBOARDING_RAW_TOKEN = 'seed-onboarding-token-0001';
+
+function hashToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
+
+function internalEmail(firstName: string, lastName: string, institutionCode: string): string {
+  const part = (value: string) =>
+    value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
+  const local = `${part(firstName).slice(0, 10)}.${part(lastName).slice(0, 10)}`;
+  const domain = part(institutionCode).slice(0, 24) || 'school';
+  return `${local}@${domain}.local`;
+}
 
 async function main() {
   console.log('Seeding database...');
@@ -140,6 +157,8 @@ async function main() {
     prisma.role.create({ data: { name: 'HR_OFFICER', description: 'HR/Payroll officer', isSystem: true } }),
     prisma.role.create({ data: { name: 'STUDENT_MANAGEMENT_OFFICER', description: 'Student management officer', isSystem: true } }),
     prisma.role.create({ data: { name: 'BURSAR', description: 'Bursar', isSystem: true } }),
+    prisma.role.create({ data: { name: 'ORG_ADMIN', description: 'Organization administrator', isSystem: true } }),
+    prisma.role.create({ data: { name: 'PRIMARY_INSTITUTION_ADMIN', description: 'Primary institution administrator', isSystem: true } }),
   ]);
 
   await prisma.userRoleAssignment.createMany({
@@ -156,6 +175,87 @@ async function main() {
       { userId: users[9].id, roleId: roles[12].id },
       { userId: users[10].id, roleId: roles[5].id },
     ],
+  });
+
+  // B1: mark seeded accounts as email-verified (D-02: privileged roles require verification)
+  await Promise.all(
+    users.map((u) =>
+      prisma.user.update({
+        where: { id: u.id },
+        data: { emailVerifiedAt: new Date() },
+      }),
+    ),
+  );
+
+  // B1: seed identity:invitation + identity:onboarding permissions for admin roles
+  await prisma.permission.createMany({
+    data: [
+      ...['list', 'read', 'create', 'revoke'].map((action) => ({
+        resource: 'identity:invitation',
+        action,
+        description: `${action} invitations`,
+      })),
+      {
+        resource: 'identity:onboarding',
+        action: 'create',
+        description: 'issue onboarding links',
+      },
+      // B5 (P1.7): read-only audit access for admin roles
+      {
+        resource: 'identity:audit_log',
+        action: 'list',
+        description: 'list audit log entries',
+      },
+      {
+        resource: 'identity:audit_log',
+        action: 'read',
+        description: 'read audit log entries',
+      },
+    ],
+  });
+
+  const invitationPermissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:invitation' },
+  });
+  const onboardingPermissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:onboarding' },
+  });
+  const auditLogPermissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:audit_log' },
+  });
+
+  const adminRoleIds = roles
+    .filter((r) =>
+      ['PLATFORM_ADMIN', 'ORG_ADMIN', 'PRIMARY_INSTITUTION_ADMIN', 'INSTITUTION_ADMIN', 'PRINCIPAL'].includes(
+        r.name,
+      ),
+    )
+    .map((r) => r.id);
+
+  await prisma.rolePermission.createMany({
+    data: [
+      ...invitationPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      ...onboardingPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      ...auditLogPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+    ],
+  });
+
+  // B1: seed one pending invitation (TEACHER) for demo/e2e acceptance
+  await prisma.userInvitation.create({
+    data: {
+      tenantId: tenant.id,
+      email: SEED_INVITATION_EMAIL,
+      token: hashToken(SEED_INVITATION_RAW_TOKEN),
+      roleId: roles[3].id,
+      status: 'PENDING',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
   });
 
   // Staff
@@ -179,6 +279,7 @@ async function main() {
         institutionId: institution.id,
         userId: s.user.id,
         staffNumber: s.staffNumber,
+        internalEmail: internalEmail(s.firstName, s.lastName, institution.code),
         firstName: s.firstName,
         lastName: s.lastName,
         gender: s.gender,
@@ -190,6 +291,52 @@ async function main() {
     });
     createdStaff.push(staff);
   }
+
+  // B1: identity memberships — an organization-level membership for every
+  // seeded account and an institution-level membership for institution-holding
+  // identities (backfill; memberships carry the identity context used by login
+  // resolution and authorization).
+  await prisma.organizationMembership.createMany({
+    data: users.map((u) => ({ tenantId: tenant.id, userId: u.id, status: 'ACTIVE' })),
+  });
+
+  await prisma.institutionMembership.createMany({
+    data: createdStaff.flatMap((s) =>
+      s.userId
+        ? [{ tenantId: tenant.id, institutionId: s.institutionId, userId: s.userId, status: 'ACTIVE' }]
+        : [],
+    ),
+  });
+
+  // B1: provisioned teacher account + six-month onboarding link (single-use,
+  // hashed at rest). The claim is the initial email verification + activation.
+  const teacherRole = roles.find((r) => r.name === 'TEACHER');
+  const provisionedTeacher = await prisma.user.create({
+    data: {
+      tenantId: tenant.id,
+      email: SEED_ONBOARDING_EMAIL,
+      passwordHash,
+      firstName: 'Provisioned',
+      lastName: 'Teacher',
+      status: 'ACTIVE',
+      ...(teacherRole ? { roles: { create: { roleId: teacherRole.id } } } : {}),
+    },
+  });
+
+  await prisma.organizationMembership.create({
+    data: { tenantId: tenant.id, userId: provisionedTeacher.id, status: 'ACTIVE' },
+  });
+
+  await prisma.onboardingLink.create({
+    data: {
+      tenantId: tenant.id,
+      userId: provisionedTeacher.id,
+      email: SEED_ONBOARDING_EMAIL,
+      token: hashToken(SEED_ONBOARDING_RAW_TOKEN),
+      status: 'PENDING',
+      expiresAt: new Date(Date.now() + 182 * 24 * 60 * 60 * 1000),
+    },
+  });
 
   // Students
   const parentUser = users[10];
@@ -222,6 +369,7 @@ async function main() {
         tenantId: tenant.id,
         institutionId: institution.id,
         studentNumber: s.studentNumber,
+        internalEmail: internalEmail(s.firstName, s.lastName, institution.code),
         firstName: s.firstName,
         lastName: s.lastName,
         gender: s.gender,
@@ -365,6 +513,31 @@ async function main() {
       status: 'BORROWED',
     },
   });
+
+  // B5 (P1.7, decision D-B5-3): DB-level append-only immutability for audit
+  // logs. `db push --force-reset` (e2e/test global-setup) rebuilds tables from
+  // the schema without triggers, so this re-applies the invariant after any
+  // reset. Idempotent; the same trigger also ships in the B5 migration.
+  // Prisma 6 rejects multi-statement raw SQL in a single prepared statement,
+  // so each DDL command ships as its own single-statement call.
+  await prisma.$executeRawUnsafe(`
+    CREATE OR REPLACE FUNCTION audit_logs_prevent_mutation()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      RAISE EXCEPTION 'audit_logs are append-only; updates and deletes are forbidden';
+    END;
+    $$ LANGUAGE plpgsql;
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    DROP TRIGGER IF EXISTS audit_logs_append_only ON audit_logs;
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TRIGGER audit_logs_append_only
+    BEFORE UPDATE OR DELETE ON audit_logs
+    FOR EACH ROW EXECUTE FUNCTION audit_logs_prevent_mutation();
+  `);
 
   console.log('Seed completed successfully.');
   console.log(`Tenant: ${tenant.name} (${tenant.slug})`);

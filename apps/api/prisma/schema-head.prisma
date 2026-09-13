@@ -121,3 +121,29 @@ enum TicketStatus {
   RESOLVED
   CLOSED
 }
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+enum MembershipStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum OnboardingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  EXPIRED
+  REVOKED
+}
+
+enum InstitutionStatus {
+  ACTIVE
+  DEACTIVATED
+}

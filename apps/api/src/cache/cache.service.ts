@@ -58,6 +58,40 @@ export class CacheService implements OnModuleDestroy {
     }
   }
 
+  /**
+   * B4 session index helpers. Redis is a cache/index only — session validity is
+   * always decided against the authoritative database row. These set helpers
+   * index which access-token cache keys belong to a session/user so that
+   * revocation and logout can invalidate the right keys.
+   */
+  async sadd(key: string, member: string, ttlSeconds?: number): Promise<void> {
+    try {
+      await this.redis.sadd(key, member);
+      if (ttlSeconds) {
+        await this.redis.expire(key, ttlSeconds);
+      }
+    } catch {
+      this.logger.warn(`Cache SADD failed for key: ${key}`);
+    }
+  }
+
+  async srem(key: string, member: string): Promise<void> {
+    try {
+      await this.redis.srem(key, member);
+    } catch {
+      this.logger.warn(`Cache SREM failed for key: ${key}`);
+    }
+  }
+
+  async smembers(key: string): Promise<string[]> {
+    try {
+      return await this.redis.smembers(key);
+    } catch {
+      this.logger.warn(`Cache SMEMBERS failed for key: ${key}`);
+      return [];
+    }
+  }
+
   async invalidateByTags(tags: string[]) {
     try {
       const pipeline = this.redis.pipeline();

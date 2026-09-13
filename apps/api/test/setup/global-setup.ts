@@ -1,8 +1,9 @@
 import { execSync } from 'child_process';
 import * as path from 'path';
+import Redis from 'ioredis';
 import { ensureTestEnv } from './env';
 
-export default function globalSetup(): void {
+export default async function globalSetup(): Promise<void> {
   ensureTestEnv();
 
   const apiDir = path.join(__dirname, '..', '..');
@@ -18,6 +19,19 @@ export default function globalSetup(): void {
     cwd: apiDir,
     stdio: 'inherit',
   });
+
+  // Determinism: the login throttle and session Redis indexes live in a shared
+  // Redis instance whose fixed-window buckets have long TTLs. Flush everything
+  // so re-runs against the same Redis never inherit stale throttle counts (or
+  // stale session indexes) from an earlier run.
+  console.log('[global-setup] Flushing Redis test data...');
+  const redis = new Redis({
+    host: process.env.REDIS_HOST || 'localhost',
+    port: Number(process.env.REDIS_PORT || 6379),
+    password: process.env.REDIS_PASSWORD || undefined,
+  });
+  await redis.flushall();
+  redis.disconnect();
 
   console.log('[global-setup] Test database ready.');
 }

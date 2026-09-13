@@ -26,8 +26,10 @@ direct `process.env` reads outside of `configuration.ts` are disallowed by proje
 | `REDIS_HOST` | `localhost` | Redis host |
 | `REDIS_PORT` | `6379` | Redis port |
 | `REDIS_PASSWORD` | *(empty)* | Redis auth password |
-| `JWT_EXPIRES_IN` | `1h` | Access-token lifetime |
+| `JWT_EXPIRES_IN` | `15m` | Access-token lifetime (D-04: config-driven 15-minute default) |
 | `JWT_REFRESH_EXPIRES_IN` | `7d` | Refresh-token / session lifetime |
+| `SESSION_MAX_SESSIONS` | `5` | Max concurrent active sessions per user per tenant (B4 / P1.4, ADR-013) |
+| `SESSION_CLEANUP_INTERVAL_MINUTES` | `60` | Interval between expired-session sweeps by the `session-cleanup` worker (B4 / P1.4, spec I-22) |
 
 ---
 
@@ -50,8 +52,12 @@ These variables are read from `.env` and used by the typed config object, but th
 | `SMTP_PASS` | 9 | Email auth |
 | `SMS_PROVIDER` | 9 | SMS gateway (e.g., Africastalking, Termii) |
 | `SMS_API_KEY` | 9 | SMS gateway auth |
-| `THROTTLE_TTL` | 3 — Reliability | *(not consumed yet: `TenantRateLimitGuard` is global but uses hardcoded windowMs 1000 / maxRequests 100)* |
-| `THROTTLE_LIMIT` | 3 | *(not consumed yet; see above)* |
+| `THROTTLE_TTL` | 3 — Reliability | Fixed-window length (ms) shared by the pre-auth login throttle and the tenant rate-limit guard. Default `1000` |
+| `THROTTLE_LIMIT` | 3 | IP-based pre-auth login limit per window and tenant rate-limit ceiling. Default `100` |
+| `THROTTLE_IDENTIFIER_LIMIT` | 1 — Auth hardening | IP + normalized-identifier pre-auth login limit per window. Default `20` |
+| `LOGIN_MAX_ATTEMPTS` | 1 — Auth hardening | Recent failures before temporary account lock (D-09; spec P-16 default `5`, allowed `3–10`) |
+| `LOGIN_FAILURE_WINDOW_MINUTES` | 1 | Failure-counting window used for lockout evaluation. Default `15` |
+| `LOGIN_LOCK_MINUTES` | 1 | Temporary lock duration after the threshold is reached. Default `15` |
 | `CORS_ORIGINS` | 1 — Auth hardening | Allowed origins (currently `cors: true` globally) |
 
 ---

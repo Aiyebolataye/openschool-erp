@@ -70,9 +70,14 @@ Rules:
 
 ### Response envelope
 
-- List responses always use the pagination envelope (see §4).
-- Detail responses return the resource directly (no envelope) — the envelope is **not** used for single resources.
-- Errors never return business logic in a 2xx body; use proper status codes.
+**LOCKED (D-07, `PHASE_1_SCOPE_REVIEW.md` §5) — amended 2026-09-12.** The frozen Identity/API specification is authoritative over earlier wording in this document.
+
+- Success (single resource): `{ "success": true, "data": { ... } }`
+- Success (list): `{ "success": true, "data": { "items": [...], "total": <number>, "page": <number>, "limit": <number> } }` — flat pagination fields inside `data`, exactly per frozen spec §10.1 (see §4)
+- Error: `{ "success": false, "error": { "code", "message", "details?", "correlationId?", "timestamp?" } }` — see §7
+- HTTP status codes remain transport-level. Errors never return business logic in a 2xx body.
+- `success: true` responses are always 2xx.
+- **`data.meta` is NOT part of the canonical API contract** unless the frozen specification is formally amended.
 
 ### Idempotency
 
@@ -93,19 +98,22 @@ Rules:
 
 Standard list query DTO: `page` (default 1), `pageSize`/`limit` (default 20, max 100), `q` (optional search), `sort`/`order`.
 
-Standard response:
+Standard response (dressed in the D-07 canonical envelope; response field names follow the frozen spec: `total`, `page`, `limit`):
 
 ```json
 {
-  "items": [],
-  "meta": {
+  "success": true,
+  "data": {
+    "items": [],
+    "total": 0,
     "page": 1,
-    "pageSize": 20,
-    "totalItems": 0,
-    "totalPages": 0
+    "limit": 20
   }
 }
 ```
+
+- `total` = total matching rows (not the page slice); `page`/`limit` echo the request.
+- No `data.meta` wrapper is emitted; use the flat fields above per the frozen spec.
 
 ---
 
@@ -129,15 +137,17 @@ Standard response:
 
 ## 7. Error handling
 
-- Global `AllExceptionsFilter` returns a stable envelope:
+- Global `AllExceptionsFilter` returns the canonical error envelope (LOCKED — D-07; HTTP status code remains transport-level):
 
 ```json
 {
-  "statusCode": 409,
-  "code": "DUPLICATE_RECORD",
-  "message": "A student with this admission number already exists",
-  "correlationId": "e70a...",
-  "timestamp": "2026-09-08T10:00:00Z"
+  "success": false,
+  "error": {
+    "code": "DUPLICATE_RECORD",
+    "message": "A student with this admission number already exists",
+    "correlationId": "e70a...",
+    "timestamp": "2026-09-08T10:00:00Z"
+  }
 }
 ```
 

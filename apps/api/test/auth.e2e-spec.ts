@@ -24,16 +24,17 @@ describe('Auth (e2e)', () => {
         })
         .expect(200);
 
-      expect(res.body.accessToken).toBeDefined();
-      expect(res.body.refreshToken).toBeDefined();
-      expect(res.body.expiresIn).toBe(3600);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.accessToken).toBeDefined();
+      expect(res.body.data.refreshToken).toBeDefined();
+      expect(res.body.data.expiresIn).toBe(900);
 
-      expect(res.body.user).toMatchObject({
+      expect(res.body.data.user).toMatchObject({
         email: 'principal@greenfield.edu.ng',
         tenantSlug: 'greenfield-academy',
       });
-      expect(res.body.user.roles).toContain('PRINCIPAL');
-      expect(res.body.user.permissions).toBeInstanceOf(Array);
+      expect(res.body.data.user.roles).toContain('PRINCIPAL');
+      expect(res.body.data.user.permissions).toBeInstanceOf(Array);
     });
 
     it('rejects wrong password with 401', async () => {
@@ -75,8 +76,9 @@ describe('Auth (e2e)', () => {
         .send({ refreshToken })
         .expect(200);
 
-      expect(res.body.accessToken).toBeDefined();
-      expect(res.body.expiresIn).toBe(3600);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.accessToken).toBeDefined();
+      expect(res.body.data.expiresIn).toBe(900);
     });
   });
 
@@ -89,9 +91,10 @@ describe('Auth (e2e)', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
 
-      expect(res.body.sub).toBeDefined();
-      expect(res.body.tenantId).toBeDefined();
-      expect(res.body.roles).toContain('PARENT');
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.sub).toBeDefined();
+      expect(res.body.data.tenantId).toBeDefined();
+      expect(res.body.data.roles).toContain('PARENT');
     });
 
     it('rejects a request without a token with 401', async () => {

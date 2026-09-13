@@ -17,16 +17,24 @@ model Tenant {
   users          User[]
   featureFlags   FeatureFlag[]
   auditLogs      AuditLog[]
+  userInvitations UserInvitation[]
+  passwordPolicies PasswordPolicy[]
+  organizationMemberships OrganizationMembership[]
+  institutionMemberships  InstitutionMembership[]
+  onboardingLinks         OnboardingLink[]
+  loginAttempts           LoginAttempt[]
+  sessions                Session[]
 
   @@index([slug])
   @@map("tenants")
 }
 
 model Institution {
-  id              String   @id @default(uuid()) @db.Uuid
-  tenantId        String   @db.Uuid
+  id              String            @id @default(uuid()) @db.Uuid
+  tenantId        String            @db.Uuid
   name            String
   code            String
+  status          InstitutionStatus @default(ACTIVE)
   logoUrl         String?
   address         String?
   city            String?
@@ -53,6 +61,8 @@ model Institution {
   feeStructures   FeeStructure[]
   transportRoutes TransportRoute[]
   hostels         Hostel[]
+  memberships     InstitutionMembership[]
+  onboardingLinks OnboardingLink[]
 
   @@unique([tenantId, code])
   @@index([tenantId])

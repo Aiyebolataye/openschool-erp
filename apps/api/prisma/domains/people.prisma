@@ -4,6 +4,7 @@ model Student {
   institutionId   String          @db.Uuid
   userId          String?         @unique @db.Uuid
   studentNumber   String
+  internalEmail   String?
   firstName       String
   lastName        String
   middleName      String?
@@ -34,7 +35,8 @@ model Student {
   transportAllocations TransportAllocation[]
   assignments     Assignment[]
 
-  @@unique([tenantId, studentNumber])
+  @@unique([tenantId, institutionId, studentNumber])
+  @@unique([tenantId, institutionId, internalEmail])
   @@index([tenantId, institutionId])
   @@index([tenantId, status])
   @@map("students")
@@ -46,6 +48,7 @@ model Staff {
   institutionId   String          @db.Uuid
   userId          String?         @unique @db.Uuid
   staffNumber     String
+  internalEmail   String?
   firstName       String
   lastName        String
   middleName      String?
@@ -73,7 +76,8 @@ model Staff {
   maintenanceRequests MaintenanceRequest[]
   leaveRequests   LeaveRequest[]
 
-  @@unique([tenantId, staffNumber])
+  @@unique([tenantId, institutionId, staffNumber])
+  @@unique([tenantId, institutionId, internalEmail])
   @@index([tenantId, institutionId])
   @@map("staff")
 }

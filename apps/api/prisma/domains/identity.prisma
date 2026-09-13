@@ -1,23 +1,32 @@
 model User {
-  id            String        @id @default(uuid()) @db.Uuid
-  tenantId      String        @db.Uuid
-  email         String
-  passwordHash  String
-  firstName     String
-  lastName      String
-  phone         String?
-  avatarUrl     String?
-  status        UserRoleStatus @default(ACTIVE)
-  lastLoginAt   DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  deletedAt     DateTime?
+  id              String        @id @default(uuid()) @db.Uuid
+  tenantId        String        @db.Uuid
+  email           String
+  passwordHash    String
+  firstName       String
+  lastName        String
+  phone           String?
+  avatarUrl       String?
+  status          UserRoleStatus @default(ACTIVE)
+  emailVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+  lockedUntil     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
 
-  tenant        Tenant        @relation(fields: [tenantId], references: [id])
-  roles         UserRoleAssignment[]
-  staff         Staff?
-  student       Student?
-  parent        Guardian?
+  tenant                 Tenant                   @relation(fields: [tenantId], references: [id])
+  roles                  UserRoleAssignment[]
+  staff                  Staff?
+  student                Student?
+  parent                 Guardian?
+  emailVerificationTokens EmailVerificationToken[]
+  passwordHistory        PasswordHistory[]
+  organizationMemberships OrganizationMembership[]
+  institutionMemberships  InstitutionMembership[]
+  onboardingLinks        OnboardingLink[]
+  loginAttempts          LoginAttempt[]
+  sessions               Session[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -35,6 +44,7 @@ model Role {
 
   users         UserRoleAssignment[]
   permissions   RolePermission[]
+  invitations   UserInvitation[]
 
   @@unique([name])
   @@map("roles")
@@ -80,15 +90,193 @@ model RolePermission {
 }
 
 model Session {
-  id            String   @id @default(uuid()) @db.Uuid
-  userId        String   @db.Uuid
-  token         String   @unique
-  userAgent     String?
-  ipAddress     String?
-  expiresAt     DateTime
-  createdAt     DateTime @default(now())
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @db.Uuid
+  userId           String   @db.Uuid
+  // Legacy column retained for migration compatibility. B4 session bookkeeping
+  // never writes it; new rows leave it NULL (kept NULL-able + UNIQUE, unused).
+  token            String?  @unique
+  accessTokenHash  String   @db.VarChar(64)
+  refreshTokenHash String   @unique @db.VarChar(64)
+  isActive         Boolean  @default(true)
+  lastActivityAt   DateTime
+  deviceInfo       Json?
+  ipAddress        String?
+  userAgent        String?
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant              Tenant                 @relation(fields: [tenantId], references: [id])
+  user                User                   @relation(fields: [userId], references: [id])
+  refreshTokenHistory RefreshTokenHistory[]
+
+  @@unique([tenantId, userId, accessTokenHash])
+  @@index([userId])
+  @@index([isActive, expiresAt])
+  @@map("sessions")
+}
+
+/// Append-only ledger of consumed refresh-token hashes (D-05 reuse detection).
+/// Only hashes are stored — never raw refresh tokens. Current tokens live in
+/// `sessions.refreshTokenHash`; a token handed in that matches neither that
+/// column nor this ledger is simply invalid (never-issued).
+model RefreshTokenHistory {
+  id               String   @id @default(uuid()) @db.Uuid
+  sessionId        String   @db.Uuid
+  refreshTokenHash String   @unique @db.VarChar(64)
+  createdAt        DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, refreshTokenHash])
+  @@index([sessionId])
+  @@map("refresh_token_history")
+}
+
+model UserInvitation {
+  id         String           @id @default(uuid()) @db.Uuid
+  tenantId   String           @db.Uuid
+  email      String           @db.VarChar(255)
+  token      String           @db.VarChar(255)
+  roleId     String?          @db.Uuid
+  status     InvitationStatus @default(PENDING)
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  deletedAt  DateTime?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  role   Role?  @relation(fields: [roleId], references: [id])
+
+  @@unique([tenantId, email, token])
+  @@index([tenantId, status])
+  @@map("user_invitations")
+}
+
+model EmailVerificationToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  token      String    @db.VarChar(255)
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
-  @@index([token])
-  @@map("sessions")
+  @@map("email_verification_tokens")
+}
+
+// Append-only authentication attempt record (D-09). Never updated or deleted;
+// a successful login only clears the ACTIVE failure window/lock state.
+model LoginAttempt {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  email         String   @db.VarChar(255)
+  userId        String?  @db.Uuid
+  success       Boolean
+  failureReason String?  @db.VarChar(255)
+  ipAddress     String?  @map("ip_address") @db.VarChar(45)
+  userAgent     String?  @map("user_agent")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, email, createdAt])
+  @@map("login_attempts")
+}
+
+model PasswordPolicy {
+  id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @db.Uuid
+  minLength         Int      @default(8)
+  requireUppercase  Boolean  @default(true)
+  requireLowercase  Boolean  @default(true)
+  requireDigit      Boolean  @default(true)
+  requireSpecialChar Boolean @default(true)
+  historyCount      Int      @default(12)
+  expiryDays        Int      @default(90)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId])
+  @@map("password_policies")
+}
+
+model PasswordHistory {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("password_history")
+}
+
+model OrganizationMembership {
+  id        String           @id @default(uuid()) @db.Uuid
+  tenantId  String           @db.Uuid
+  userId    String           @db.Uuid
+  status    MembershipStatus @default(ACTIVE)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  deletedAt DateTime?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([tenantId, userId])
+  @@index([tenantId, status])
+  @@map("organization_memberships")
+}
+
+model InstitutionMembership {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  institutionId String           @db.Uuid
+  userId        String           @db.Uuid
+  status        MembershipStatus @default(ACTIVE)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+
+  @@unique([tenantId, institutionId, userId])
+  @@index([tenantId, institutionId, status])
+  @@index([userId])
+  @@map("institution_memberships")
+}
+
+model OnboardingLink {
+  id            String          @id @default(uuid()) @db.Uuid
+  tenantId      String          @db.Uuid
+  userId        String          @db.Uuid
+  institutionId String?         @db.Uuid
+  email         String          @db.VarChar(255)
+  token         String          @db.VarChar(255)
+  status        OnboardingStatus @default(PENDING)
+  expiresAt     DateTime
+  acceptedAt    DateTime?
+  confirmedAt   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+  institution Institution? @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, userId, token])
+  @@index([userId])
+  @@map("onboarding_links")
 }
