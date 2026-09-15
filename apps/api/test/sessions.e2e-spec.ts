@@ -36,10 +36,18 @@ let app: INestApplication;
 /** Create a fresh, ordinary (non-privileged) user in the seed tenant. */
 async function freshUser(prisma: PrismaService, label = 'b4'): Promise<string> {
   const tenant = await prisma.tenant.findUnique({ where: { slug: SLUG } });
+  const teacher = await prisma.role.findUnique({ where: { name: 'TEACHER' } });
   const email = unique(label);
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
   await prisma.user.create({
-    data: { tenantId: tenant!.id, email, passwordHash, firstName: 'B4', lastName: 'Test' },
+    data: {
+      tenantId: tenant!.id,
+      email,
+      passwordHash,
+      firstName: 'B4',
+      lastName: 'Test',
+      roles: { create: { tenantId: tenant!.id, roleId: teacher!.id } },
+    },
   });
   return email;
 }

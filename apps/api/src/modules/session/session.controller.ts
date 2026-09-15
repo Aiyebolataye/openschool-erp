@@ -12,6 +12,10 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '../../common/decorators/user.decorator';
+import { PermissionGuard } from '../../common/guards/permission.guard';
+import { Permissions } from '../../common/decorators/permissions.decorator';
+import { ObjectScope } from '../../common/decorators/object-scope.decorator';
+import { ObjectScopeGuard } from '../../common/guards/object-scope.guard';
 import { SessionService } from './session.service';
 
 /**
@@ -19,15 +23,22 @@ import { SessionService } from './session.service';
  * scoped to the authenticated caller's own sessions within their tenant: a
  * caller can never list or revoke another user's (or another tenant's)
  * sessions. No token hashes or refresh/access tokens are ever returned.
+ *
+ * RBAC-2 (P2.2): each endpoint enforces the frozen `identity:session`
+ * permission rows (seeded by RBAC-1) via PermissionGuard. Permissions are
+ * resolved server-side from role assignments in the trusted JWT strategy
+ * (never supplied or overridden by request input).
  */
 @ApiTags('sessions')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), PermissionGuard, ObjectScopeGuard)
 @Controller('sessions')
 export class SessionController {
   constructor(private readonly sessions: SessionService) {}
 
   @Get()
+  @Permissions('identity:session:list')
+  @ObjectScope({ type: 'self', model: 'session' })
   @ApiOperation({ summary: 'List the caller\'s sessions across devices' })
   @ApiResponse({ status: 200, description: 'List of the caller\'s own sessions' })
   async list(
@@ -39,6 +50,8 @@ export class SessionController {
   }
 
   @Delete(':id')
+  @Permissions('identity:session:revoke')
+  @ObjectScope({ type: 'self', model: 'session' })
   @ApiOperation({ summary: 'Revoke one of the caller\'s own sessions' })
   @ApiResponse({ status: 200, description: 'Session revoked' })
   @ApiResponse({ status: 404, description: 'Session not found or not owned by caller' })
@@ -55,6 +68,8 @@ export class SessionController {
   }
 
   @Delete()
+  @Permissions('identity:session:revoke_all')
+  @ObjectScope({ type: 'self', model: 'session' })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Log out the caller from every device (this tenant)' })
   @ApiResponse({ status: 200, description: 'All of the caller\'s sessions revoked' })

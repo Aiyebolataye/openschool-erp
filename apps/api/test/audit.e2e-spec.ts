@@ -159,7 +159,7 @@ describe('Audit log persistence + read-only API (P1.7 / D-B5-2/3/4)', () => {
         lastName: 'Auditor',
         status: 'ACTIVE',
         emailVerifiedAt: new Date(),
-        roles: { create: { roleId: institutionAdmin.id } },
+        roles: { create: { tenantId: other.id, roleId: institutionAdmin.id } },
       },
     });
     await prisma.organizationMembership.create({

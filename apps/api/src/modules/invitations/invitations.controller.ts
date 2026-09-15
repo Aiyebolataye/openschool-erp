@@ -15,6 +15,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../common/decorators/user.decorator';
 import { PermissionGuard } from '../../common/guards/permission.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
+import { ObjectScope } from '../../common/decorators/object-scope.decorator';
+import { ObjectScopeGuard } from '../../common/guards/object-scope.guard';
 import { InvitationsService } from './invitations.service';
 import {
   AcceptInvitationDto,
@@ -24,12 +26,13 @@ import {
 
 @ApiTags('invitations')
 @Controller('invitations')
-@UseGuards(AuthGuard('jwt'), PermissionGuard)
+@UseGuards(AuthGuard('jwt'), PermissionGuard, ObjectScopeGuard)
 export class InvitationsController {
   constructor(private readonly invitations: InvitationsService) {}
 
   @Get()
   @Permissions('identity:invitation:list')
+  @ObjectScope({ type: 'tenant', model: 'userInvitation' })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List invitations for the current tenant' })
   list(@CurrentUser('tenantId') tenantId: string, @Query() query: ListInvitationsQueryDto) {
@@ -38,6 +41,7 @@ export class InvitationsController {
 
   @Get(':id')
   @Permissions('identity:invitation:read')
+  @ObjectScope({ type: 'tenant', model: 'userInvitation' })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a single invitation' })
   findOne(@CurrentUser('tenantId') tenantId: string, @Param('id') id: string) {
@@ -46,6 +50,7 @@ export class InvitationsController {
 
   @Post()
   @Permissions('identity:invitation:create')
+  @ObjectScope({ type: 'tenant', model: 'userInvitation' })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create an invitation' })
   create(@CurrentUser('tenantId') tenantId: string, @Body() dto: CreateInvitationDto) {
@@ -54,6 +59,7 @@ export class InvitationsController {
 
   @Post(':id/resend')
   @Permissions('identity:invitation:create')
+  @ObjectScope({ type: 'tenant', model: 'userInvitation' })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Resend an invitation (regenerates the token)' })
   resend(@CurrentUser('tenantId') tenantId: string, @Param('id') id: string) {
@@ -62,6 +68,7 @@ export class InvitationsController {
 
   @Delete(':id')
   @Permissions('identity:invitation:revoke')
+  @ObjectScope({ type: 'tenant', model: 'userInvitation' })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Revoke an invitation' })
   revoke(@CurrentUser('tenantId') tenantId: string, @Param('id') id: string) {

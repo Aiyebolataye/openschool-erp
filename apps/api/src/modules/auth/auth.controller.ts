@@ -5,6 +5,8 @@ import { LoginThrottleGuard } from './login-throttle.guard';
 import { TenantedLoginDto, RefreshDto, RegisterDto, VerifyEmailDto } from './dto/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '../../common/decorators/user.decorator';
+import { ObjectScope } from '../../common/decorators/object-scope.decorator';
+import { ObjectScopeGuard } from '../../common/guards/object-scope.guard';
 import { Request } from 'express';
 
 @ApiTags('auth')
@@ -13,7 +15,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('me')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), ObjectScopeGuard)
+  @ObjectScope({ type: 'authOnly' })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get the currently authenticated user' })
   getMe(@CurrentUser() user: Record<string, unknown>) {
@@ -50,7 +53,8 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), ObjectScopeGuard)
+  @ObjectScope({ type: 'self', model: 'session' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Log out the current session (revoke this device)' })
@@ -76,7 +80,8 @@ export class AuthController {
   }
 
   @Post('email/verification-request')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), ObjectScopeGuard)
+  @ObjectScope({ type: 'authOnly' })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Request an email verification token for the current user' })
   async requestVerification(@CurrentUser('sub') userId: string) {

@@ -161,19 +161,23 @@ async function main() {
     prisma.role.create({ data: { name: 'PRIMARY_INSTITUTION_ADMIN', description: 'Primary institution administrator', isSystem: true } }),
   ]);
 
+  // RBAC-3 (P2.3, Option 2): `user_roles` is tenant-scoped —
+  // `UserRoleAssignment` carries `tenantId NOT NULL` with
+  // `@@unique([tenantId, userId, roleId])`. Every seeded assignment therefore
+  // binds the role within the Greenfield tenant context.
   await prisma.userRoleAssignment.createMany({
     data: [
-      { userId: users[0].id, roleId: roles[0].id },
-      { userId: users[1].id, roleId: roles[2].id },
-      { userId: users[2].id, roleId: roles[3].id },
-      { userId: users[3].id, roleId: roles[6].id },
-      { userId: users[4].id, roleId: roles[7].id },
-      { userId: users[5].id, roleId: roles[8].id },
-      { userId: users[6].id, roleId: roles[9].id },
-      { userId: users[7].id, roleId: roles[10].id },
-      { userId: users[8].id, roleId: roles[11].id },
-      { userId: users[9].id, roleId: roles[12].id },
-      { userId: users[10].id, roleId: roles[5].id },
+      { tenantId: tenant.id, userId: users[0].id, roleId: roles[0].id },
+      { tenantId: tenant.id, userId: users[1].id, roleId: roles[2].id },
+      { tenantId: tenant.id, userId: users[2].id, roleId: roles[3].id },
+      { tenantId: tenant.id, userId: users[3].id, roleId: roles[6].id },
+      { tenantId: tenant.id, userId: users[4].id, roleId: roles[7].id },
+      { tenantId: tenant.id, userId: users[5].id, roleId: roles[8].id },
+      { tenantId: tenant.id, userId: users[6].id, roleId: roles[9].id },
+      { tenantId: tenant.id, userId: users[7].id, roleId: roles[10].id },
+      { tenantId: tenant.id, userId: users[8].id, roleId: roles[11].id },
+      { tenantId: tenant.id, userId: users[9].id, roleId: roles[12].id },
+      { tenantId: tenant.id, userId: users[10].id, roleId: roles[5].id },
     ],
   });
 
@@ -214,6 +218,72 @@ async function main() {
     ],
   });
 
+  // B4 (RBAC-1 / P2.1): register the complete frozen identity permission catalogue.
+  // Rows below mirror the authoritative endpoint -> permission matrix verbatim from the
+  // frozen spec (engineering/Identity & Access Engineering.md, section 10 - API Catalogue).
+  // Two-layer model per ADR-002: Resources live on Permission; Permission Groups bundle
+  // them for API-key scoping.
+  await prisma.permission.createMany({
+    data: [
+      // identity:user
+      ...['list', 'read', 'create', 'update', 'delete'].map((action) => ({
+        resource: 'identity:user',
+        action,
+        description: `${action} users`,
+      })),
+      {
+        resource: 'identity:user',
+        action: 'assign',
+        description: 'assign users to roles',
+      },
+      // identity:role
+      ...['list', 'read', 'create', 'update', 'delete'].map((action) => ({
+        resource: 'identity:role',
+        action,
+        description: `${action} roles`,
+      })),
+      {
+        resource: 'identity:role',
+        action: 'assign',
+        description: 'assign roles to users',
+      },
+      // identity:permission
+      ...['list', 'read', 'create'].map((action) => ({
+        resource: 'identity:permission',
+        action,
+        description: `${action} permissions`,
+      })),
+      // identity:permission_group (two-layer model ADR-002)
+      ...['list', 'read', 'create', 'update', 'delete'].map((action) => ({
+        resource: 'identity:permission_group',
+        action,
+        description: `${action} permission groups`,
+      })),
+      {
+        resource: 'identity:permission_group',
+        action: 'assign',
+        description: 'assign permissions to groups',
+      },
+      // identity:delegation
+      ...['list', 'read', 'create', 'cancel'].map((action) => ({
+        resource: 'identity:delegation',
+        action,
+        description: `${action} delegations`,
+      })),
+      // identity:session
+      ...['list', 'read', 'revoke'].map((action) => ({
+        resource: 'identity:session',
+        action,
+        description: `${action} sessions`,
+      })),
+      {
+        resource: 'identity:session',
+        action: 'revoke_all',
+        description: 'revoke all sessions',
+      },
+    ],
+  });
+
   const invitationPermissionRows = await prisma.permission.findMany({
     where: { resource: 'identity:invitation' },
   });
@@ -223,6 +293,24 @@ async function main() {
   const auditLogPermissionRows = await prisma.permission.findMany({
     where: { resource: 'identity:audit_log' },
   });
+  const userPermissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:user' },
+  });
+  const rolePermissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:role' },
+  });
+  const permissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:permission' },
+  });
+  const permissionGroupPermissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:permission_group' },
+  });
+  const delegationPermissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:delegation' },
+  });
+  const sessionPermissionRows = await prisma.permission.findMany({
+    where: { resource: 'identity:session' },
+  });
 
   const adminRoleIds = roles
     .filter((r) =>
@@ -231,6 +319,15 @@ async function main() {
       ),
     )
     .map((r) => r.id);
+
+  // RBAC-4 (P2.5): `identity:session` is a *self-scoped* resource. Every
+  // authenticated identity may list and revoke its own sessions
+  // (spec §9.8 / D-05); the ObjectScopeGuard enforces the self boundary so a
+  // grant can never touch another user's (or another tenant's) sessions.
+  // The grant is therefore universal across seeded roles — broadening the
+  // RBAC-1 admin-only grant is the object-level scope consequence, not a
+  // permission-model change.
+  const allRoleIds = roles.map((r) => r.id);
 
   await prisma.rolePermission.createMany({
     data: [
@@ -242,6 +339,24 @@ async function main() {
       ),
       ...auditLogPermissionRows.flatMap((p) =>
         adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      ...userPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      ...rolePermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      ...permissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      ...permissionGroupPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      ...delegationPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      ...sessionPermissionRows.flatMap((p) =>
+        allRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
       ),
     ],
   });
@@ -319,7 +434,7 @@ async function main() {
       firstName: 'Provisioned',
       lastName: 'Teacher',
       status: 'ACTIVE',
-      ...(teacherRole ? { roles: { create: { roleId: teacherRole.id } } } : {}),
+      ...(teacherRole ? { roles: { create: { tenantId: tenant.id, roleId: teacherRole.id } } } : {}),
     },
   });
 
