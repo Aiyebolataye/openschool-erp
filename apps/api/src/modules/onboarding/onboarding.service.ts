@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   Logger,
@@ -56,7 +57,11 @@ export class OnboardingService {
    * account (replacement semantics). Admin flows are explicit (not subject to
    * the public enumeration rules), so unknown accounts surface as 404.
    */
-  async create(tenantId: string, dto: { email: string; institutionId?: string }) {
+  async create(
+    tenantId: string,
+    caller: { userId: string; roles: string[] },
+    dto: { email: string; institutionId?: string },
+  ) {
     const email = normalizeEmail(dto.email);
 
     const user = await this.prisma.user.findFirst({
@@ -76,6 +81,35 @@ export class OnboardingService {
       });
       if (!institution) {
         throw new BadRequestException('Specified institution does not exist');
+      }
+      // RBAC-4 (P2.5): a deactivated institution must not be a valid binding
+      // target — institution-scoped authorization fails closed.
+      if (institution.status !== 'ACTIVE') {
+        throw new BadRequestException('Specified institution is not active');
+      }
+
+      // RBAC-4 (P2.5): institution-scoped operation. Binding an onboarding link
+      // to an institution is an institution-scoped action. The trusted caller
+      // institution context must authorize it:
+      //   - Platform Admin holds platform-level authority and may bind
+      //     institution-scoped links org-wide (frozen Platform Admin semantics).
+      //   - Any other caller must hold an ACTIVE membership in the target
+      //     institution; missing or non-active membership fails closed.
+      if (!caller.roles.includes('PLATFORM_ADMIN')) {
+        const membership = await this.prisma.institutionMembership.findUnique({
+          where: {
+            tenantId_institutionId_userId: {
+              tenantId,
+              institutionId: institution.id,
+              userId: caller.userId,
+            },
+          },
+        });
+        if (!membership || membership.status !== 'ACTIVE') {
+          throw new ForbiddenException(
+            'Caller has no active membership in the target institution',
+          );
+        }
       }
     }
 

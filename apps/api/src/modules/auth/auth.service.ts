@@ -514,7 +514,7 @@ export class AuthService {
           phone: dto.phone,
           status: 'ACTIVE',
           emailVerifiedAt: null,
-          ...(roleId ? { roles: { create: { roleId } } } : {}),
+          ...(roleId ? { roles: { create: { tenantId: tenant.id, roleId } } } : {}),
           passwordHistory: { create: { passwordHash } },
           emailVerificationTokens: {
             create: {

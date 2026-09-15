@@ -559,7 +559,7 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
       for (const name of roleNames) {
         const role = await prisma.role.findUnique({ where: { name } });
         if (!role) throw new Error(`Seeded role ${name} not found`);
-        roleAssignments.push({ roleId: role.id });
+        roleAssignments.push({ tenantId: tenant.id, roleId: role.id });
       }
       return prisma.user.create({
         data: {
@@ -1119,7 +1119,7 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
           lastName: 'David',
           status: 'ACTIVE',
           emailVerifiedAt: new Date(),
-          roles: { create: { roleId: role.id } },
+          roles: { create: { tenantId: xyz.id, roleId: role.id } },
         },
       });
       await prisma.organizationMembership.create({
@@ -1174,7 +1174,7 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
       for (const name of roleNames) {
         const role = await prisma.role.findUnique({ where: { name } });
         if (!role) throw new Error(`Seeded role ${name} not found`);
-        roleAssignments.push({ roleId: role.id });
+        roleAssignments.push({ tenantId, roleId: role.id });
       }
       return prisma.user.create({
         data: {

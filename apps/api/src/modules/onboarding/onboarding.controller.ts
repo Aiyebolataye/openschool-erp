@@ -12,6 +12,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../common/decorators/user.decorator';
 import { PermissionGuard } from '../../common/guards/permission.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
+import { ObjectScope } from '../../common/decorators/object-scope.decorator';
+import { ObjectScopeGuard } from '../../common/guards/object-scope.guard';
 import { OnboardingService } from './onboarding.service';
 import {
   CreateOnboardingLinkDto,
@@ -22,16 +24,22 @@ import {
 
 @ApiTags('onboarding')
 @Controller('onboarding')
-@UseGuards(AuthGuard('jwt'), PermissionGuard)
+@UseGuards(AuthGuard('jwt'), PermissionGuard, ObjectScopeGuard)
 export class OnboardingController {
   constructor(private readonly onboarding: OnboardingService) {}
 
   @Post()
   @Permissions('identity:onboarding:create')
+  @ObjectScope({ type: 'tenant', model: 'onboardingLink' })
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Issue a six-month onboarding link for a provisioned account' })
-  create(@CurrentUser('tenantId') tenantId: string, @Body() dto: CreateOnboardingLinkDto) {
-    return this.onboarding.create(tenantId, dto);
+  create(
+    @CurrentUser('tenantId') tenantId: string,
+    @CurrentUser('sub') userId: string,
+    @CurrentUser('roles') roles: string[],
+    @Body() dto: CreateOnboardingLinkDto,
+  ) {
+    return this.onboarding.create(tenantId, { userId, roles: roles ?? [] }, dto);
   }
 }
 
