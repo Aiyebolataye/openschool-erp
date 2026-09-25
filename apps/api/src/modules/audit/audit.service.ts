@@ -1,10 +1,12 @@
 import {
   Injectable,
   Logger,
+  Optional,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EventDedupService } from '../events/event-dedup.service';
 
 /**
  * Append-only audit persistence (P1.7 / decisions D-B5-2, D-B5-3).
@@ -29,6 +31,12 @@ export interface AuditRecordInput {
   contextIp?: string | null;
   contextUserAgent?: string | null;
   correlationId?: string | null;
+  /**
+   * D-4 (additive): stable id of the event/logical occurrence this row belongs
+   * to. When present, the same occurrence delivered twice persists exactly one
+   * row (72h dedup). Absent = legacy behaviour (always persists).
+   */
+  eventId?: string | null;
 }
 
 const PAGE_MAX = 100;
@@ -40,6 +48,7 @@ export class AuditService {
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
+    @Optional() private readonly dedup?: EventDedupService,
   ) {}
 
   private captureActorEmail(): boolean {
@@ -47,6 +56,22 @@ export class AuditService {
   }
 
   async record(input: AuditRecordInput): Promise<void> {
+    // D-4 (additive): when a producer stamps the eventId on the occurrence,
+    // the same occurrence delivered twice persists exactly one row. Without an
+    // eventId the legacy path (persist every call) is unchanged, so existing
+    // producers keep byte-for-byte behaviour.
+    if (input.eventId && this.dedup) {
+      const duplicate = await this.dedup.isDuplicate(
+        'audit',
+        input.tenantId ?? 'system',
+        input.eventId,
+      );
+      if (duplicate) {
+        this.logger.warn(`Skipping duplicate audit event ${input.eventId}`);
+        return;
+      }
+    }
+
     const data: Prisma.AuditLogCreateInput = {
       tenant: input.tenantId
         ? { connect: { id: input.tenantId } }

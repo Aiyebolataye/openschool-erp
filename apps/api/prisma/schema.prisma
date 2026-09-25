@@ -32,13 +32,166 @@ enum Gender {
   MALE
   FEMALE
   OTHER
+  PREFER_NOT_TO_SAY
+}
+
+// PHASE 5 (P5, frozen Academic Management Engineering §8.1) enums. The
+// legacy `EnrollmentStatus` (ACTIVE/COMPLETED/...) is replaced by the frozen
+// enrolment lifecycle; the legacy academic tables were archived (D-1).
+enum AcademicYearStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum SessionStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum TermStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum SubjectStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum DepartmentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum GradeLevelStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ClassStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum TeachingRole {
+  SUBJECT_TEACHER
+  CLASS_TEACHER
+  DEPARTMENT_HEAD
+}
+
+enum TimetableStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }
 
 enum EnrollmentStatus {
+  ENROLLED
   ACTIVE
-  COMPLETED
   TRANSFERRED
   WITHDRAWN
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  ACTIVE
+  DROPPED
+}
+
+enum AttendanceType {
+  STUDENT
+  STAFF
+}
+
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADED
+  RETURNED
+}
+
+enum AssessmentType {
+  CONTINUOUS_ASSESSMENT
+  TEST
+  EXAMINATION
+  PRACTICAL
+  ORAL
+}
+
+enum AssessmentStatus {
+  DRAFT
+  PUBLISHED
+  GRADED
+}
+
+enum GradeScaleStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum ResultStatus {
+  COMPILED
+  APPROVED
+  PUBLISHED
+}
+
+enum ReportCardStatus {
+  GENERATED
+  PUBLISHED
+}
+
+enum ProgressionType {
+  PROMOTED
+  CONDITIONALLY_PROMOTED
+  RETAINED
+  GRADUATED
+  WITHDRAWN
+}
+
+enum PolicyStatus {
+  DRAFT
+  ACTIVE
+  SUPERSEDED
+}
+
+enum SummerSchoolStatus {
+  CONFIGURED
+  OPEN
+  REGISTRATION_CLOSED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum SSRegistrationStatus {
+  REGISTERED
+  ACTIVE
+  COMPLETED
+}
+
+enum CostModel {
+  PER_STUDENT
+  PER_SUBJECT
+  FREE
 }
 
 enum InvoiceStatus {
@@ -146,217 +299,966 @@ enum OnboardingStatus {
 enum InstitutionStatus {
   ACTIVE
   DEACTIVATED
+  PROVISIONING
+  SUSPENDED
+  ARCHIVED
 }
 
 
 // --- Domain: academic ---
 
+// ============================================================================
+// Academic domain (PHASE 5 — Academic Management, Master Roadmap P5.1-P5.8)
+//
+// Authoritative design source: engineering/Academic Management Engineering.md
+// §7 (table catalogue / column catalogue / constraints / indexes), §8
+// (Prisma schema, enums) — frozen v1.2. Governed by locked decisions D-1..D-4:
+//   • D-1: replaces the legacy academic structures (academic_years, terms,
+//     curricula, subjects, classes, enrollments, grades, results + operations
+//     attendance + documents assignments/submissions + institution
+//     departments). Legacy tables are archived to `_academic_legacy_*` by the
+//     archive migration (data preserved); this file is the authoritative
+//     model set. See docs/PHASE_5_MIGRATION_REPORT.md.
+//   • D-3: the Academic domain is the canonical owner of Year / Session /
+//     Term / Department / AcademicPolicy and calendar semantics. The
+//     Institution spec's academic_sessions/academic_terms/academic_holidays
+//     catalogue is NOT materialized here or in the institution domain.
+//   • Cross-domain references to the People domain (student_person_id,
+//     staff_person_id, head_staff_id) are plain UUID columns WITHOUT Prisma
+//     relations per the frozen §8 cross-domain reference decision (the People
+//     Student/Staff aggregates own their PKs; FKs are enforced at the
+//     application layer by the academics module).
+//   • D-4 events / dedup are additive work in the event envelope (see
+//     src/modules/events) and are not represented in these tables.
+//
+// Attendance "check exactly one of student_class_enrollment_id /
+// staff_person_id" and the partial unique (attendance_type = STUDENT) are
+// enforced by the Postgres NULL-DISTINCT partial-index semantics of
+// @@unique([tenantId, studentClassEnrollmentId, subjectId, date]) plus a
+// CHECK constraint created by the archive migration (migration SQL).
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Academic calendar core
+// ---------------------------------------------------------------------------
+
 model AcademicYear {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @db.Uuid
-  institutionId String   @db.Uuid
-  name          String
-  startYear     Int
-  endYear       Int
-  isCurrent     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  deletedAt     DateTime?
+  id            String             @id @default(uuid()) @db.Uuid
+  tenantId      String             @db.Uuid
+  institutionId String             @db.Uuid
+  name          String             @db.VarChar(50)
+  startDate     DateTime           @map("start_date") @db.Date
+  endDate       DateTime           @map("end_date") @db.Date
+  status        AcademicYearStatus @default(DRAFT)
+  isActive      Boolean            @default(true) @map("is_active")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  createdBy     String?            @map("created_by") @db.Uuid
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  updatedBy     String?            @map("updated_by") @db.Uuid
+  deletedAt     DateTime?          @map("deleted_at")
+  deletedBy     String?            @map("deleted_by") @db.Uuid
+  version       Int                @default(1)
 
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  terms         Term[]
-  curricula     Curriculum[]
-  enrollments   Enrollment[]
-  results       Result[]
+  sessions   AcademicSession[]
   feeStructures FeeStructure[]
-  invoices      Invoice[]
-  assignments   Assignment[]
+  invoices   Invoice[]
 
-  @@unique([tenantId, startYear])
-  @@index([tenantId, institutionId])
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, name])
+  @@index([tenantId, institutionId], name: "idx_ay_tenant_institution")
+  @@index([tenantId, status], name: "idx_ay_status")
   @@map("academic_years")
 }
 
+model AcademicSession {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  institutionId String       @db.Uuid
+  academicYearId String      @db.Uuid
+  name          String       @db.VarChar(50)
+  startDate     DateTime     @map("start_date") @db.Date
+  endDate       DateTime     @map("end_date") @db.Date
+  status        SessionStatus @default(DRAFT)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  createdBy     String?      @map("created_by") @db.Uuid
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  updatedBy     String?      @map("updated_by") @db.Uuid
+  deletedAt     DateTime?    @map("deleted_at")
+  deletedBy     String?      @map("deleted_by") @db.Uuid
+  version       Int          @default(1)
+
+  year  AcademicYear @relation(fields: [academicYearId], references: [id])
+  terms Term[]
+  institution Institution @relation(fields: [institutionId], references: [id])
+  studentEnrollmentDetails StudentEnrollmentDetail[] @relation("PeopleEnrollmentAcademicSession")
+  studentAcademicRecords   StudentAcademicRecord[]   @relation("PeopleRecordAcademicSession")
+
+  @@unique([tenantId, institutionId, academicYearId, name])
+  @@index([tenantId, academicYearId], name: "idx_as_tenant_year")
+  @@map("academic_sessions")
+}
+
 model Term {
-  id              String   @id @default(uuid()) @db.Uuid
-  tenantId        String   @db.Uuid
-  academicYearId  String   @db.Uuid
-  name            String
-  startDate       DateTime
-  endDate         DateTime
-  isCurrent       Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  deletedAt       DateTime?
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  academicSessionId String @db.Uuid
+  name          String   @db.VarChar(50)
+  startDate     DateTime @map("start_date") @db.Date
+  endDate       DateTime @map("end_date") @db.Date
+  status        TermStatus @default(DRAFT)
+  createdAt     DateTime @default(now()) @map("created_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  updatedBy     String?  @map("updated_by") @db.Uuid
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?  @map("deleted_by") @db.Uuid
+  version       Int      @default(1)
 
-  academicYear    AcademicYear @relation(fields: [academicYearId], references: [id])
-  attendance      Attendance[]
-  results         Result[]
-  grades          Grade[]
-  invoices        Invoice[]
-  feeStructures   FeeStructure[]
-  libraryLoans    BookLoan[]
+  session AcademicSession @relation(fields: [academicSessionId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  teachingAssignments TeachingAssignment[]
+  timetables          Timetable[]
+  studentClassEnrollments StudentClassEnrollment[]
+  assignments         Assignment[]
+  assessments         Assessment[]
+  results             Result[]
+  reportCards         ReportCard[]
+  academicProgressions AcademicProgression[]
+  summerSchoolSessions SummerSchoolSession[]
+
+  feeStructures FeeStructure[]
+  invoices      Invoice[]
+  libraryLoans  BookLoan[]
   maintenanceRequests MaintenanceRequest[]
-  leaveRequests   LeaveRequest[]
+  leaveRequests LeaveRequest[]
 
-  @@unique([academicYearId, name])
-  @@index([tenantId, academicYearId])
+  @@unique([tenantId, institutionId, academicSessionId, name])
+  @@index([tenantId, academicSessionId], name: "idx_terms_tenant_session")
   @@map("terms")
 }
 
-model Curriculum {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @db.Uuid
-  institutionId String   @db.Uuid
-  academicYearId String  @db.Uuid
-  name          String
-  description   String?
-  version       String   @default("1.0")
-  status        UserRoleStatus @default(ACTIVE)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  deletedAt     DateTime?
-
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  academicYear  AcademicYear @relation(fields: [academicYearId], references: [id])
-  subjects      Subject[]
-
-  @@unique([tenantId, academicYearId, name])
-  @@index([tenantId])
-  @@map("curricula")
-}
+// ---------------------------------------------------------------------------
+// Curriculum: subject, subject group, department, stream
+// ---------------------------------------------------------------------------
 
 model Subject {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @db.Uuid
-  institutionId String   @db.Uuid
-  curriculumId  String   @db.Uuid
-  departmentId  String?  @db.Uuid
-  code          String
-  name          String
-  description   String?
-  creditHours   Int      @default(1)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  deletedAt     DateTime?
+  id            String        @id @default(uuid()) @db.Uuid
+  tenantId      String        @db.Uuid
+  institutionId String        @db.Uuid
+  departmentId  String?       @db.Uuid
+  name          String        @db.VarChar(100)
+  code          String        @db.VarChar(20)
+  description   String?       @db.VarChar(500)
+  status        SubjectStatus @default(DRAFT)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  createdBy     String?       @map("created_by") @db.Uuid
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  updatedBy     String?       @map("updated_by") @db.Uuid
+  deletedAt     DateTime?     @map("deleted_at")
+  deletedBy     String?       @map("deleted_by") @db.Uuid
+  version       Int           @default(1)
 
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  curriculum    Curriculum @relation(fields: [curriculumId], references: [id])
-  department    Department? @relation(fields: [departmentId], references: [id])
-  classes       Class[]
-  grades        Grade[]
+  department Department? @relation(fields: [departmentId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
 
-  @@unique([tenantId, code])
-  @@index([tenantId, curriculumId])
+  subjectGroups     SubjectSubjectGroup[]
+  teachingAssignments TeachingAssignment[]
+  timetableSlots     TimetableSlot[]
+  subjectRegistrations SubjectRegistration[]
+  attendance         Attendance[]
+  assignments        Assignment[]
+  assessments        Assessment[]
+  results            Result[]
+  summerSchoolResults SummerSchoolResult[]
+
+  @@unique([tenantId, institutionId, code])
+  @@index([tenantId, institutionId], name: "idx_subjects_tenant_institution")
+  @@index([departmentId], name: "idx_subjects_department")
+  @@index([tenantId, status], name: "idx_subjects_status")
   @@map("subjects")
 }
 
+model SubjectGroup {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  institutionId String       @db.Uuid
+  name          String       @db.VarChar(100)
+  description   String?      @db.VarChar(500)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  createdBy     String?      @map("created_by") @db.Uuid
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  updatedBy     String?      @map("updated_by") @db.Uuid
+  deletedAt     DateTime?    @map("deleted_at")
+  deletedBy     String?      @map("deleted_by") @db.Uuid
+  version       Int          @default(1)
+
+  subjects SubjectSubjectGroup[]
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, name])
+  @@map("subject_groups")
+}
+
+model SubjectSubjectGroup {
+  id             String       @id @default(uuid()) @db.Uuid
+  tenantId       String       @db.Uuid
+  subjectId      String       @db.Uuid
+  subjectGroupId String       @db.Uuid
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  subject Subject      @relation(fields: [subjectId], references: [id])
+  group   SubjectGroup @relation(fields: [subjectGroupId], references: [id])
+
+  @@unique([tenantId, subjectId, subjectGroupId])
+  @@map("subject_subject_groups")
+}
+
+model Department {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  institutionId String           @db.Uuid
+  name          String           @db.VarChar(100)
+  headStaffId   String?          @map("head_staff_id") @db.Uuid
+  status        DepartmentStatus @default(ACTIVE)
+  createdAt     DateTime         @default(now()) @map("created_at")
+  createdBy     String?          @map("created_by") @db.Uuid
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  updatedBy     String?          @map("updated_by") @db.Uuid
+  deletedAt     DateTime?        @map("deleted_at")
+  deletedBy     String?          @map("deleted_by") @db.Uuid
+  version       Int              @default(1)
+
+  subjects Subject[]
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, name])
+  @@index([tenantId, institutionId], name: "idx_departments_tenant")
+  @@map("departments")
+}
+
+model Stream {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  institutionId String           @db.Uuid
+  gradeLevelId  String           @db.Uuid
+  name          String           @db.VarChar(100)
+  createdAt     DateTime         @default(now()) @map("created_at")
+  createdBy     String?          @map("created_by") @db.Uuid
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  updatedBy     String?          @map("updated_by") @db.Uuid
+  deletedAt     DateTime?        @map("deleted_at")
+  deletedBy     String?          @map("deleted_by") @db.Uuid
+  version       Int              @default(1)
+
+  gradeLevel GradeLevel @relation(fields: [gradeLevelId], references: [id])
+  classes    Class[]
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, name, gradeLevelId])
+  @@map("streams")
+}
+
+model GradeLevel {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  institutionId String           @db.Uuid
+  name          String           @db.VarChar(50)
+  displayOrder  Int              @map("display_order")
+  status        GradeLevelStatus @default(ACTIVE)
+  createdAt     DateTime         @default(now()) @map("created_at")
+  createdBy     String?          @map("created_by") @db.Uuid
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  updatedBy     String?          @map("updated_by") @db.Uuid
+  deletedAt     DateTime?        @map("deleted_at")
+  deletedBy     String?          @map("deleted_by") @db.Uuid
+  version       Int              @default(1)
+
+  streams Stream[]
+  classes Class[]
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, name])
+  @@map("grade_levels")
+}
+
+// ---------------------------------------------------------------------------
+// Class structure: class, arm, homeroom
+// ---------------------------------------------------------------------------
+
 model Class {
-  id              String   @id @default(uuid()) @db.Uuid
-  tenantId        String   @db.Uuid
-  institutionId   String   @db.Uuid
-  subjectId       String   @db.Uuid
-  academicYearId  String?  @db.Uuid
-  name            String
-  section         String?
-  capacity        Int      @default(40)
-  teacherStaffId  String?  @db.Uuid
-  classTeacherId  String?  @db.Uuid
-  room            String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  deletedAt       DateTime?
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @db.Uuid
+  institutionId String      @db.Uuid
+  gradeLevelId  String      @db.Uuid
+  streamId      String?     @db.Uuid
+  name          String      @db.VarChar(50)
+  capacity      Int
+  status        ClassStatus @default(DRAFT)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  createdBy     String?     @map("created_by") @db.Uuid
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  updatedBy     String?     @map("updated_by") @db.Uuid
+  deletedAt     DateTime?   @map("deleted_at")
+  deletedBy     String?     @map("deleted_by") @db.Uuid
+  version       Int         @default(1)
 
-  institution     Institution @relation(fields: [institutionId], references: [id])
-  subject         Subject     @relation(fields: [subjectId], references: [id])
-  teacher         Staff?      @relation("ClassTeacher", fields: [teacherStaffId], references: [id])
-  classTeacher    Staff?      @relation(fields: [classTeacherId], references: [id])
-  enrollments     Enrollment[]
-  attendance      Attendance[]
-  assignments     Assignment[]
-  submissions     Submission[]
-  libraryBookCopies LibraryBookCopy[]
+  gradeLevel GradeLevel @relation(fields: [gradeLevelId], references: [id])
+  stream     Stream?    @relation(fields: [streamId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
 
-  @@unique([tenantId, subjectId, name, academicYearId])
-  @@index([tenantId, institutionId])
+  arms                    Arm[]
+  homeroom                Homeroom?
+  teachingAssignments     TeachingAssignment[]
+  timetables              Timetable[]
+  studentClassEnrollments StudentClassEnrollment[]
+  assignments             Assignment[]
+  libraryBookCopies       LibraryBookCopy[]
+  progressionsFrom        AcademicProgression[] @relation("ProgressionFromClass")
+  progressionsTo          AcademicProgression[] @relation("ProgressionToClass")
+
+  @@unique([tenantId, institutionId, gradeLevelId, name])
+  @@index([tenantId, gradeLevelId], name: "idx_classes_tenant_grade")
+  @@index([tenantId, institutionId], name: "idx_classes_tenant_institution")
   @@map("classes")
 }
 
-model Enrollment {
-  id            String           @id @default(uuid()) @db.Uuid
-  tenantId      String           @db.Uuid
-  studentId     String           @db.Uuid
-  classId       String           @db.Uuid
-  academicYearId String          @db.Uuid
-  status        EnrollmentStatus @default(ACTIVE)
-  enrolledAt    DateTime         @default(now())
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  deletedAt     DateTime?
-
-  student       Student  @relation(fields: [studentId], references: [id])
-  class         Class    @relation(fields: [classId], references: [id])
-  academicYear  AcademicYear @relation(fields: [academicYearId], references: [id])
-  grades        Grade[]
-  results       Result[]
-
-  @@unique([studentId, classId, academicYearId])
-  @@index([tenantId, studentId])
-  @@index([tenantId, classId])
-  @@map("enrollments")
-}
-
-model Grade {
+model Arm {
   id            String   @id @default(uuid()) @db.Uuid
   tenantId      String   @db.Uuid
-  enrollmentId  String   @db.Uuid
-  subjectId     String   @db.Uuid
-  staffId       String?  @db.Uuid
-  termId        String   @db.Uuid
-  assessment    Decimal  @default(0) @db.Decimal(5, 2)
-  exam          Decimal  @default(0) @db.Decimal(5, 2)
-  total         Decimal  @default(0) @db.Decimal(5, 2)
-  grade         String?
-  remark        String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  institutionId String   @db.Uuid
+  classId       String   @db.Uuid
+  name          String   @db.VarChar(10)
+  staffPersonId String?  @map("staff_person_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  updatedBy     String?  @map("updated_by") @db.Uuid
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?  @map("deleted_by") @db.Uuid
+  version       Int      @default(1)
 
-  enrollment    Enrollment @relation(fields: [enrollmentId], references: [id])
-  subject       Subject    @relation(fields: [subjectId], references: [id])
-  staff         Staff?     @relation(fields: [staffId], references: [id])
-  term          Term       @relation(fields: [termId], references: [id])
+  class Class @relation(fields: [classId], references: [id])
 
-  @@unique([enrollmentId, subjectId, termId])
-  @@index([tenantId, enrollmentId])
-  @@map("grades")
+  @@unique([tenantId, classId, name])
+  @@map("arms")
 }
 
+model Homeroom {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  classId       String   @unique @db.Uuid
+  staffPersonId String?  @map("staff_person_id") @db.Uuid
+  assignedAt    DateTime @default(now()) @map("assigned_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  updatedBy     String?  @map("updated_by") @db.Uuid
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?  @map("deleted_by") @db.Uuid
+  version       Int      @default(1)
+
+  class Class @relation(fields: [classId], references: [id])
+
+  @@map("homerooms")
+}
+
+model TeachingAssignment {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  institutionId String       @db.Uuid
+  staffPersonId String       @map("staff_person_id") @db.Uuid
+  subjectId     String       @db.Uuid
+  classId       String       @db.Uuid
+  termId        String       @db.Uuid
+  role          TeachingRole
+  workloadHours Int?         @map("workload_hours")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  createdBy     String?      @map("created_by") @db.Uuid
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  updatedBy     String?      @map("updated_by") @db.Uuid
+  deletedAt     DateTime?    @map("deleted_at")
+  deletedBy     String?      @map("deleted_by") @db.Uuid
+  version       Int          @default(1)
+
+  subject Subject @relation(fields: [subjectId], references: [id])
+  class   Class   @relation(fields: [classId], references: [id])
+  term    Term    @relation(fields: [termId], references: [id])
+
+  @@unique([tenantId, staffPersonId, subjectId, classId, termId])
+  @@index([staffPersonId], name: "idx_ta_staff")
+  @@index([classId], name: "idx_ta_class")
+  @@index([subjectId], name: "idx_ta_subject")
+  @@index([termId], name: "idx_ta_term")
+  @@map("teaching_assignments")
+}
+
+// ---------------------------------------------------------------------------
+// Timetable
+// ---------------------------------------------------------------------------
+
+model Timetable {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  institutionId String           @db.Uuid
+  classId       String           @db.Uuid
+  termId        String           @db.Uuid
+  status        TimetableStatus  @default(DRAFT)
+  createdAt     DateTime         @default(now()) @map("created_at")
+  createdBy     String?          @map("created_by") @db.Uuid
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  updatedBy     String?          @map("updated_by") @db.Uuid
+  deletedAt     DateTime?        @map("deleted_at")
+  deletedBy     String?          @map("deleted_by") @db.Uuid
+  version       Int              @default(1)
+
+  class Class @relation(fields: [classId], references: [id])
+  term  Term   @relation(fields: [termId], references: [id])
+  slots TimetableSlot[]
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, classId, termId])
+  @@index([classId], name: "idx_tt_class")
+  @@index([termId], name: "idx_tt_term")
+  @@map("timetables")
+}
+
+model TimetableSlot {
+  id            String     @id @default(uuid()) @db.Uuid
+  tenantId      String     @db.Uuid
+  institutionId String     @db.Uuid
+  timetableId   String     @db.Uuid
+  dayOfWeek     DayOfWeek  @map("day_of_week")
+  startTime     DateTime   @map("start_time") @db.Time(0)
+  endTime       DateTime   @map("end_time") @db.Time(0)
+  subjectId     String     @db.Uuid
+  staffPersonId String?    @map("staff_person_id") @db.Uuid
+  room          String?    @db.VarChar(100)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  createdBy     String?    @map("created_by") @db.Uuid
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  updatedBy     String?    @map("updated_by") @db.Uuid
+  deletedAt     DateTime?  @map("deleted_at")
+  deletedBy     String?    @map("deleted_by") @db.Uuid
+  version       Int        @default(1)
+
+  timetable Timetable @relation(fields: [timetableId], references: [id])
+  subject   Subject   @relation(fields: [subjectId], references: [id])
+
+  @@unique([tenantId, timetableId, dayOfWeek, startTime])
+  @@index([timetableId], name: "idx_ts_timetable")
+  @@map("timetable_slots")
+}
+
+// ---------------------------------------------------------------------------
+// Student placement: enrollment + subject registration
+// ---------------------------------------------------------------------------
+
+model StudentClassEnrollment {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  institutionId String           @db.Uuid
+  studentPersonId String          @map("student_person_id") @db.Uuid
+  classId       String           @db.Uuid
+  termId        String           @db.Uuid
+  enrollmentDate DateTime         @map("enrollment_date") @db.Date
+  status        EnrollmentStatus @default(ENROLLED)
+  createdAt     DateTime         @default(now()) @map("created_at")
+  createdBy     String?          @map("created_by") @db.Uuid
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  updatedBy     String?          @map("updated_by") @db.Uuid
+  deletedAt     DateTime?        @map("deleted_at")
+  deletedBy     String?          @map("deleted_by") @db.Uuid
+  version       Int              @default(1)
+
+  class Class @relation(fields: [classId], references: [id])
+  term  Term   @relation(fields: [termId], references: [id])
+
+  subjectRegistrations SubjectRegistration[]
+  attendance           Attendance[]
+  assignmentSubmissions AssignmentSubmission[]
+  assessmentResults    AssessmentResult[]
+  results              Result[]
+  reportCards          ReportCard[]
+
+  @@unique([tenantId, studentPersonId, classId, termId])
+  @@index([studentPersonId], name: "idx_sce_student")
+  @@index([classId], name: "idx_sce_class")
+  @@index([termId], name: "idx_sce_term")
+  @@map("student_class_enrollments")
+}
+
+model SubjectRegistration {
+  id            String             @id @default(uuid()) @db.Uuid
+  tenantId      String             @db.Uuid
+  institutionId String             @db.Uuid
+  studentClassEnrollmentId String  @db.Uuid
+  subjectId     String             @db.Uuid
+  registeredAt  DateTime           @default(now()) @map("registered_at")
+  status        RegistrationStatus @default(REGISTERED)
+  createdAt     DateTime           @default(now()) @map("created_at")
+  createdBy     String?            @map("created_by") @db.Uuid
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  updatedBy     String?            @map("updated_by") @db.Uuid
+  deletedAt     DateTime?          @map("deleted_at")
+  deletedBy     String?            @map("deleted_by") @db.Uuid
+  version       Int                @default(1)
+
+  enrollment StudentClassEnrollment @relation(fields: [studentClassEnrollmentId], references: [id])
+  subject    Subject                @relation(fields: [subjectId], references: [id])
+
+  @@unique([tenantId, studentClassEnrollmentId, subjectId])
+  @@index([studentClassEnrollmentId], name: "idx_sr_enrollment")
+  @@map("subject_registrations")
+}
+
+// ---------------------------------------------------------------------------
+// Attendance (no soft delete)
+// ---------------------------------------------------------------------------
+
+model Attendance {
+  id                       String           @id @default(uuid()) @db.Uuid
+  tenantId                 String           @db.Uuid
+  institutionId            String           @db.Uuid
+  studentClassEnrollmentId String?          @map("student_class_enrollment_id") @db.Uuid
+  staffPersonId            String?          @map("staff_person_id") @db.Uuid
+  subjectId                String           @db.Uuid
+  date                     DateTime         @db.Date
+  status                   AttendanceStatus @default(PRESENT)
+  attendanceType           AttendanceType   @map("attendance_type")
+  notes                    String?          @db.VarChar(500)
+  corrected                Boolean          @default(false)
+  correctedBy              String?          @map("corrected_by") @db.Uuid
+  correctedAt              DateTime?        @map("corrected_at")
+  createdAt                DateTime         @default(now()) @map("created_at")
+  createdBy                String?          @map("created_by") @db.Uuid
+  updatedAt                DateTime         @updatedAt @map("updated_at")
+  updatedBy                String?          @map("updated_by") @db.Uuid
+  version                  Int              @default(1)
+
+  enrollment StudentClassEnrollment? @relation(fields: [studentClassEnrollmentId], references: [id])
+  subject    Subject                  @relation(fields: [subjectId], references: [id])
+
+  @@unique([tenantId, studentClassEnrollmentId, subjectId, date])
+  @@index([studentClassEnrollmentId, date], name: "idx_att_student_date")
+  @@index([staffPersonId, date], name: "idx_att_staff_date")
+  @@index([subjectId, date], name: "idx_att_subject_date")
+  @@map("attendance")
+}
+
+// ---------------------------------------------------------------------------
+// Assignment + submission
+// ---------------------------------------------------------------------------
+
+model Assignment {
+  id              String           @id @default(uuid()) @db.Uuid
+  tenantId        String           @db.Uuid
+  institutionId   String           @db.Uuid
+  title           String           @db.VarChar(200)
+  description     String?          @db.Text
+  subjectId       String           @db.Uuid
+  classId         String           @db.Uuid
+  termId          String           @db.Uuid
+  submissionStart DateTime         @map("submission_start")
+  submissionEnd   DateTime         @map("submission_end")
+  maxScore        Decimal          @map("max_score") @db.Decimal(10, 2)
+  attachments     Json?
+  status          AssignmentStatus @default(DRAFT)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  createdBy       String?          @map("created_by") @db.Uuid
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  updatedBy       String?          @map("updated_by") @db.Uuid
+  deletedAt       DateTime?        @map("deleted_at")
+  deletedBy       String?          @map("deleted_by") @db.Uuid
+  version         Int              @default(1)
+
+  subject     Subject                 @relation(fields: [subjectId], references: [id])
+  class       Class                   @relation(fields: [classId], references: [id])
+  term        Term                    @relation(fields: [termId], references: [id])
+  submissions AssignmentSubmission[]
+
+  @@index([classId], name: "idx_asg_class")
+  @@index([subjectId], name: "idx_asg_subject")
+  @@index([termId], name: "idx_asg_term")
+  @@map("assignments")
+}
+
+model AssignmentSubmission {
+  id                       String           @id @default(uuid()) @db.Uuid
+  tenantId                 String           @db.Uuid
+  institutionId            String           @db.Uuid
+  assignmentId             String           @db.Uuid
+  studentClassEnrollmentId String           @db.Uuid
+  submittedAt              DateTime         @map("submitted_at")
+  content                  String?          @db.Text
+  attachments              Json?
+  score                    Decimal?         @db.Decimal(10, 2)
+  feedback                 String?          @db.Text
+  gradedBy                 String?          @map("graded_by") @db.Uuid
+  gradedAt                 DateTime?        @map("graded_at")
+  status                   SubmissionStatus @default(SUBMITTED)
+  createdAt                DateTime         @default(now()) @map("created_at")
+  createdBy                String?          @map("created_by") @db.Uuid
+  updatedAt                DateTime         @updatedAt @map("updated_at")
+  updatedBy                String?          @map("updated_by") @db.Uuid
+  deletedAt                DateTime?        @map("deleted_at")
+  deletedBy                String?          @map("deleted_by") @db.Uuid
+  version                  Int              @default(1)
+
+  assignment Assignment                @relation(fields: [assignmentId], references: [id])
+  enrollment StudentClassEnrollment    @relation(fields: [studentClassEnrollmentId], references: [id])
+
+  @@unique([tenantId, assignmentId, studentClassEnrollmentId])
+  @@map("assignment_submissions")
+}
+
+// ---------------------------------------------------------------------------
+// Assessment
+// ---------------------------------------------------------------------------
+
+model Assessment {
+  id              String           @id @default(uuid()) @db.Uuid
+  tenantId        String           @db.Uuid
+  institutionId   String           @db.Uuid
+  title           String           @db.VarChar(200)
+  assessmentType  AssessmentType   @map("assessment_type")
+  subjectId       String           @db.Uuid
+  termId          String           @db.Uuid
+  maxScore        Decimal          @map("max_score") @db.Decimal(10, 2)
+  weight          Decimal          @db.Decimal(5, 2)
+  date            DateTime?        @db.Date
+  status          AssessmentStatus @default(DRAFT)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  createdBy       String?          @map("created_by") @db.Uuid
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  updatedBy       String?          @map("updated_by") @db.Uuid
+  deletedAt       DateTime?        @map("deleted_at")
+  deletedBy       String?          @map("deleted_by") @db.Uuid
+  version         Int              @default(1)
+
+  subject Subject            @relation(fields: [subjectId], references: [id])
+  term    Term               @relation(fields: [termId], references: [id])
+  results AssessmentResult[]
+
+  @@map("assessments")
+}
+
+model AssessmentResult {
+  id                       String   @id @default(uuid()) @db.Uuid
+  tenantId                 String   @db.Uuid
+  institutionId            String   @db.Uuid
+  assessmentId             String   @db.Uuid
+  studentClassEnrollmentId String   @db.Uuid
+  score                    Decimal  @db.Decimal(10, 2)
+  gradedBy                 String   @map("graded_by") @db.Uuid
+  gradedAt                 DateTime @map("graded_at")
+  notes                    String?  @db.VarChar(500)
+  createdAt                DateTime @default(now()) @map("created_at")
+  createdBy                String?  @map("created_by") @db.Uuid
+  updatedAt                DateTime @updatedAt @map("updated_at")
+  updatedBy                String?  @map("updated_by") @db.Uuid
+  deletedAt                DateTime? @map("deleted_at")
+  deletedBy                String?  @map("deleted_by") @db.Uuid
+  version                  Int      @default(1)
+
+  assessment Assessment              @relation(fields: [assessmentId], references: [id])
+  enrollment StudentClassEnrollment  @relation(fields: [studentClassEnrollmentId], references: [id])
+
+  @@unique([tenantId, assessmentId, studentClassEnrollmentId])
+  @@index([studentClassEnrollmentId], name: "idx_ar_enrollment")
+  @@index([assessmentId], name: "idx_ar_assessment")
+  @@map("assessment_results")
+}
+
+// ---------------------------------------------------------------------------
+// Grading: grade scale, boundary, remark
+// ---------------------------------------------------------------------------
+
+model GradeScale {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @db.Uuid
+  institutionId String           @db.Uuid
+  name          String           @db.VarChar(50)
+  description   String?          @db.VarChar(500)
+  status        GradeScaleStatus @default(DRAFT)
+  createdAt     DateTime         @default(now()) @map("created_at")
+  createdBy     String?          @map("created_by") @db.Uuid
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  updatedBy     String?          @map("updated_by") @db.Uuid
+  deletedAt     DateTime?        @map("deleted_at")
+  deletedBy     String?          @map("deleted_by") @db.Uuid
+  version       Int              @default(1)
+
+  boundaries GradeBoundary[]
+  remarks    Remark[]
+  results    Result[]
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, name])
+  @@map("grade_scales")
+}
+
+model GradeBoundary {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  gradeScaleId  String   @db.Uuid
+  grade         String   @db.VarChar(10)
+  minScore      Decimal  @map("min_score") @db.Decimal(10, 2)
+  maxScore      Decimal  @map("max_score") @db.Decimal(10, 2)
+  remark        String?  @db.VarChar(200)
+  displayOrder  Int      @map("display_order")
+  createdAt     DateTime @default(now()) @map("created_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  updatedBy     String?  @map("updated_by") @db.Uuid
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?  @map("deleted_by") @db.Uuid
+  version       Int      @default(1)
+
+  scale GradeScale @relation(fields: [gradeScaleId], references: [id])
+
+  @@unique([tenantId, gradeScaleId, grade])
+  @@map("grade_boundaries")
+}
+
+model Remark {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  gradeScaleId  String   @db.Uuid
+  minScore      Decimal  @map("min_score") @db.Decimal(10, 2)
+  maxScore      Decimal  @map("max_score") @db.Decimal(10, 2)
+  remarkText    String   @map("remark_text") @db.VarChar(500)
+  createdAt     DateTime @default(now()) @map("created_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  updatedBy     String?  @map("updated_by") @db.Uuid
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?  @map("deleted_by") @db.Uuid
+  version       Int      @default(1)
+
+  scale GradeScale @relation(fields: [gradeScaleId], references: [id])
+
+  @@map("remarks")
+}
+
+// ---------------------------------------------------------------------------
+// Results + report cards (no soft delete)
+// ---------------------------------------------------------------------------
+
 model Result {
-  id              String   @id @default(uuid()) @db.Uuid
-  tenantId        String   @db.Uuid
-  enrollmentId    String   @db.Uuid
-  academicYearId  String   @db.Uuid
-  termId          String   @db.Uuid
-  termAverage     Decimal? @db.Decimal(5, 2)
-  classPosition   Int?
-  totalScore      Decimal  @default(0) @db.Decimal(8, 2)
-  averageScore    Decimal  @default(0) @db.Decimal(5, 2)
-  grade           String?
-  status          UserRoleStatus @default(ACTIVE)
-  publishedAt     DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  deletedAt       DateTime?
+  id                       String       @id @default(uuid()) @db.Uuid
+  tenantId                 String       @db.Uuid
+  institutionId            String       @db.Uuid
+  studentClassEnrollmentId String       @db.Uuid
+  subjectId                String       @db.Uuid
+  termId                   String       @db.Uuid
+  totalScore               Decimal      @map("total_score") @db.Decimal(10, 2)
+  grade                    String?      @db.VarChar(10)
+  remark                   String?      @db.VarChar(200)
+  rank                     Int?
+  caScore                  Decimal      @map("ca_score") @db.Decimal(10, 2)
+  examScore                Decimal      @map("exam_score") @db.Decimal(10, 2)
+  gradeScaleId             String       @db.Uuid
+  status                   ResultStatus @default(COMPILED)
+  versionNumber            Int          @map("version_number") @default(1)
+  createdAt                DateTime     @default(now()) @map("created_at")
+  createdBy                String?      @map("created_by") @db.Uuid
+  updatedAt                DateTime     @updatedAt @map("updated_at")
+  updatedBy                String?      @map("updated_by") @db.Uuid
+  version                  Int          @default(1)
 
-  enrollment      Enrollment @relation(fields: [enrollmentId], references: [id])
-  academicYear    AcademicYear @relation(fields: [academicYearId], references: [id])
-  term            Term       @relation(fields: [termId], references: [id])
+  enrollment StudentClassEnrollment @relation(fields: [studentClassEnrollmentId], references: [id])
+  subject    Subject                @relation(fields: [subjectId], references: [id])
+  term       Term                   @relation(fields: [termId], references: [id])
+  scale      GradeScale             @relation(fields: [gradeScaleId], references: [id])
 
-  @@unique([enrollmentId, academicYearId, termId])
-  @@index([tenantId, academicYearId])
+  @@unique([tenantId, studentClassEnrollmentId, subjectId, termId])
+  @@index([studentClassEnrollmentId], name: "idx_res_enrollment")
+  @@index([termId, subjectId], name: "idx_res_term_subject")
   @@map("results")
 }
 
+model ReportCard {
+  id                       String           @id @default(uuid()) @db.Uuid
+  tenantId                 String           @db.Uuid
+  institutionId            String           @db.Uuid
+  studentClassEnrollmentId String           @db.Uuid
+  termId                   String           @db.Uuid
+  averageScore             Decimal          @map("average_score") @db.Decimal(10, 2)
+  position                 Int?
+  totalScore               Decimal          @map("total_score") @db.Decimal(10, 2)
+  remarks                  String?          @db.Text
+  generatedAt              DateTime         @map("generated_at")
+  publishedAt              DateTime?        @map("published_at")
+  status                   ReportCardStatus @default(GENERATED)
+  createdAt                DateTime         @default(now()) @map("created_at")
+  createdBy                String?          @map("created_by") @db.Uuid
+  updatedAt                DateTime         @updatedAt @map("updated_at")
+  updatedBy                String?          @map("updated_by") @db.Uuid
+  version                  Int              @default(1)
+
+  enrollment StudentClassEnrollment @relation(fields: [studentClassEnrollmentId], references: [id])
+  term       Term                   @relation(fields: [termId], references: [id])
+
+  @@unique([tenantId, studentClassEnrollmentId, termId])
+  @@index([studentClassEnrollmentId], name: "idx_rc_student")
+  @@map("report_cards")
+}
+
+// ---------------------------------------------------------------------------
+// Academic progression
+// ---------------------------------------------------------------------------
+
+model AcademicProgression {
+  id             String         @id @default(uuid()) @db.Uuid
+  tenantId       String         @db.Uuid
+  institutionId  String         @db.Uuid
+  studentPersonId String        @map("student_person_id") @db.Uuid
+  fromClassId    String         @map("from_class_id") @db.Uuid
+  toClassId      String?        @map("to_class_id") @db.Uuid
+  termId         String         @db.Uuid
+  progressionType ProgressionType @map("progression_type")
+  criteriaMet    Json?          @map("criteria_met")
+  notes          String?        @db.VarChar(500)
+  approvedBy     String?        @map("approved_by") @db.Uuid
+  approvedAt     DateTime?      @map("approved_at")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  createdBy      String?        @map("created_by") @db.Uuid
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  updatedBy      String?        @map("updated_by") @db.Uuid
+  deletedAt      DateTime?      @map("deleted_at")
+  deletedBy      String?        @map("deleted_by") @db.Uuid
+  version        Int            @default(1)
+
+  fromClass Class? @relation("ProgressionFromClass", fields: [fromClassId], references: [id])
+  toClass   Class? @relation("ProgressionToClass", fields: [toClassId], references: [id])
+  term      Term   @relation(fields: [termId], references: [id])
+
+  @@unique([tenantId, studentPersonId, termId])
+  @@index([studentPersonId], name: "idx_ap_student")
+  @@map("academic_progressions")
+}
+
+// ---------------------------------------------------------------------------
+// Academic policy
+// ---------------------------------------------------------------------------
+
+model AcademicPolicy {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  institutionId String       @db.Uuid
+  policyType    String       @map("policy_type") @db.VarChar(50)
+  policyKey     String       @map("policy_key") @db.VarChar(100)
+  value         Json
+  description   String?      @db.VarChar(500)
+  version       Int          @default(1)
+  effectiveFrom DateTime     @map("effective_from") @db.Date
+  effectiveTo   DateTime?    @map("effective_to") @db.Date
+  status        PolicyStatus @default(DRAFT)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  createdBy     String?      @map("created_by") @db.Uuid
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  updatedBy     String?      @map("updated_by") @db.Uuid
+  deletedAt     DateTime?    @map("deleted_at")
+  deletedBy     String?      @map("deleted_by") @db.Uuid
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, policyType, policyKey, version])
+  @@index([tenantId, institutionId, policyType, policyKey], name: "idx_ap_type_key")
+  @@map("academic_policies")
+}
+
+// ---------------------------------------------------------------------------
+// Summer school (no soft delete on results)
+// ---------------------------------------------------------------------------
+
+model SummerSchoolSession {
+  id                String            @id @default(uuid()) @db.Uuid
+  tenantId          String            @db.Uuid
+  institutionId     String            @db.Uuid
+  termId            String            @db.Uuid
+  name              String            @db.VarChar(100)
+  registrationStart DateTime          @map("registration_start") @db.Date
+  registrationEnd   DateTime          @map("registration_end") @db.Date
+  startDate         DateTime          @map("start_date") @db.Date
+  endDate           DateTime          @map("end_date") @db.Date
+  examStartDate     DateTime?         @map("exam_start_date") @db.Date
+  examEndDate       DateTime?         @map("exam_end_date") @db.Date
+  costModel         CostModel         @map("cost_model")
+  costAmount        Decimal?          @map("cost_amount") @db.Decimal(10, 2)
+  maxGrade          String?           @map("max_grade") @db.VarChar(10)
+  eligibleGrades    Json?             @map("eligible_grades")
+  status            SummerSchoolStatus @default(CONFIGURED)
+  createdAt         DateTime          @default(now()) @map("created_at")
+  createdBy         String?           @map("created_by") @db.Uuid
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  updatedBy         String?           @map("updated_by") @db.Uuid
+  deletedAt         DateTime?         @map("deleted_at")
+  deletedBy         String?           @map("deleted_by") @db.Uuid
+  version           Int               @default(1)
+
+  term          Term                     @relation(fields: [termId], references: [id])
+  registrations SummerSchoolRegistration[]
+  institution   Institution              @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, termId, name])
+  @@map("summer_school_sessions")
+}
+
+model SummerSchoolRegistration {
+  id                      String               @id @default(uuid()) @db.Uuid
+  tenantId                String               @db.Uuid
+  institutionId           String               @db.Uuid
+  summerSchoolSessionId   String               @db.Uuid
+  studentPersonId         String               @map("student_person_id") @db.Uuid
+  registeredAt            DateTime             @default(now()) @map("registered_at")
+  paymentStatus           String?              @map("payment_status") @db.VarChar(50)
+  status                  SSRegistrationStatus @default(REGISTERED)
+  createdAt               DateTime             @default(now()) @map("created_at")
+  createdBy               String?              @map("created_by") @db.Uuid
+  updatedAt               DateTime             @updatedAt @map("updated_at")
+  updatedBy               String?              @map("updated_by") @db.Uuid
+  deletedAt               DateTime?            @map("deleted_at")
+  deletedBy               String?              @map("deleted_by") @db.Uuid
+  version                 Int                  @default(1)
+
+  session SummerSchoolSession @relation(fields: [summerSchoolSessionId], references: [id])
+  results SummerSchoolResult[]
+
+  @@unique([tenantId, summerSchoolSessionId, studentPersonId])
+  @@index([summerSchoolSessionId], name: "idx_ssr_session")
+  @@map("summer_school_registrations")
+}
+
+model SummerSchoolResult {
+  id                        String   @id @default(uuid()) @db.Uuid
+  tenantId                  String   @db.Uuid
+  institutionId             String   @db.Uuid
+  summerSchoolRegistrationId String  @db.Uuid
+  subjectId                 String   @db.Uuid
+  originalGrade             String   @map("original_grade") @db.VarChar(10)
+  newScore                  Decimal? @map("new_score") @db.Decimal(10, 2)
+  newGrade                  String?  @map("new_grade") @db.VarChar(10)
+  published                 Boolean  @default(false)
+  publishedAt               DateTime? @map("published_at")
+  createdAt                 DateTime @default(now()) @map("created_at")
+  createdBy                 String?  @map("created_by") @db.Uuid
+  updatedAt                 DateTime @updatedAt @map("updated_at")
+  updatedBy                 String?  @map("updated_by") @db.Uuid
+  version                   Int      @default(1)
+
+  registration SummerSchoolRegistration @relation(fields: [summerSchoolRegistrationId], references: [id])
+  subject      Subject                  @relation(fields: [subjectId], references: [id])
+
+  @@unique([tenantId, summerSchoolRegistrationId, subjectId])
+  @@map("summer_school_results")
+}
 
 // --- Domain: analytics ---
 
@@ -545,58 +1447,6 @@ model Document {
   @@index([tenantId, studentId])
   @@index([tenantId, type])
   @@map("documents")
-}
-
-model Assignment {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @db.Uuid
-  classId       String   @db.Uuid
-  studentId     String?  @db.Uuid
-  academicYearId String  @db.Uuid
-  title         String
-  description   String?
-  dueDate       DateTime
-  totalMarks    Int      @default(100)
-  status        UserRoleStatus @default(ACTIVE)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  deletedAt     DateTime?
-
-  class         Class         @relation(fields: [classId], references: [id])
-  student       Student?      @relation(fields: [studentId], references: [id])
-  academicYear  AcademicYear  @relation(fields: [academicYearId], references: [id])
-  submissions   Submission[]
-
-  @@index([tenantId, classId])
-  @@index([tenantId, studentId])
-  @@map("assignments")
-}
-
-model Submission {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @db.Uuid
-  assignmentId  String   @db.Uuid
-  studentId     String   @db.Uuid
-  classId       String   @db.Uuid
-  content       String?
-  fileUrl       String?
-  grade         Int?
-  feedback      String?
-  status        UserRoleStatus @default(ACTIVE)
-  submittedAt   DateTime @default(now())
-  gradedAt      DateTime?
-  gradedBy      String?  @db.Uuid
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  deletedAt     DateTime?
-
-  assignment    Assignment @relation(fields: [assignmentId], references: [id])
-  student       Student    @relation(fields: [studentId], references: [id])
-  class         Class      @relation(fields: [classId], references: [id])
-
-  @@unique([assignmentId, studentId])
-  @@index([tenantId, studentId])
-  @@map("submissions")
 }
 
 model LibraryBook {
@@ -813,6 +1663,7 @@ model User {
   staff                  Staff?
   student                Student?
   parent                 Guardian?
+  parentRecord           Parent?
   emailVerificationTokens EmailVerificationToken[]
   passwordHistory        PasswordHistory[]
   organizationMemberships OrganizationMembership[]
@@ -843,6 +1694,13 @@ model Role {
   @@map("roles")
 }
 
+// M0 (PEOPLE-1): `user_roles` is tenant-scoped (RBAC-3 / P2.3 Option 2).
+// The `tenantId` column, Tenant relation and `@@unique([tenantId, userId, roleId])`
+// are the authoritative Phase-2 source-of-truth definition. Previously this
+// field lived only in the hand-tuned generated schema.prisma + rbac3.sql, so a
+// re-merge would have silently dropped the tenant-scoped assignment. Keeping it
+// here guarantees domains/identity.prisma, merged schema.prisma, migration
+// history and the actual database all agree.
 model UserRoleAssignment {
   id        String   @id @default(uuid()) @db.Uuid
   tenantId  String   @db.Uuid
@@ -1077,6 +1935,66 @@ model OnboardingLink {
 }
 
 
+// --- Domain: institution-configuration ---
+
+// P4.1 - Institution Management - additive configuration/settings domain.
+// FROZEN basis reused (do not redefine): institution.prisma models
+//   Institution (status: InstitutionStatus), Tenant, Department, and the
+//   identity domain's InstitutionMembership + RoleSystem + MembershipStatus.
+// This file ONLY adds the two institution-scoped configuration tables the
+// roadmap P4.1 block + Institution spec 7.1 require and that are genuinely
+// absent from the schema:
+//   institution_configurations (tenant-scoped, versioned, NO soft delete)
+//   institution_settings    (tenant-scoped, versioned, NO soft delete)
+// Every row is tenant-scoped (tenantId) AND institution-scoped
+// (institutionId). Server derives both from the authenticated session; a
+// client-supplied institutionId can NEVER create/alter another tenant's row.
+// Isolation follows BR-01 (cross-tenant prohibited) and BR-07 (institution
+// configuration isolated to its tenant). Versioning follows BR-10 (all
+// configuration changes are versioned and audited).
+
+model InstitutionConfiguration {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  key           String
+  value         Json
+  version       Int      @default(1)
+  createdBy     String?  @db.Uuid
+  updatedBy     String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([institutionId, key])
+  @@index([tenantId, institutionId])
+  @@map("institution_configurations")
+}
+
+model InstitutionSetting {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  key           String
+  value         Json
+  kind          String   @default("STRING")
+  version       Int      @default(1)
+  createdBy     String?  @db.Uuid
+  updatedBy     String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([institutionId, key])
+  @@index([tenantId, institutionId])
+  @@map("institution_settings")
+}
+
+
 // --- Domain: institution ---
 
 model Tenant {
@@ -1094,9 +2012,11 @@ model Tenant {
   updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
 
-  institutions   Institution[]
-  users          User[]
-  featureFlags   FeatureFlag[]
+  institutions           Institution[]
+  institutionConfigurations InstitutionConfiguration[]
+  institutionSettings     InstitutionSetting[]
+  users           User[]
+  featureFlags    FeatureFlag[]
   auditLogs      AuditLog[]
   userInvitations UserInvitation[]
   passwordPolicies PasswordPolicy[]
@@ -1105,8 +2025,29 @@ model Tenant {
   onboardingLinks         OnboardingLink[]
   loginAttempts           LoginAttempt[]
   sessions                Session[]
+  userRoleAssignments     UserRoleAssignment[]
 
-  userRoleAssignments   UserRoleAssignment[]
+  people               Person[]
+  personProfiles       PersonProfile[]
+  personInstitutions   PersonInstitution[]
+  students             Student[]
+  studentEnrollmentDetails StudentEnrollmentDetail[]
+  studentAcademicRecords   StudentAcademicRecord[]
+  studentGraduationDetails StudentGraduationDetail[]
+  studentTransferDetails   StudentTransferDetail[]
+  studentWithdrawalDetails StudentWithdrawalDetail[]
+  staff                Staff[]
+  staffEmploymentDetails  StaffEmploymentDetail[]
+  staffQualifications     StaffQualification[]
+  staffCertifications     StaffCertification[]
+  staffEmploymentHistory  StaffEmploymentHistory[]
+  parents              Parent[]
+  guardians            Guardian[]
+  applicants           Applicant[]
+  emergencyContacts    EmergencyContact[]
+  personRelationships  PersonRelationship[]
+  peopleDocuments      PeopleDocument[]
+
   @@index([slug])
   @@map("tenants")
 }
@@ -1135,67 +2076,41 @@ model Institution {
   tenant          Tenant          @relation(fields: [tenantId], references: [id])
   departments     Department[]
   academicYears   AcademicYear[]
+  academicSessions AcademicSession[]
+  terms           Term[]
+  subjects        Subject[]
+  subjectGroups   SubjectGroup[]
+  streams         Stream[]
+  gradeLevels     GradeLevel[]
+  classes         Class[]
+  timetables      Timetable[]
+  gradeScales     GradeScale[]
+  academicPolicies AcademicPolicy[]
+  summerSchoolSessions SummerSchoolSession[]
   students        Student[]
   staff           Staff[]
-  classes         Class[]
-  curricula       Curriculum[]
-  subjects        Subject[]
   feeStructures   FeeStructure[]
   transportRoutes TransportRoute[]
   hostels         Hostel[]
+  institutionConfigurations InstitutionConfiguration[]
+  institutionSettings       InstitutionSetting[]
   memberships     InstitutionMembership[]
   onboardingLinks OnboardingLink[]
+  personInstitutions PersonInstitution[]
+  parents            Parent[]
+  guardians          Guardian[]
+  applicants         Applicant[]
+  studentTransferSources     StudentTransferDetail[] @relation("TransferSourceInstitution")
+  studentTransferDestinations StudentTransferDetail[] @relation("TransferDestinationInstitution")
+  personRelationships        PersonRelationship[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
   @@map("institutions")
 }
 
-model Department {
-  id              String   @id @default(uuid()) @db.Uuid
-  tenantId        String   @db.Uuid
-  institutionId   String   @db.Uuid
-  name            String
-  code            String
-  description     String?
-  headStaffId     String?  @db.Uuid
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  deletedAt       DateTime?
-
-  institution     Institution @relation(fields: [institutionId], references: [id])
-  subjects        Subject[]
-
-  @@unique([tenantId, institutionId, code])
-  @@index([tenantId, institutionId])
-  @@map("departments")
-}
-
 
 // --- Domain: operations ---
-
-model Attendance {
-  id            String           @id @default(uuid()) @db.Uuid
-  tenantId      String           @db.Uuid
-  classId       String           @db.Uuid
-  studentId     String           @db.Uuid
-  termId        String           @db.Uuid
-  date          DateTime         @db.Date
-  status        AttendanceStatus @default(PRESENT)
-  remarks       String?
-  recordedBy    String?          @db.Uuid
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-
-  class         Class    @relation(fields: [classId], references: [id])
-  student       Student  @relation(fields: [studentId], references: [id])
-  term          Term     @relation(fields: [termId], references: [id])
-
-  @@unique([classId, studentId, date])
-  @@index([tenantId, classId, date])
-  @@index([tenantId, studentId])
-  @@map("attendance")
-}
 
 model Hostel {
   id              String      @id @default(uuid()) @db.Uuid
@@ -1379,130 +2294,684 @@ model LeaveRequest {
 
 // --- Domain: people ---
 
-model Student {
-  id              String          @id @default(uuid()) @db.Uuid
-  tenantId        String          @db.Uuid
-  institutionId   String          @db.Uuid
-  userId          String?         @unique @db.Uuid
-  studentNumber   String
-  internalEmail   String?
-  firstName       String
-  lastName        String
-  middleName      String?
-  dateOfBirth     DateTime?
-  gender          Gender
-  bloodGroup      String?
-  nationality     String?         @default("Nigerian")
-  stateOfOrigin   String?
-  address         String?
-  phone           String?
-  admissionDate   DateTime        @default(now())
-  status          EnrollmentStatus @default(ACTIVE)
-  profileImageUrl String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  deletedAt       DateTime?
+// ============================================================================
+// People domain (PEOPLE-1 — People Foundation, Master Roadmap Phase 4)
+//
+// Authoritative design source: engineering/People Engineering.md §7 (frozen)
+// with the §18-approved architecture decisions:
+//   • Person is the root identity aggregate; role sub-types (Student, Staff,
+//     Parent, Guardian, Applicant) reference people and add role-specific
+//     attributes. Identity attributes live ONLY on people (single source of
+//     truth; no denormalized first/last name or gender on sub-types).
+//   • Person ↔ User link (approved §18 #3): nullable `userId` bridge on the
+//     rebuilt Student/Staff/Parent/Guardian records. `User.personId` is NOT
+//     added. Phase-1/2 identity/session architecture remains authoritative.
+//   • `publicId` is server-generated, immutable, unique per tenant
+//     (P-/STU-/EMP-/APP-YYYY-NNNNNN). Generation foundation: people.utils.
+//   • Explicit lifecycle/status enums per table (approved §18 #2).
+//   • `internalEmail` and `studentNumber`/`staffNumber` Prisma field names are
+//     retained on Student/Staff (mapped to spec columns) because Phase-1 login
+//     resolution (auth.service.resolveIdentity) and the identity-b1 e2e suite
+//     depend on them. Additive columns, documented in the implementation report.
+//   • student_enrollment_details.academic_session_id and
+//     student_academic_records.academic_session_id are nullable UUID columns
+//     (spec People Engineering §7.2 FK → academic_sessions). Academic Session
+//     ownership lives in the Academics domain (frozen-spec deviation D2);
+//     PHASE 5 wires the deferred FK relation to the authoritative
+//     AcademicSession model (see Migration report §legacy→new mapping).
+// ============================================================================
 
-  institution     Institution     @relation(fields: [institutionId], references: [id])
-  user            User?           @relation(fields: [userId], references: [id])
-  enrollments     Enrollment[]
+enum PersonStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum StudentStatus {
+  ENROLLED
+  ACTIVE
+  TRANSFERRED
+  WITHDRAWN
+  GRADUATED
+}
+
+enum StaffStatus {
+  HIRED
+  ACTIVE
+  ON_LEAVE
+  SEPARATED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+}
+
+enum ContactPreference {
+  EMAIL
+  PHONE
+  SMS
+  WHATSAPP
+}
+
+enum ParentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum GuardianStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ApplicantStatus {
+  APPLIED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum ApplicantSource {
+  WEBSITE
+  REFERRAL
+  WALK_IN
+  AGENT
+  OTHER
+}
+
+enum RelationshipType {
+  PARENT
+  GUARDIAN
+  SIBLING
+  EMERGENCY_CONTACT
+  AUTHORIZED_PICKUP
+  STAFF_STUDENT
+  OTHER
+}
+
+enum DocumentStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum RoleContext {
+  STUDENT
+  STAFF
+  PARENT
+  GUARDIAN
+  APPLICANT
+}
+
+model Person {
+  id              String         @id @default(uuid()) @db.Uuid
+  tenantId        String         @db.Uuid
+  publicId        String         @map("public_id") @db.VarChar(20)
+  firstName       String         @map("first_name") @db.VarChar(100)
+  lastName        String         @map("last_name") @db.VarChar(100)
+  middleName      String?        @map("middle_name") @db.VarChar(100)
+  email           String         @db.VarChar(255)
+  phone           String?        @db.VarChar(50)
+  dateOfBirth     DateTime?      @map("date_of_birth") @db.Date
+  gender          Gender
+  bloodGroup      String?        @map("blood_group") @db.VarChar(10)
+  stateOfOrigin   String?        @map("state_of_origin") @db.VarChar(100)
+  address         String?        @db.VarChar(500)
+  status          PersonStatus   @default(ACTIVE)
+  isActive        Boolean        @default(true) @map("is_active")
+  profilePhotoRef String?        @map("profile_photo_ref") @db.VarChar(500)
+  createdAt       DateTime       @default(now()) @map("created_at")
+  createdBy       String?        @map("created_by") @db.Uuid
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  updatedBy       String?        @map("updated_by") @db.Uuid
+  deletedAt       DateTime?      @map("deleted_at")
+  deletedBy       String?        @map("deleted_by") @db.Uuid
+  version         Int            @default(1)
+
+  tenant             Tenant                  @relation(fields: [tenantId], references: [id])
+  profile            PersonProfile?
+  personInstitutions PersonInstitution[]
+  students           Student[]
+  staff              Staff[]
+  parents            Parent[]
+  guardians          Guardian[]
+  applicants         Applicant[]
+  emergencyContacts  EmergencyContact[]
+  sourceRelationships PersonRelationship[]   @relation("person_relations_source")
+  targetRelationships PersonRelationship[]   @relation("person_relations_target")
+  documents          PeopleDocument[]
+
+  @@unique([tenantId, email])
+  @@unique([tenantId, publicId])
+  @@index([tenantId, status])
+  @@index([tenantId, isActive])
+  @@index([tenantId, firstName, lastName])
+  @@map("people")
+}
+
+model PersonProfile {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @db.Uuid
+  personId     String   @unique @db.Uuid
+  bio          String?  @db.VarChar(1000)
+  customFields Json?
+  metadata     Json?
+  createdAt    DateTime @default(now()) @map("created_at")
+  createdBy    String?  @map("created_by") @db.Uuid
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  updatedBy    String?  @map("updated_by") @db.Uuid
+  deletedAt    DateTime? @map("deleted_at")
+  deletedBy    String?  @map("deleted_by") @db.Uuid
+  version      Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@index([tenantId])
+  @@map("person_profiles")
+}
+
+model PersonInstitution {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  personId      String       @db.Uuid
+  institutionId String       @db.Uuid
+  roleContext   RoleContext  @map("role_context")
+  assignedAt    DateTime     @default(now()) @map("assigned_at")
+  assignedBy    String?      @map("assigned_by") @db.Uuid
+  createdAt     DateTime     @default(now()) @map("created_at")
+  createdBy     String?      @map("created_by") @db.Uuid
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  updatedBy     String?      @map("updated_by") @db.Uuid
+  deletedAt     DateTime?    @map("deleted_at")
+  deletedBy     String?      @map("deleted_by") @db.Uuid
+  version       Int          @default(1)
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  person      Person      @relation(fields: [personId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, personId, institutionId, roleContext])
+  @@index([tenantId, personId])
+  @@index([tenantId, institutionId])
+  @@map("person_institutions")
+}
+
+model Student {
+  id              String        @id @default(uuid()) @db.Uuid
+  tenantId        String        @db.Uuid
+  personId        String        @db.Uuid
+  institutionId   String        @db.Uuid
+  userId          String?       @unique @db.Uuid
+  publicId        String        @map("public_id") @db.VarChar(20)
+  internalEmail   String?       @map("internal_email") @db.VarChar(255)
+  studentNumber   String?       @map("student_id_number") @db.VarChar(50)
+  enrollmentDate  DateTime      @default(now()) @map("enrollment_date") @db.Date
+  status          StudentStatus @default(ENROLLED)
+  createdAt       DateTime      @default(now()) @map("created_at")
+  createdBy       String?       @map("created_by") @db.Uuid
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  updatedBy       String?       @map("updated_by") @db.Uuid
+  deletedAt       DateTime?     @map("deleted_at")
+  deletedBy       String?       @map("deleted_by") @db.Uuid
+  version         Int           @default(1)
+
+  tenant          Tenant                  @relation(fields: [tenantId], references: [id])
+  institution     Institution             @relation(fields: [institutionId], references: [id])
+  person          Person                  @relation(fields: [personId], references: [id])
+  user            User?                   @relation(fields: [userId], references: [id])
+  enrollmentDetail StudentEnrollmentDetail?
+  academicRecords StudentAcademicRecord[]
+  graduationDetail StudentGraduationDetail?
+  transferDetail  StudentTransferDetail?
+  withdrawalDetail StudentWithdrawalDetail?
   invoices        Invoice[]
-  attendance      Attendance[]
-  submissions     Submission[]
   documents       Document[]
-  relationships   StudentGuardianRelationship[]
   libraryLoans    BookLoan[]
   hostelAllocations HostelAllocation[]
   transportAllocations TransportAllocation[]
-  assignments     Assignment[]
 
+  @@unique([tenantId, personId, institutionId])
+  @@unique([tenantId, publicId])
   @@unique([tenantId, institutionId, studentNumber])
   @@unique([tenantId, institutionId, internalEmail])
+  @@index([tenantId, personId])
   @@index([tenantId, institutionId])
   @@index([tenantId, status])
   @@map("students")
 }
 
+model StudentEnrollmentDetail {
+  id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @db.Uuid
+  studentId         String   @unique @db.Uuid
+  academicSessionId String?  @map("academic_session_id") @db.Uuid
+  gradeLevel        String   @map("grade_level") @db.VarChar(50)
+  className         String?  @map("class_name") @db.VarChar(50)
+  stream            String?  @db.VarChar(50)
+  enrollmentType    String   @map("enrollment_type") @db.VarChar(50)
+  createdAt         DateTime @default(now()) @map("created_at")
+  createdBy         String?  @map("created_by") @db.Uuid
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  updatedBy         String?  @map("updated_by") @db.Uuid
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by") @db.Uuid
+  version           Int      @default(1)
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+  academicSession AcademicSession? @relation("PeopleEnrollmentAcademicSession", fields: [academicSessionId], references: [id])
+
+  @@map("student_enrollment_details")
+}
+
+model StudentAcademicRecord {
+  id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @db.Uuid
+  studentId         String   @db.Uuid
+  academicSessionId String?  @map("academic_session_id") @db.Uuid
+  recordType        String   @map("record_type") @db.VarChar(50)
+  referenceId       String?  @map("reference_id") @db.Uuid
+  referenceType     String?  @map("reference_type") @db.VarChar(100)
+  metadata          Json?
+  createdAt         DateTime @default(now()) @map("created_at")
+  createdBy         String?  @map("created_by") @db.Uuid
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  updatedBy         String?  @map("updated_by") @db.Uuid
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by") @db.Uuid
+  version           Int      @default(1)
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+  academicSession AcademicSession? @relation("PeopleRecordAcademicSession", fields: [academicSessionId], references: [id])
+
+  @@index([tenantId, studentId])
+  @@map("student_academic_records")
+}
+
+model StudentGraduationDetail {
+  id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @db.Uuid
+  studentId         String   @unique @db.Uuid
+  graduationDate    DateTime @map("graduation_date") @db.Date
+  finalGrade        String?  @map("final_grade") @db.VarChar(50)
+  certificateNumber String?  @map("certificate_number") @db.VarChar(100)
+  diplomaReference  String?  @map("diploma_reference") @db.VarChar(500)
+  createdAt         DateTime @default(now()) @map("created_at")
+  createdBy         String?  @map("created_by") @db.Uuid
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  updatedBy         String?  @map("updated_by") @db.Uuid
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by") @db.Uuid
+  version           Int      @default(1)
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@map("student_graduation_details")
+}
+
+model StudentTransferDetail {
+  id                       String   @id @default(uuid()) @db.Uuid
+  tenantId                 String   @db.Uuid
+  studentId                String   @unique @db.Uuid
+  transferDate             DateTime @map("transfer_date") @db.Date
+  sourceInstitutionId      String?  @map("source_institution_id") @db.Uuid
+  destinationInstitutionId String?  @map("destination_institution_id") @db.Uuid
+  transferReason           String?  @map("transfer_reason") @db.VarChar(500)
+  transferDocuments        Json?    @map("transfer_documents")
+  createdAt                DateTime @default(now()) @map("created_at")
+  createdBy                String?  @map("created_by") @db.Uuid
+  updatedAt                DateTime @updatedAt @map("updated_at")
+  updatedBy                String?  @map("updated_by") @db.Uuid
+  deletedAt                DateTime? @map("deleted_at")
+  deletedBy                String?  @map("deleted_by") @db.Uuid
+  version                  Int      @default(1)
+
+  tenant                  Tenant      @relation(fields: [tenantId], references: [id])
+  student                 Student     @relation(fields: [studentId], references: [id])
+  sourceInstitution       Institution? @relation("TransferSourceInstitution", fields: [sourceInstitutionId], references: [id])
+  destinationInstitution  Institution? @relation("TransferDestinationInstitution", fields: [destinationInstitutionId], references: [id])
+
+  @@map("student_transfer_details")
+}
+
+model StudentWithdrawalDetail {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid
+  studentId       String   @unique @db.Uuid
+  withdrawalDate  DateTime @map("withdrawal_date") @db.Date
+  withdrawalReason String? @map("withdrawal_reason") @db.VarChar(500)
+  withdrawalType  String   @map("withdrawal_type") @db.VarChar(50)
+  refundStatus    String?  @map("refund_status") @db.VarChar(50)
+  createdAt       DateTime @default(now()) @map("created_at")
+  createdBy       String?  @map("created_by") @db.Uuid
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  updatedBy       String?  @map("updated_by") @db.Uuid
+  deletedAt       DateTime? @map("deleted_at")
+  deletedBy       String?  @map("deleted_by") @db.Uuid
+  version         Int      @default(1)
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@map("student_withdrawal_details")
+}
+
 model Staff {
-  id              String          @id @default(uuid()) @db.Uuid
-  tenantId        String          @db.Uuid
-  institutionId   String          @db.Uuid
-  userId          String?         @unique @db.Uuid
-  staffNumber     String
-  internalEmail   String?
-  firstName       String
-  lastName        String
-  middleName      String?
-  dateOfBirth     DateTime?
-  gender          Gender
-  phone           String?
-  email           String?
-  qualification   String?
-  specialization  String?
-  hireDate        DateTime        @default(now())
-  employmentType  String          @default("full_time")
-  department      String?
-  position        String?
-  status          UserRoleStatus  @default(ACTIVE)
-  profileImageUrl String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  deletedAt       DateTime?
+  id              String         @id @default(uuid()) @db.Uuid
+  tenantId        String         @db.Uuid
+  personId        String         @db.Uuid
+  institutionId   String         @db.Uuid
+  userId          String?        @unique @db.Uuid
+  publicId        String         @map("public_id") @db.VarChar(20)
+  internalEmail   String?        @map("internal_email") @db.VarChar(255)
+  staffNumber     String?        @map("employee_id") @db.VarChar(50)
+  hireDate        DateTime       @default(now()) @map("hire_date") @db.Date
+  employmentType  EmploymentType @default(FULL_TIME) @map("employment_type")
+  status          StaffStatus    @default(HIRED)
+  createdAt       DateTime       @default(now()) @map("created_at")
+  createdBy       String?        @map("created_by") @db.Uuid
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  updatedBy       String?        @map("updated_by") @db.Uuid
+  deletedAt       DateTime?      @map("deleted_at")
+  deletedBy       String?        @map("deleted_by") @db.Uuid
+  version         Int            @default(1)
 
-  institution     Institution     @relation(fields: [institutionId], references: [id])
-  user            User?           @relation(fields: [userId], references: [id])
-  classes         Class[]
-  classTeacherOf  Class[]         @relation("ClassTeacher")
-  grades          Grade[]
+  tenant           Tenant            @relation(fields: [tenantId], references: [id])
+  institution      Institution       @relation(fields: [institutionId], references: [id])
+  person           Person            @relation(fields: [personId], references: [id])
+  user             User?             @relation(fields: [userId], references: [id])
+  employmentDetail StaffEmploymentDetail?
+  qualifications   StaffQualification[]
+  certifications   StaffCertification[]
+  employmentHistory StaffEmploymentHistory[]
   maintenanceRequests MaintenanceRequest[]
-  leaveRequests   LeaveRequest[]
+  leaveRequests    LeaveRequest[]
+  subordinates     StaffEmploymentDetail[] @relation("ReportingStaff")
 
+  @@unique([tenantId, personId, institutionId])
+  @@unique([tenantId, publicId])
   @@unique([tenantId, institutionId, staffNumber])
   @@unique([tenantId, institutionId, internalEmail])
+  @@index([tenantId, personId])
   @@index([tenantId, institutionId])
+  @@index([tenantId, status])
   @@map("staff")
 }
 
+model StaffEmploymentDetail {
+  id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @db.Uuid
+  staffId           String   @unique @db.Uuid
+  position          String   @db.VarChar(200)
+  department        String?  @db.VarChar(200)
+  reportingTo       String?  @map("reporting_to") @db.Uuid
+  workLocation      String?  @map("work_location") @db.VarChar(200)
+  salaryGrade       String?  @map("salary_grade") @db.VarChar(50)
+  contractStartDate DateTime? @map("contract_start_date") @db.Date
+  contractEndDate   DateTime? @map("contract_end_date") @db.Date
+  createdAt         DateTime @default(now()) @map("created_at")
+  createdBy         String?  @map("created_by") @db.Uuid
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  updatedBy         String?  @map("updated_by") @db.Uuid
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by") @db.Uuid
+  version           Int      @default(1)
+
+  tenant           Tenant  @relation(fields: [tenantId], references: [id])
+  staff            Staff   @relation(fields: [staffId], references: [id])
+  reportingToStaff Staff?  @relation("ReportingStaff", fields: [reportingTo], references: [id])
+
+  @@map("staff_employment_details")
+}
+
+model StaffQualification {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @db.Uuid
+  staffId          String   @db.Uuid
+  qualificationName String  @map("qualification_name") @db.VarChar(200)
+  institutionName  String   @map("institution_name") @db.VarChar(200)
+  fieldOfStudy     String?  @map("field_of_study") @db.VarChar(200)
+  yearObtained     Int      @map("year_obtained")
+  grade            String?  @db.VarChar(50)
+  certificateRef   String?  @map("certificate_ref") @db.VarChar(500)
+  createdAt        DateTime @default(now()) @map("created_at")
+  createdBy        String?  @map("created_by") @db.Uuid
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  updatedBy        String?  @map("updated_by") @db.Uuid
+  deletedAt        DateTime? @map("deleted_at")
+  deletedBy        String?  @map("deleted_by") @db.Uuid
+  version          Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  staff  Staff  @relation(fields: [staffId], references: [id])
+
+  @@index([tenantId, staffId])
+  @@map("staff_qualifications")
+}
+
+model StaffCertification {
+  id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @db.Uuid
+  staffId           String   @db.Uuid
+  certificationName String   @map("certification_name") @db.VarChar(200)
+  issuingBody       String   @map("issuing_body") @db.VarChar(200)
+  issueDate         DateTime @map("issue_date") @db.Date
+  expiryDate        DateTime? @map("expiry_date") @db.Date
+  certificateNumber String?  @map("certificate_number") @db.VarChar(100)
+  certificateRef    String?  @map("certificate_ref") @db.VarChar(500)
+  createdAt         DateTime @default(now()) @map("created_at")
+  createdBy         String?  @map("created_by") @db.Uuid
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  updatedBy         String?  @map("updated_by") @db.Uuid
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by") @db.Uuid
+  version           Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  staff  Staff  @relation(fields: [staffId], references: [id])
+
+  @@index([tenantId, staffId])
+  @@map("staff_certifications")
+}
+
+model StaffEmploymentHistory {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @db.Uuid
+  staffId          String   @db.Uuid
+  institutionName  String   @map("institution_name") @db.VarChar(200)
+  position         String   @db.VarChar(200)
+  startDate        DateTime @map("start_date") @db.Date
+  endDate          DateTime? @map("end_date") @db.Date
+  reasonForLeaving String?  @map("reason_for_leaving") @db.VarChar(500)
+  createdAt        DateTime @default(now()) @map("created_at")
+  createdBy        String?  @map("created_by") @db.Uuid
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  updatedBy        String?  @map("updated_by") @db.Uuid
+  deletedAt        DateTime? @map("deleted_at")
+  deletedBy        String?  @map("deleted_by") @db.Uuid
+  version          Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  staff  Staff  @relation(fields: [staffId], references: [id])
+
+  @@index([tenantId, staffId])
+  @@map("staff_employment_history")
+}
+
+model Parent {
+  id               String           @id @default(uuid()) @db.Uuid
+  tenantId         String           @db.Uuid
+  personId         String           @db.Uuid
+  institutionId    String           @db.Uuid
+  userId           String?          @unique @db.Uuid
+  contactPreference ContactPreference @default(EMAIL) @map("contact_preference")
+  status           ParentStatus     @default(ACTIVE)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  createdBy        String?          @map("created_by") @db.Uuid
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  updatedBy        String?          @map("updated_by") @db.Uuid
+  deletedAt        DateTime?        @map("deleted_at")
+  deletedBy        String?          @map("deleted_by") @db.Uuid
+  version          Int              @default(1)
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  person      Person      @relation(fields: [personId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+  user        User?       @relation(fields: [userId], references: [id])
+
+  @@unique([tenantId, personId, institutionId])
+  @@index([tenantId, personId])
+  @@index([tenantId, institutionId])
+  @@map("parents")
+}
+
 model Guardian {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @db.Uuid
-  userId        String?  @unique @db.Uuid
-  firstName     String
-  lastName      String
-  email         String
-  phone         String
-  address       String?
-  occupation    String?
-  relationship  String
-  isPrimary     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  deletedAt     DateTime?
+  id                  String            @id @default(uuid()) @db.Uuid
+  tenantId            String            @db.Uuid
+  personId            String            @db.Uuid
+  institutionId       String            @db.Uuid
+  userId              String?           @unique @db.Uuid
+  legalGuardianshipRef String?          @map("legal_guardianship_ref") @db.VarChar(500)
+  contactPreference   ContactPreference @default(EMAIL) @map("contact_preference")
+  status              GuardianStatus    @default(ACTIVE)
+  createdAt           DateTime          @default(now()) @map("created_at")
+  createdBy           String?           @map("created_by") @db.Uuid
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+  updatedBy           String?           @map("updated_by") @db.Uuid
+  deletedAt           DateTime?         @map("deleted_at")
+  deletedBy           String?           @map("deleted_by") @db.Uuid
+  version             Int               @default(1)
 
-  user          User?    @relation(fields: [userId], references: [id])
-  relationships StudentGuardianRelationship[]
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  person      Person      @relation(fields: [personId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+  user        User?       @relation(fields: [userId], references: [id])
 
-  @@index([tenantId])
+  @@unique([tenantId, personId, institutionId])
+  @@index([tenantId, personId])
+  @@index([tenantId, institutionId])
   @@map("guardians")
 }
 
-model StudentGuardianRelationship {
-  id          String   @id @default(uuid()) @db.Uuid
-  tenantId    String   @db.Uuid
-  studentId   String   @db.Uuid
-  guardianId  String   @db.Uuid
-  relationship String
-  isPrimary   Boolean  @default(false)
-  createdAt   DateTime @default(now())
+model Applicant {
+  id              String          @id @default(uuid()) @db.Uuid
+  tenantId        String          @db.Uuid
+  personId        String          @db.Uuid
+  institutionId   String          @db.Uuid
+  publicId        String          @map("public_id") @db.VarChar(20)
+  applicationDate DateTime        @default(now()) @map("application_date") @db.Date
+  targetGrade     String          @map("target_grade") @db.VarChar(100)
+  source          ApplicantSource @default(WALK_IN)
+  status          ApplicantStatus @default(APPLIED)
+  notes           String?         @db.VarChar(2000)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  createdBy       String?         @map("created_by") @db.Uuid
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  updatedBy       String?         @map("updated_by") @db.Uuid
+  deletedAt       DateTime?       @map("deleted_at")
+  deletedBy       String?         @map("deleted_by") @db.Uuid
+  version         Int             @default(1)
 
-  student     Student  @relation(fields: [studentId], references: [id])
-  guardian    Guardian @relation(fields: [guardianId], references: [id])
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  person      Person      @relation(fields: [personId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
 
-  @@unique([studentId, guardianId])
-  @@index([tenantId])
-  @@map("student_guardian_relationships")
+  @@unique([tenantId, personId, institutionId])
+  @@unique([tenantId, publicId])
+  @@index([tenantId, personId])
+  @@index([tenantId, institutionId])
+  @@index([tenantId, status])
+  @@map("applicants")
 }
 
+model EmergencyContact {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  personId      String   @db.Uuid
+  name          String   @db.VarChar(200)
+  phonePrimary  String   @map("phone_primary") @db.VarChar(50)
+  phoneSecondary String? @map("phone_secondary") @db.VarChar(50)
+  email         String?  @db.VarChar(255)
+  relationship  String   @db.VarChar(100)
+  priority      Int
+  address       String?  @db.VarChar(500)
+  createdAt     DateTime @default(now()) @map("created_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  updatedBy     String?  @map("updated_by") @db.Uuid
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?  @map("deleted_by") @db.Uuid
+  version       Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@unique([tenantId, personId, priority])
+  @@index([tenantId, personId])
+  @@map("emergency_contacts")
+}
+
+model PersonRelationship {
+  id               String           @id @default(uuid()) @db.Uuid
+  tenantId         String           @db.Uuid
+  sourcePersonId   String           @map("source_person_id") @db.Uuid
+  targetPersonId   String           @map("target_person_id") @db.Uuid
+  relationshipType RelationshipType @map("relationship_type")
+  institutionId    String           @db.Uuid
+  startDate        DateTime         @default(now()) @map("start_date") @db.Date
+  endDate          DateTime?        @map("end_date") @db.Date
+  isActive         Boolean          @default(true) @map("is_active")
+  metadata         Json?
+  createdAt        DateTime         @default(now()) @map("created_at")
+  createdBy        String?          @map("created_by") @db.Uuid
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  updatedBy        String?          @map("updated_by") @db.Uuid
+  deletedAt        DateTime?        @map("deleted_at")
+  deletedBy        String?          @map("deleted_by") @db.Uuid
+  version          Int              @default(1)
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  sourcePerson Person      @relation("person_relations_source", fields: [sourcePersonId], references: [id])
+  targetPerson Person      @relation("person_relations_target", fields: [targetPersonId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, sourcePersonId, targetPersonId, relationshipType, institutionId])
+  @@index([tenantId, sourcePersonId])
+  @@index([tenantId, targetPersonId])
+  @@index([tenantId, institutionId])
+  @@map("person_relationships")
+}
+
+model PeopleDocument {
+  id            String         @id @default(uuid()) @db.Uuid
+  tenantId      String         @db.Uuid
+  personId      String         @db.Uuid
+  documentType  String         @map("document_type") @db.VarChar(100)
+  documentName  String         @map("document_name") @db.VarChar(200)
+  fileReference String         @map("file_reference") @db.VarChar(500)
+  fileSize      Int?           @map("file_size")
+  mimeType      String?        @map("mime_type") @db.VarChar(100)
+  status        DocumentStatus @default(ACTIVE)
+  expiryDate    DateTime?      @map("expiry_date") @db.Date
+  createdAt     DateTime       @default(now()) @map("created_at")
+  createdBy     String?        @map("created_by") @db.Uuid
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  updatedBy     String?        @map("updated_by") @db.Uuid
+  deletedAt     DateTime?      @map("deleted_at")
+  deletedBy     String?        @map("deleted_by") @db.Uuid
+  version       Int            @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@index([tenantId, personId])
+  @@map("people_documents")
+}
 
 // --- Domain: platform ---
 

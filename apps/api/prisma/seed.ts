@@ -1,4 +1,18 @@
-import { PrismaClient, UserRole, Gender, EnrollmentStatus, InvoiceStatus, PaymentStatus, PaymentMethod, NotificationStatus, AttendanceStatus } from '@prisma/client';
+import {
+  PrismaClient,
+  Gender,
+  InvoiceStatus,
+  PaymentStatus,
+  PaymentMethod,
+  NotificationStatus,
+  AttendanceStatus,
+  StudentStatus,
+  StaffStatus,
+  EmploymentType,
+  ContactPreference,
+  RelationshipType,
+  RoleContext,
+} from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { createHash } from 'crypto';
 
@@ -9,6 +23,15 @@ export const SEED_INVITATION_EMAIL = 'candidate@greenfield.edu.ng';
 export const SEED_INVITATION_RAW_TOKEN = 'seed-invitation-token-0001';
 export const SEED_ONBOARDING_EMAIL = 'provisioned.teacher@greenfield.edu.ng';
 export const SEED_ONBOARDING_RAW_TOKEN = 'seed-onboarding-token-0001';
+
+const PUBLIC_ID_YEAR = new Date().getFullYear();
+
+// Matches the frozen People format `<PREFIX>-<YYYY>-<NNNNNN>` (see
+// src/modules/people/people.utils.ts). Seed sequences are deterministic and
+// unique within their tenant-scoped table.
+function publicId(prefix: 'P' | 'STU' | 'EMP' | 'APP', sequence: number): string {
+  return `${prefix}-${PUBLIC_ID_YEAR}-${String(sequence).padStart(6, '0')}`;
+}
 
 function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
@@ -54,78 +77,130 @@ async function main() {
     },
   });
 
+  // PHASE 5 (P5.1-P5.8): academic fixtures re-authored against the frozen
+  // Academic schema (engineering/Academic Management Engineering.md §7-8).
+  // See docs/PHASE_5_MIGRATION_REPORT.md for the legacy-tables disposition.
+  // Calendar: Year → Session → Terms; departments; subjects; grade levels +
+  // streams → classes; students are placed via student_class_enrollments
+  // (student_person_id = Person.id, per the frozen cross-domain decision).
   await prisma.department.createMany({
     data: [
-      { tenantId: tenant.id, institutionId: institution.id, name: 'Science Department', code: 'SCI' },
-      { tenantId: tenant.id, institutionId: institution.id, name: 'Arts Department', code: 'ART' },
-      { tenantId: tenant.id, institutionId: institution.id, name: 'Commercial Department', code: 'COM' },
-      { tenantId: tenant.id, institutionId: institution.id, name: 'Junior School', code: 'JNR' },
-      { tenantId: tenant.id, institutionId: institution.id, name: 'Senior School', code: 'SNR' },
+      { tenantId: tenant.id, institutionId: institution.id, name: 'Science Department' },
+      { tenantId: tenant.id, institutionId: institution.id, name: 'Arts Department' },
+      { tenantId: tenant.id, institutionId: institution.id, name: 'Commercial Department' },
     ],
   });
+
+  const deptScience = await prisma.department.findFirst({ where: { tenantId: tenant.id, name: 'Science Department' } });
+  const deptArts = await prisma.department.findFirst({ where: { tenantId: tenant.id, name: 'Arts Department' } });
+  const deptCommercial = await prisma.department.findFirst({ where: { tenantId: tenant.id, name: 'Commercial Department' } });
 
   const academicYear = await prisma.academicYear.create({
     data: {
       tenantId: tenant.id,
       institutionId: institution.id,
       name: '2025/2026',
-      startYear: 2025,
-      endYear: 2026,
-      isCurrent: true,
+      startDate: new Date('2025-09-08'),
+      endDate: new Date('2026-07-17'),
+      status: 'ACTIVE',
+      isActive: true,
+    },
+  });
+
+  const academicSession = await prisma.academicSession.create({
+    data: {
+      tenantId: tenant.id,
+      institutionId: institution.id,
+      academicYearId: academicYear.id,
+      name: '2025/2026 Session',
+      startDate: new Date('2025-09-08'),
+      endDate: new Date('2026-07-17'),
+      status: 'ACTIVE',
     },
   });
 
   await prisma.term.createMany({
     data: [
-      { tenantId: tenant.id, academicYearId: academicYear.id, name: 'First Term', startDate: new Date('2025-09-08'), endDate: new Date('2025-12-12'), isCurrent: true },
-      { tenantId: tenant.id, academicYearId: academicYear.id, name: 'Second Term', startDate: new Date('2026-01-05'), endDate: new Date('2026-03-27') },
-      { tenantId: tenant.id, academicYearId: academicYear.id, name: 'Third Term', startDate: new Date('2026-04-13'), endDate: new Date('2026-07-17') },
+      { tenantId: tenant.id, institutionId: institution.id, academicSessionId: academicSession.id, name: 'First Term', startDate: new Date('2025-09-08'), endDate: new Date('2025-12-12'), status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, academicSessionId: academicSession.id, name: 'Second Term', startDate: new Date('2026-01-05'), endDate: new Date('2026-03-27'), status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, academicSessionId: academicSession.id, name: 'Third Term', startDate: new Date('2026-04-13'), endDate: new Date('2026-07-17'), status: 'DRAFT' },
     ],
   });
 
   const currentTerm = await prisma.term.findFirst({
-    where: { academicYearId: academicYear.id, isCurrent: true },
-  });
-
-  const curriculum = await prisma.curriculum.create({
-    data: {
-      tenantId: tenant.id,
-      institutionId: institution.id,
-      academicYearId: academicYear.id,
-      name: 'Standard Curriculum',
-      version: '1.0',
-    },
+    where: { academicSessionId: academicSession.id, status: 'ACTIVE' },
+    orderBy: { name: 'asc' },
   });
 
   const subjects = await prisma.subject.createMany({
     data: [
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'MTH', name: 'Mathematics', creditHours: 4 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'ENG', name: 'English Language', creditHours: 4 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'PHY', name: 'Physics', creditHours: 3 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'CHM', name: 'Chemistry', creditHours: 3 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'BIO', name: 'Biology', creditHours: 3 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'LIT', name: 'Literature in English', creditHours: 3 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'GOV', name: 'Government', creditHours: 3 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'ECO', name: 'Economics', creditHours: 3 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'ACC', name: 'Accounting', creditHours: 3 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'YOR', name: 'Yoruba Language', creditHours: 2 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'CIV', name: 'Civic Education', creditHours: 2 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'FUR', name: 'Further Mathematics', creditHours: 3 },
-      { tenantId: tenant.id, institutionId: institution.id, curriculumId: curriculum.id, code: 'COM', name: 'Computer Science', creditHours: 3 },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptScience?.id, code: 'MTH', name: 'Mathematics', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptArts?.id, code: 'ENG', name: 'English Language', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptScience?.id, code: 'PHY', name: 'Physics', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptScience?.id, code: 'CHM', name: 'Chemistry', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptScience?.id, code: 'BIO', name: 'Biology', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptArts?.id, code: 'LIT', name: 'Literature in English', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptArts?.id, code: 'GOV', name: 'Government', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptCommercial?.id, code: 'ECO', name: 'Economics', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptCommercial?.id, code: 'ACC', name: 'Accounting', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptArts?.id, code: 'YOR', name: 'Yoruba Language', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptArts?.id, code: 'CIV', name: 'Civic Education', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptScience?.id, code: 'FUR', name: 'Further Mathematics', status: 'ACTIVE' },
+      { tenantId: tenant.id, institutionId: institution.id, departmentId: deptScience?.id, code: 'COM', name: 'Computer Science', status: 'ACTIVE' },
     ],
   });
 
-  const mathSubject = await prisma.subject.findFirst({ where: { code: 'MTH', tenantId: tenant.id } });
-  const engSubject = await prisma.subject.findFirst({ where: { code: 'ENG', tenantId: tenant.id } });
+  // P5.2 subject groups: 'Core Science' bundles the science subjects.
+  const coreScienceGroup = await prisma.subjectGroup.create({
+    data: {
+      tenantId: tenant.id,
+      institutionId: institution.id,
+      name: 'Core Science',
+      description: 'Core science subjects for SS1',
+    },
+  });
+  const coreSubjects = await prisma.subject.findMany({
+    where: { tenantId: tenant.id, code: { in: ['MTH', 'PHY', 'CHM', 'BIO'] } },
+  });
+  if (coreSubjects.length === 4) {
+    await prisma.subjectSubjectGroup.createMany({
+      data: coreSubjects.map((s) => ({
+        tenantId: tenant.id,
+        subjectId: s.id,
+        subjectGroupId: coreScienceGroup.id,
+      })),
+    });
+  }
+
+  // Class structure: grade level + streams → classes.
+  const ss1GradeLevel = await prisma.gradeLevel.create({
+    data: { tenantId: tenant.id, institutionId: institution.id, name: 'SS1', displayOrder: 1, status: 'ACTIVE' },
+  });
+  const [scienceStream, artsStream] = await Promise.all([
+    prisma.stream.create({ data: { tenantId: tenant.id, institutionId: institution.id, gradeLevelId: ss1GradeLevel.id, name: 'Science' } }),
+    prisma.stream.create({ data: { tenantId: tenant.id, institutionId: institution.id, gradeLevelId: ss1GradeLevel.id, name: 'Arts' } }),
+  ]);
 
   const ss1Classes = [];
-  if (mathSubject && engSubject) {
-    const [created1, created2] = await Promise.all([
-      prisma.class.create({ data: { tenantId: tenant.id, institutionId: institution.id, subjectId: mathSubject.id, academicYearId: academicYear.id, name: 'SS 1 Science', section: 'A', capacity: 35 } }),
-      prisma.class.create({ data: { tenantId: tenant.id, institutionId: institution.id, subjectId: engSubject.id, academicYearId: academicYear.id, name: 'SS 1 Arts', section: 'A', capacity: 30 } }),
-    ]);
-    ss1Classes.push(created1, created2);
-  }
+  const [ss1Science, ss1Arts] = await Promise.all([
+    prisma.class.create({ data: { tenantId: tenant.id, institutionId: institution.id, gradeLevelId: ss1GradeLevel.id, streamId: scienceStream.id, name: 'SS 1 Science', capacity: 35, status: 'ACTIVE' } }),
+    prisma.class.create({ data: { tenantId: tenant.id, institutionId: institution.id, gradeLevelId: ss1GradeLevel.id, streamId: artsStream.id, name: 'SS 1 Arts', capacity: 30, status: 'ACTIVE' } }),
+  ]);
+  ss1Classes.push(ss1Science, ss1Arts);
+
+  // P5.6 grading: standard scale + boundaries (drives result compilation).
+  const standardScale = await prisma.gradeScale.create({
+    data: { tenantId: tenant.id, institutionId: institution.id, name: 'Standard Scale', status: 'ACTIVE' },
+  });
+  await prisma.gradeBoundary.createMany({
+    data: [
+      { tenantId: tenant.id, institutionId: institution.id, gradeScaleId: standardScale.id, grade: 'A', minScore: 70, maxScore: 100, remark: 'Excellent', displayOrder: 1 },
+      { tenantId: tenant.id, institutionId: institution.id, gradeScaleId: standardScale.id, grade: 'B', minScore: 60, maxScore: 69, remark: 'Very Good', displayOrder: 2 },
+      { tenantId: tenant.id, institutionId: institution.id, gradeScaleId: standardScale.id, grade: 'C', minScore: 50, maxScore: 59, remark: 'Good', displayOrder: 3 },
+      { tenantId: tenant.id, institutionId: institution.id, gradeScaleId: standardScale.id, grade: 'D', minScore: 40, maxScore: 49, remark: 'Fair', displayOrder: 4 },
+      { tenantId: tenant.id, institutionId: institution.id, gradeScaleId: standardScale.id, grade: 'F', minScore: 0, maxScore: 39, remark: 'Fail', displayOrder: 5 },
+    ],
+  });
 
   const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 10);
 
@@ -284,6 +359,173 @@ async function main() {
     ],
   });
 
+  // PEOPLE-1 (spec §10.3): register the frozen People permission catalogue.
+  // `people:*` resource action sets map verbatim from the approved
+  // implementation matrix (§18 decision #5).
+  await prisma.permission.createMany({
+    data: [
+      // people:person
+      ...['list', 'read', 'create', 'update', 'delete', 'search', 'assign', 'merge'].map((action) => ({
+        resource: 'people:person',
+        action,
+        description: `${action} people`,
+      })),
+      // people:student / people:staff / people:parent / people:guardian
+      ...['student', 'staff', 'parent', 'guardian'].flatMap((type) =>
+        ['list', 'read', 'create', 'update', 'delete'].map((action) => ({
+          resource: `people:${type}`,
+          action,
+          description: `${action} ${type}s`,
+        })),
+      ),
+      // people:applicant
+      ...['list', 'read', 'create', 'update', 'delete', 'accept', 'reject'].map((action) => ({
+        resource: 'people:applicant',
+        action,
+        description: `${action} applicants`,
+      })),
+      // people:emergency_contact / people:relationship / people:document
+      ...['emergency_contact', 'relationship', 'document'].flatMap((type) =>
+        ['list', 'read', 'create', 'update', 'delete'].map((action) => ({
+          resource: `people:${type}`,
+          action,
+          description: `${action} ${type.replace('_', ' ')}s`,
+        })),
+      ),
+    ],
+  });
+
+  // P4.1 (Institution Management): register the institution permission
+  // catalogue. Admin-only in V1 — the five admin roles receive `institution:*`;
+  // no non-admin role receives Institution access. Endpoint -> permission
+  // mapping mirrors the approved P4.1 audit decision.
+  await prisma.permission.createMany({
+    data: [
+      // institution:institution
+      ...['list', 'read', 'create', 'update', 'delete', 'suspend', 'restore', 'archive', 'activate'].map((action) => ({
+        resource: 'institution:institution',
+        action,
+        description: `${action} institutions`,
+      })),
+      // institution:config (key-addressable upsert surface -> no create)
+      ...['list', 'read', 'update', 'delete'].map((action) => ({
+        resource: 'institution:config',
+        action,
+        description: `${action} institution configuration`,
+      })),
+      // institution:setting (key-addressable upsert surface -> no create)
+      ...['list', 'read', 'update', 'delete'].map((action) => ({
+        resource: 'institution:setting',
+        action,
+        description: `${action} institution settings`,
+      })),
+    ],
+  });
+
+  // PHASE 5 (D-2): register the frozen Academic permission catalogue
+  // (engineering/Academic Management Engineering.md §10.3; mapping decision —
+  // docs/PHASE_5_ACADEMIC_RBAC_GRANT_MATRIX.md). No new RBAC roles; grants below.
+  await prisma.permission.createMany({
+    data: [
+      // academics:calendar — years/sessions/terms
+      ...['read', 'create', 'update', 'manage'].map((action) => ({
+        resource: 'academics:calendar',
+        action,
+        description: `${action} academic calendar`,
+      })),
+      // academics:subject
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'academics:subject',
+        action,
+        description: `${action} subjects`,
+      })),
+      // academics:department
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'academics:department',
+        action,
+        description: `${action} departments`,
+      })),
+      // academics:grade_level
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'academics:grade_level',
+        action,
+        description: `${action} grade levels`,
+      })),
+      // academics:class
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'academics:class',
+        action,
+        description: `${action} classes`,
+      })),
+      // academics:teaching
+      ...['read', 'create', 'update', 'delete'].map((action) => ({
+        resource: 'academics:teaching',
+        action,
+        description: `${action} teaching assignments`,
+      })),
+      // academics:timetable
+      ...['read', 'create', 'update', 'manage'].map((action) => ({
+        resource: 'academics:timetable',
+        action,
+        description: `${action} timetables`,
+      })),
+      // academics:enrollment
+      ...['read', 'create', 'update', 'delete'].map((action) => ({
+        resource: 'academics:enrollment',
+        action,
+        description: `${action} enrollments`,
+      })),
+      // academics:attendance
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'academics:attendance',
+        action,
+        description: `${action} attendance`,
+      })),
+      // academics:assignment
+      ...['read', 'create', 'update', 'manage', 'submit', 'grade'].map((action) => ({
+        resource: 'academics:assignment',
+        action,
+        description: `${action} assignments`,
+      })),
+      // academics:assessment
+      ...['read', 'create', 'update', 'manage', 'grade'].map((action) => ({
+        resource: 'academics:assessment',
+        action,
+        description: `${action} assessments`,
+      })),
+      // academics:grading
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'academics:grading',
+        action,
+        description: `${action} grade scales`,
+      })),
+      // academics:result
+      ...['read', 'compile', 'approve', 'publish', 'generate'].map((action) => ({
+        resource: 'academics:result',
+        action,
+        description: `${action} results`,
+      })),
+      // academics:progression
+      ...['read', 'evaluate', 'approve', 'manage'].map((action) => ({
+        resource: 'academics:progression',
+        action,
+        description: `${action} progressions`,
+      })),
+      // academics:summer_school
+      ...['read', 'create', 'update', 'manage', 'register', 'compile', 'publish'].map((action) => ({
+        resource: 'academics:summer_school',
+        action,
+        description: `${action} summer school`,
+      })),
+      // academics:policy
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'academics:policy',
+        action,
+        description: `${action} academic policies`,
+      })),
+    ],
+  });
+
   const invitationPermissionRows = await prisma.permission.findMany({
     where: { resource: 'identity:invitation' },
   });
@@ -310,6 +552,15 @@ async function main() {
   });
   const sessionPermissionRows = await prisma.permission.findMany({
     where: { resource: 'identity:session' },
+  });
+  const peoplePermissionRows = await prisma.permission.findMany({
+    where: { resource: { startsWith: 'people:' } },
+  });
+  const institutionPermissionRows = await prisma.permission.findMany({
+    where: { resource: { startsWith: 'institution:' } },
+  });
+  const academicPermissionRows = await prisma.permission.findMany({
+    where: { resource: { startsWith: 'academics:' } },
   });
 
   const adminRoleIds = roles
@@ -358,8 +609,202 @@ async function main() {
       ...sessionPermissionRows.flatMap((p) =>
         allRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
       ),
+      // PEOPLE-1: `people:*` grants mirror the approved mapping — the five
+      // admin roles only. No non-admin role receives People access in V1.
+      ...peoplePermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      // P4.1: `institution:*` grants mirror the approved mapping — the five
+      // admin roles only. No non-admin role receives Institution access in V1.
+      ...institutionPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      // PHASE 5 (D-2): `academics:*` — the five admin roles receive the full
+      // frozen catalogue. Non-admin grants follow the operational matrix below.
+      ...academicPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
     ],
   });
+
+  // PEOPLE-2 (frozen PEOPLE-G §8.3 role→permission matrix, locked decision D-B):
+  // operational-role grants for People endpoints. Least privilege only; object
+  // scope (tenant/institution/self) remains enforced by the guards at runtime.
+  const operationalMatrix: {
+    roleName: string;
+    grants: { resource: string; actions: string[] }[];
+  }[] = [
+    {
+      roleName: 'HR_OFFICER',
+      grants: [{ resource: 'people:staff', actions: ['list', 'read', 'create', 'update', 'delete'] }],
+    },
+    {
+      roleName: 'STUDENT_MANAGEMENT_OFFICER',
+      grants: [
+        { resource: 'people:student', actions: ['list', 'read', 'create', 'update', 'delete'] },
+        { resource: 'people:applicant', actions: ['list', 'read', 'create', 'update', 'delete', 'accept', 'reject'] },
+      ],
+    },
+    {
+      roleName: 'TEACHER',
+      grants: [
+        { resource: 'people:person', actions: ['list', 'read', 'search'] },
+        { resource: 'people:student', actions: ['list', 'read'] },
+      ],
+    },
+    {
+      roleName: 'PARENT',
+      grants: [
+        { resource: 'people:person', actions: ['read'] },
+        { resource: 'people:student', actions: ['read'] },
+      ],
+    },
+    {
+      roleName: 'STUDENT',
+      grants: [
+        { resource: 'people:person', actions: ['read'] },
+        { resource: 'people:student', actions: ['read'] },
+      ],
+    },
+  ];
+
+  const matrixGrantRows = operationalMatrix.flatMap(({ roleName, grants }) => {
+    const role = roles.find((r) => r.name === roleName);
+    if (!role) {
+      throw new Error(`Seeded role ${roleName} not found`);
+    }
+    return grants.flatMap(({ resource, actions }) => {
+      const perms = peoplePermissionRows.filter(
+        (p) => p.resource === resource && actions.includes(p.action),
+      );
+      if (perms.length !== actions.length) {
+        throw new Error(
+          `people permissions missing for ${roleName}:${resource} (expected ${actions.join(',')})`,
+        );
+      }
+      return perms.map((p) => ({ roleId: role.id, permissionId: p.id }));
+    });
+  });
+
+  if (matrixGrantRows.length > 0) {
+    await prisma.rolePermission.createMany({ data: matrixGrantRows });
+  }
+
+  // PHASE 5 (D-2): operational-role grants for Academic endpoints — least
+  // privilege, mirroring the People matrix pattern. Object scope (tenant /
+  // institution / self / persisted TeachingAssignment) remains enforced by the
+  // guards at runtime. Frozen mapping: docs/PHASE_5_ACADEMIC_RBAC_GRANT_MATRIX.md §3.
+  const academicOperationalMatrix: {
+    roleName: string;
+    grants: { resource: string; actions: string[] }[];
+  }[] = [
+    {
+      roleName: 'TEACHER',
+      grants: [
+        { resource: 'academics:calendar', actions: ['read'] },
+        { resource: 'academics:subject', actions: ['read'] },
+        { resource: 'academics:department', actions: ['read'] },
+        { resource: 'academics:grade_level', actions: ['read'] },
+        { resource: 'academics:class', actions: ['read'] },
+        { resource: 'academics:teaching', actions: ['read'] },
+        { resource: 'academics:timetable', actions: ['read'] },
+        { resource: 'academics:enrollment', actions: ['read'] },
+        { resource: 'academics:attendance', actions: ['read', 'create', 'update'] },
+        { resource: 'academics:assignment', actions: ['read', 'create', 'update', 'manage', 'grade'] },
+        { resource: 'academics:assessment', actions: ['read', 'create', 'update', 'manage', 'grade'] },
+        { resource: 'academics:grading', actions: ['read'] },
+        { resource: 'academics:result', actions: ['read', 'approve'] },
+        { resource: 'academics:progression', actions: ['read'] },
+        { resource: 'academics:summer_school', actions: ['read'] },
+        { resource: 'academics:policy', actions: ['read'] },
+      ],
+    },
+    {
+      roleName: 'STUDENT',
+      grants: [
+        { resource: 'academics:calendar', actions: ['read'] },
+        { resource: 'academics:subject', actions: ['read'] },
+        { resource: 'academics:class', actions: ['read'] },
+        { resource: 'academics:timetable', actions: ['read'] },
+        { resource: 'academics:attendance', actions: ['read'] },
+        { resource: 'academics:assignment', actions: ['read', 'submit'] },
+        { resource: 'academics:assessment', actions: ['read'] },
+        { resource: 'academics:result', actions: ['read'] },
+        { resource: 'academics:progression', actions: ['read'] },
+        { resource: 'academics:summer_school', actions: ['read'] },
+        { resource: 'academics:policy', actions: ['read'] },
+      ],
+    },
+    {
+      roleName: 'PARENT',
+      grants: [
+        { resource: 'academics:calendar', actions: ['read'] },
+        { resource: 'academics:subject', actions: ['read'] },
+        { resource: 'academics:class', actions: ['read'] },
+        { resource: 'academics:timetable', actions: ['read'] },
+        { resource: 'academics:attendance', actions: ['read'] },
+        { resource: 'academics:assignment', actions: ['read'] },
+        { resource: 'academics:assessment', actions: ['read'] },
+        { resource: 'academics:result', actions: ['read'] },
+        { resource: 'academics:progression', actions: ['read'] },
+        { resource: 'academics:summer_school', actions: ['read'] },
+        { resource: 'academics:policy', actions: ['read'] },
+      ],
+    },
+    {
+      roleName: 'STUDENT_MANAGEMENT_OFFICER',
+      grants: [
+        { resource: 'academics:calendar', actions: ['read'] },
+        { resource: 'academics:subject', actions: ['read'] },
+        { resource: 'academics:department', actions: ['read'] },
+        { resource: 'academics:grade_level', actions: ['read'] },
+        { resource: 'academics:class', actions: ['read'] },
+        { resource: 'academics:teaching', actions: ['read'] },
+        { resource: 'academics:enrollment', actions: ['read', 'create', 'update', 'delete'] },
+        { resource: 'academics:attendance', actions: ['read', 'create', 'update'] },
+        { resource: 'academics:result', actions: ['read'] },
+        { resource: 'academics:progression', actions: ['read', 'evaluate', 'manage'] },
+        { resource: 'academics:summer_school', actions: ['read', 'register'] },
+      ],
+    },
+    {
+      roleName: 'HR_OFFICER',
+      grants: [
+        { resource: 'academics:calendar', actions: ['read'] },
+        { resource: 'academics:department', actions: ['read'] },
+        { resource: 'academics:subject', actions: ['read'] },
+        { resource: 'academics:grade_level', actions: ['read'] },
+        { resource: 'academics:class', actions: ['read'] },
+        { resource: 'academics:teaching', actions: ['read', 'create', 'update', 'delete'] },
+      ],
+    },
+    {
+      roleName: 'BURSAR',
+      grants: [{ resource: 'academics:calendar', actions: ['read'] }],
+    },
+  ];
+
+  const academicMatrixGrantRows = academicOperationalMatrix.flatMap(({ roleName, grants }) => {
+    const role = roles.find((r) => r.name === roleName);
+    if (!role) {
+      throw new Error(`Seeded role ${roleName} not found`);
+    }
+    return grants.flatMap(({ resource, actions }) => {
+      const perms = academicPermissionRows.filter(
+        (p) => p.resource === resource && actions.includes(p.action),
+      );
+      if (perms.length !== actions.length) {
+        throw new Error(
+          `academics permissions missing for ${roleName}:${resource} (expected ${actions.join(',')})`,
+        );
+      }
+      return perms.map((p) => ({ roleId: role.id, permissionId: p.id }));
+    });
+  });
+
+  if (academicMatrixGrantRows.length > 0) {
+    await prisma.rolePermission.createMany({ data: academicMatrixGrantRows });
+  }
 
   // B1: seed one pending invitation (TEACHER) for demo/e2e acceptance
   await prisma.userInvitation.create({
@@ -373,7 +818,10 @@ async function main() {
     },
   });
 
-  // Staff
+  // Staff — PEOPLE-1: Person is the identity root. A Staff row carries only
+  // role-specific state (publicId, employee id, internal email, hire/status);
+  // the name/gender/contact identity lives on the linked Person, and the
+  // position/department live on StaffEmploymentDetail.
   const staffUsers = [
     { user: users[1], staffNumber: 'STF-001', firstName: 'Mrs', lastName: 'Ajayi', gender: 'FEMALE' as Gender, position: 'Principal', department: 'Administration', hireDate: new Date('2020-01-15') },
     { user: users[2], staffNumber: 'STF-002', firstName: 'Mr', lastName: 'Okafor', gender: 'MALE' as Gender, position: 'Senior Teacher', department: 'Science', specialization: 'Physics', hireDate: new Date('2019-09-01') },
@@ -387,25 +835,141 @@ async function main() {
   ];
 
   const createdStaff = [];
+  const staffPersonIds = [];
+  let staffSeq = 1;
+  let personSeq = 1;
   for (const s of staffUsers) {
+    const person = await prisma.person.create({
+      data: {
+        tenantId: tenant.id,
+        publicId: publicId('P', personSeq++),
+        firstName: s.firstName,
+        lastName: s.lastName,
+        gender: s.gender,
+        email: s.user.email,
+        phone: s.user.phone ?? undefined,
+        status: 'ACTIVE',
+      },
+    });
     const staff = await prisma.staff.create({
       data: {
         tenantId: tenant.id,
         institutionId: institution.id,
+        personId: person.id,
         userId: s.user.id,
-        staffNumber: s.staffNumber,
+        publicId: publicId('EMP', staffSeq),
         internalEmail: internalEmail(s.firstName, s.lastName, institution.code),
-        firstName: s.firstName,
-        lastName: s.lastName,
-        gender: s.gender,
+        staffNumber: s.staffNumber,
+        hireDate: s.hireDate,
+        employmentType: 'FULL_TIME' as EmploymentType,
+        status: 'ACTIVE' as StaffStatus,
+      },
+    });
+    await prisma.staffEmploymentDetail.create({
+      data: {
+        tenantId: tenant.id,
+        staffId: staff.id,
         position: s.position,
         department: s.department,
-        specialization: s.specialization,
-        hireDate: s.hireDate,
+        contractStartDate: s.hireDate,
+      },
+    });
+    await prisma.personInstitution.create({
+      data: {
+        tenantId: tenant.id,
+        personId: person.id,
+        institutionId: institution.id,
+        roleContext: 'STAFF' as RoleContext,
       },
     });
     createdStaff.push(staff);
+    staffPersonIds.push(person.id);
+    staffSeq += 1;
   }
+
+  // PHASE 5 (D-2): teaching fixture. CLASS_TEACHER is a responsibility carried
+  // on a persisted TeachingAssignment — NEVER an RBAC role. Mr Okafor
+  // (createdStaff[1] / staffPersonIds[1]) teaches Mathematics in 'SS 1 Science'
+  // for the active term and holds the class-teacher / homeroom responsibility.
+  const mathSubject = await prisma.subject.findFirst({ where: { tenantId: tenant.id, code: 'MTH' } });
+  if (currentTerm && mathSubject && ss1Classes.length > 0) {
+    await prisma.teachingAssignment.create({
+      data: {
+        tenantId: tenant.id,
+        institutionId: institution.id,
+        staffPersonId: staffPersonIds[1],
+        subjectId: mathSubject.id,
+        classId: ss1Classes[0].id,
+        termId: currentTerm.id,
+        role: 'CLASS_TEACHER',
+        workloadHours: 20,
+      },
+    });
+    await prisma.homeroom.create({
+      data: {
+        tenantId: tenant.id,
+        institutionId: institution.id,
+        classId: ss1Classes[0].id,
+        staffPersonId: staffPersonIds[1],
+      },
+    });
+  }
+
+  // PEOPLE-3: staff qualification / certification / employment-history fixtures
+  // (sub-resource read models for the staff management API).
+  await prisma.staffQualification.create({
+    data: {
+      tenantId: tenant.id,
+      staffId: createdStaff[1].id,
+      qualificationName: 'B.Sc. Physics',
+      institutionName: 'University of Lagos',
+      fieldOfStudy: 'Physics',
+      yearObtained: 2003,
+      grade: 'Second Class Upper',
+    },
+  });
+  await prisma.staffQualification.create({
+    data: {
+      tenantId: tenant.id,
+      staffId: createdStaff[4].id,
+      qualificationName: 'Postgraduate Diploma in Librarianship',
+      institutionName: 'Ahmadu Bello University',
+      fieldOfStudy: 'Librarianship',
+      yearObtained: 2010,
+    },
+  });
+  await prisma.staffCertification.create({
+    data: {
+      tenantId: tenant.id,
+      staffId: createdStaff[1].id,
+      certificationName: 'TRCN Teacher License',
+      issuingBody: 'Teachers Registration Council of Nigeria',
+      issueDate: new Date('2018-09-15'),
+      expiryDate: new Date('2028-09-15'),
+      certificateNumber: 'TRCN-2018-4471',
+    },
+  });
+  await prisma.staffCertification.create({
+    data: {
+      tenantId: tenant.id,
+      staffId: createdStaff[0].id,
+      certificationName: 'School Leadership Certificate',
+      issuingBody: 'National Institute for Educational Planning',
+      issueDate: new Date('2019-06-01'),
+      certificateNumber: 'NIE-019-2203',
+    },
+  });
+  await prisma.staffEmploymentHistory.create({
+    data: {
+      tenantId: tenant.id,
+      staffId: createdStaff[1].id,
+      institutionName: 'GSS Fiditi',
+      position: 'Graduate Teacher',
+      startDate: new Date('2014-09-15'),
+      endDate: new Date('2019-07-31'),
+      reasonForLeaving: 'Relocation',
+    },
+  });
 
   // B1: identity memberships — an organization-level membership for every
   // seeded account and an institution-level membership for institution-holding
@@ -421,6 +985,21 @@ async function main() {
         ? [{ tenantId: tenant.id, institutionId: s.institutionId, userId: s.userId, status: 'ACTIVE' }]
         : [],
     ),
+  });
+
+  // PEOPLE-2: backfill institution-level memberships for the HR, Student-Management
+  // and Parent operational accounts so their sessions resolve an institution
+  // context (login resolution + PeopleScopeGuard institution scope + self reads).
+  await prisma.institutionMembership.createMany({
+    data: [users[7], users[8], users[10]]
+      .filter((u) => !!u)
+      .map((u) => ({
+        tenantId: tenant.id,
+        institutionId: institution.id,
+        userId: u.id,
+        status: 'ACTIVE',
+      })),
+    skipDuplicates: true,
   });
 
   // B1: provisioned teacher account + six-month onboarding link (single-use,
@@ -453,69 +1032,160 @@ async function main() {
     },
   });
 
-  // Students
+  // Students — PEOPLE-1: same split as staff. Identity (name/gender/date of
+  // birth/contact/blood group/state) lives on Person; Student carries only
+  // role state (publicId, student id, internal email, enrollment).
   const parentUser = users[10];
-  const guardian = await prisma.guardian.create({
-    data: {
-      tenantId: tenant.id,
-      userId: parentUser.id,
-      firstName: 'Mr',
-      lastName: 'Eze',
-      email: 'parent@greenfield.edu.ng',
-      phone: '+234 801 234 5700',
-      occupation: 'Engineer',
-      relationship: 'Father',
-      isPrimary: true,
-    },
-  });
-
   const studentsData = [
-    { studentNumber: 'STU-21401', firstName: 'Chidi', lastName: 'Eze', gender: 'MALE' as Gender, dateOfBirth: new Date('2008-05-15'), admissionDate: new Date('2023-09-04'), status: 'ACTIVE' as EnrollmentStatus, phone: '+234 802 111 2222', address: '14 Palm Avenue, Lagos', bloodGroup: 'O+', stateOfOrigin: 'Enugu' },
-    { studentNumber: 'STU-21411', firstName: 'Kayode', lastName: 'Eze', gender: 'MALE' as Gender, dateOfBirth: new Date('2007-11-22'), admissionDate: new Date('2022-09-05'), status: 'ACTIVE' as EnrollmentStatus, phone: '+234 802 111 2223', address: '14 Palm Avenue, Lagos', bloodGroup: 'A+', stateOfOrigin: 'Enugu' },
-    { studentNumber: 'STU-21402', firstName: 'Aisha', lastName: 'Bello', gender: 'FEMALE' as Gender, dateOfBirth: new Date('2008-03-10'), admissionDate: new Date('2023-09-04'), status: 'ACTIVE' as EnrollmentStatus, phone: '+234 802 111 2224', address: '7 Victoria Island, Lagos' },
-    { studentNumber: 'STU-21403', firstName: 'Tunde', lastName: 'Olawale', gender: 'MALE' as Gender, dateOfBirth: new Date('2008-07-18'), admissionDate: new Date('2023-09-04'), status: 'ACTIVE' as EnrollmentStatus, phone: '+234 802 111 2225', address: '23 Ikeja, Lagos' },
-    { studentNumber: 'STU-21404', firstName: 'Ngozi', lastName: 'Nwosu', gender: 'FEMALE' as Gender, dateOfBirth: new Date('2008-01-25'), admissionDate: new Date('2023-09-04'), status: 'ACTIVE' as EnrollmentStatus, phone: '+234 802 111 2226', address: '56 Surulere, Lagos' },
+    { studentNumber: 'STU-21401', firstName: 'Chidi', lastName: 'Eze', gender: 'MALE' as Gender, dateOfBirth: new Date('2008-05-15'), admissionDate: new Date('2023-09-04'), phone: '+234 802 111 2222', address: '14 Palm Avenue, Lagos', bloodGroup: 'O+', stateOfOrigin: 'Enugu', gradeLevel: 'SS1', className: 'SS 1 Science' },
+    { studentNumber: 'STU-21411', firstName: 'Kayode', lastName: 'Eze', gender: 'MALE' as Gender, dateOfBirth: new Date('2007-11-22'), admissionDate: new Date('2022-09-05'), phone: '+234 802 111 2223', address: '14 Palm Avenue, Lagos', bloodGroup: 'A+', stateOfOrigin: 'Enugu', gradeLevel: 'SS1', className: 'SS 1 Science' },
+    { studentNumber: 'STU-21402', firstName: 'Aisha', lastName: 'Bello', gender: 'FEMALE' as Gender, dateOfBirth: new Date('2008-03-10'), admissionDate: new Date('2023-09-04'), phone: '+234 802 111 2224', address: '7 Victoria Island, Lagos', gradeLevel: 'SS1', className: 'SS 1 Arts' },
+    { studentNumber: 'STU-21403', firstName: 'Tunde', lastName: 'Olawale', gender: 'MALE' as Gender, dateOfBirth: new Date('2008-07-18'), admissionDate: new Date('2023-09-04'), phone: '+234 802 111 2225', address: '23 Ikeja, Lagos', gradeLevel: 'SS1', className: 'SS 1 Science' },
+    { studentNumber: 'STU-21404', firstName: 'Ngozi', lastName: 'Nwosu', gender: 'FEMALE' as Gender, dateOfBirth: new Date('2008-01-25'), admissionDate: new Date('2023-09-04'), phone: '+234 802 111 2226', address: '56 Surulere, Lagos', gradeLevel: 'SS1', className: 'SS 1 Arts' },
   ];
 
   const createdStudents = [];
+  const studentPersonIds = [];
+  let studentSeq = 1;
   for (const s of studentsData) {
-    const student = await prisma.student.create({
+    const internal = internalEmail(s.firstName, s.lastName, institution.code);
+    const person = await prisma.person.create({
       data: {
         tenantId: tenant.id,
-        institutionId: institution.id,
-        studentNumber: s.studentNumber,
-        internalEmail: internalEmail(s.firstName, s.lastName, institution.code),
+        publicId: publicId('P', personSeq++),
         firstName: s.firstName,
         lastName: s.lastName,
         gender: s.gender,
-        dateOfBirth: s.dateOfBirth,
-        admissionDate: s.admissionDate,
-        status: s.status,
+        email: internal,
         phone: s.phone,
         address: s.address,
         bloodGroup: s.bloodGroup,
         stateOfOrigin: s.stateOfOrigin,
+        dateOfBirth: s.dateOfBirth,
+        status: 'ACTIVE',
+      },
+    });
+    const student = await prisma.student.create({
+      data: {
+        tenantId: tenant.id,
+        institutionId: institution.id,
+        personId: person.id,
+        publicId: publicId('STU', studentSeq),
+        internalEmail: internal,
+        studentNumber: s.studentNumber,
+        enrollmentDate: s.admissionDate,
+        status: 'ENROLLED' as StudentStatus,
+      },
+    });
+    await prisma.studentEnrollmentDetail.create({
+      data: {
+        tenantId: tenant.id,
+        studentId: student.id,
+        gradeLevel: s.gradeLevel,
+        className: s.className,
+        enrollmentType: 'REGULAR',
+      },
+    });
+    await prisma.personInstitution.create({
+      data: {
+        tenantId: tenant.id,
+        personId: person.id,
+        institutionId: institution.id,
+        roleContext: 'STUDENT' as RoleContext,
       },
     });
     createdStudents.push(student);
+    studentPersonIds.push(person.id);
+    studentSeq += 1;
   }
 
-  await prisma.studentGuardianRelationship.createMany({
+  // Guardians & parents — PEOPLE-1: `person_relationships` replaces the old
+  // `StudentGuardianRelationship` SGR table (see implementation report §7/§9).
+  // guardians.parentUser is Mr Eze (linked to the parent@ account); the father
+  // relationship to both Eze boys is a PARENT relationship on the people graph.
+  const guardianPerson = await prisma.person.create({
+    data: {
+      tenantId: tenant.id,
+      publicId: publicId('P', personSeq++),
+      firstName: 'Mr',
+      lastName: 'Eze',
+      gender: 'MALE',
+      email: internalEmail('Mr', 'Eze', institution.code),
+      phone: '+234 801 234 5700',
+      status: 'ACTIVE',
+    },
+  });
+
+  const guardian = await prisma.guardian.create({
+    data: {
+      tenantId: tenant.id,
+      institutionId: institution.id,
+      personId: guardianPerson.id,
+      userId: parentUser.id,
+      contactPreference: 'EMAIL' as ContactPreference,
+      status: 'ACTIVE',
+    },
+  });
+
+  await prisma.personInstitution.create({
+    data: {
+      tenantId: tenant.id,
+      personId: guardianPerson.id,
+      institutionId: institution.id,
+      roleContext: 'GUARDIAN' as RoleContext,
+    },
+  });
+
+  const parentPerson = await prisma.person.create({
+    data: {
+      tenantId: tenant.id,
+      publicId: publicId('P', personSeq++),
+      firstName: 'Mrs',
+      lastName: 'Uche Eze',
+      gender: 'FEMALE',
+      email: 'uche.eze@ga.local',
+      phone: '+234 802 555 7788',
+      status: 'ACTIVE',
+    },
+  });
+
+  await prisma.parent.create({
+    data: {
+      tenantId: tenant.id,
+      institutionId: institution.id,
+      personId: parentPerson.id,
+      contactPreference: 'PHONE' as ContactPreference,
+      status: 'ACTIVE',
+    },
+  });
+
+  await prisma.personInstitution.create({
+    data: {
+      tenantId: tenant.id,
+      personId: parentPerson.id,
+      institutionId: institution.id,
+      roleContext: 'PARENT' as RoleContext,
+    },
+  });
+
+  await prisma.personRelationship.createMany({
     data: [
-      { tenantId: tenant.id, studentId: createdStudents[0].id, guardianId: guardian.id, relationship: 'Father', isPrimary: true },
-      { tenantId: tenant.id, studentId: createdStudents[1].id, guardianId: guardian.id, relationship: 'Father', isPrimary: true },
+      { tenantId: tenant.id, institutionId: institution.id, sourcePersonId: guardianPerson.id, targetPersonId: studentPersonIds[0], relationshipType: 'PARENT' as RelationshipType, metadata: { roleContext: 'GUARDIAN', isPrimary: true } },
+      { tenantId: tenant.id, institutionId: institution.id, sourcePersonId: guardianPerson.id, targetPersonId: studentPersonIds[1], relationshipType: 'PARENT' as RelationshipType, metadata: { roleContext: 'GUARDIAN', isPrimary: true } },
+      { tenantId: tenant.id, institutionId: institution.id, sourcePersonId: parentPerson.id, targetPersonId: studentPersonIds[0], relationshipType: 'PARENT' as RelationshipType, metadata: { roleContext: 'PARENT', isPrimary: false } },
     ],
   });
 
-  // Enrollments
-  if (ss1Classes.length > 0) {
-    await prisma.enrollment.createMany({
+  // Enrollments — PHASE 5: frozen `student_class_enrollments` (per-term, keyed
+  // by Person) replaces the legacy enrollment table (see D-1 report).
+  if (ss1Classes.length > 0 && currentTerm) {
+    await prisma.studentClassEnrollment.createMany({
       data: [
-        { tenantId: tenant.id, studentId: createdStudents[0].id, classId: ss1Classes[0].id, academicYearId: academicYear.id, status: 'ACTIVE' },
-        { tenantId: tenant.id, studentId: createdStudents[1].id, classId: ss1Classes[0].id, academicYearId: academicYear.id, status: 'ACTIVE' },
-        { tenantId: tenant.id, studentId: createdStudents[2].id, classId: ss1Classes[1].id, academicYearId: academicYear.id, status: 'ACTIVE' },
-        { tenantId: tenant.id, studentId: createdStudents[3].id, classId: ss1Classes[0].id, academicYearId: academicYear.id, status: 'ACTIVE' },
-        { tenantId: tenant.id, studentId: createdStudents[4].id, classId: ss1Classes[1].id, academicYearId: academicYear.id, status: 'ACTIVE' },
+        { tenantId: tenant.id, institutionId: institution.id, studentPersonId: studentPersonIds[0], classId: ss1Classes[0].id, termId: currentTerm.id, enrollmentDate: new Date('2025-09-08'), status: 'ENROLLED' },
+        { tenantId: tenant.id, institutionId: institution.id, studentPersonId: studentPersonIds[1], classId: ss1Classes[0].id, termId: currentTerm.id, enrollmentDate: new Date('2025-09-08'), status: 'ENROLLED' },
+        { tenantId: tenant.id, institutionId: institution.id, studentPersonId: studentPersonIds[2], classId: ss1Classes[1].id, termId: currentTerm.id, enrollmentDate: new Date('2025-09-08'), status: 'ENROLLED' },
+        { tenantId: tenant.id, institutionId: institution.id, studentPersonId: studentPersonIds[3], classId: ss1Classes[0].id, termId: currentTerm.id, enrollmentDate: new Date('2025-09-08'), status: 'ENROLLED' },
+        { tenantId: tenant.id, institutionId: institution.id, studentPersonId: studentPersonIds[4], classId: ss1Classes[1].id, termId: currentTerm.id, enrollmentDate: new Date('2025-09-08'), status: 'ENROLLED' },
       ],
     });
   }

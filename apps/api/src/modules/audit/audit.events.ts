@@ -6,6 +6,8 @@
  * `{Entity}{PastTenseVerb}` convention. Payloads carry only IDs and
  * non-secret request metadata — never plaintext tokens, hashes or secrets.
  */
+import { EventEnvelopeFields } from '../events/event-envelope';
+
 export const AuthEvents = {
   LoginSucceeded: 'LoginSucceeded',
   LoginFailed: 'LoginFailed',
@@ -21,27 +23,27 @@ interface RequestContextFields {
   correlationId?: string | null;
 }
 
-export interface LoginSucceededPayload extends RequestContextFields {
+export interface LoginSucceededPayload extends RequestContextFields, EventEnvelopeFields {
   tenantId: string;
   userId: string;
   actorEmail: string;
   emittedAt: string;
 }
 
-export interface LoginFailedPayload extends RequestContextFields {
+export interface LoginFailedPayload extends RequestContextFields, EventEnvelopeFields {
   tenantId: string | null;
   actorEmail: string;
   reason: string;
   emittedAt: string;
 }
 
-export interface LoginLockedPayload extends RequestContextFields {
+export interface LoginLockedPayload extends RequestContextFields, EventEnvelopeFields {
   tenantId: string;
   actorEmail: string;
   emittedAt: string;
 }
 
-export interface RegistrationSucceededPayload extends RequestContextFields {
+export interface RegistrationSucceededPayload extends RequestContextFields, EventEnvelopeFields {
   tenantId: string;
   userId: string;
   actorEmail: string;
@@ -49,14 +51,14 @@ export interface RegistrationSucceededPayload extends RequestContextFields {
   emittedAt: string;
 }
 
-export interface EmailVerificationRequestedPayload {
+export interface EmailVerificationRequestedPayload extends EventEnvelopeFields {
   tenantId: string;
   userId: string;
   actorEmail: string;
   emittedAt: string;
 }
 
-export interface EmailVerifiedPayload {
+export interface EmailVerifiedPayload extends EventEnvelopeFields {
   tenantId: string;
   userId: string;
   actorEmail: string;

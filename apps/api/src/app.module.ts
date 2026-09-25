@@ -15,6 +15,9 @@ import { InvitationsModule } from './modules/invitations/invitations.module';
 import { OnboardingModule } from './modules/onboarding/onboarding.module';
 import { SessionModule } from './modules/session/session.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { PeopleModule } from './modules/people/people.module';
+import { InstitutionsModule } from './modules/institutions/institutions.module';
+import { EventsModule } from './modules/events/events.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { CorrelationIdInterceptor } from './common/interceptors/correlation-id.interceptor';
 
@@ -38,6 +41,9 @@ import { CorrelationIdInterceptor } from './common/interceptors/correlation-id.i
     OnboardingModule,
     SessionModule,
     AuditModule,
+    PeopleModule,
+    InstitutionsModule,
+    EventsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },

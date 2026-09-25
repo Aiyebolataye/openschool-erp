@@ -13,9 +13,11 @@ model Tenant {
   updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
 
-  institutions   Institution[]
-  users          User[]
-  featureFlags   FeatureFlag[]
+  institutions           Institution[]
+  institutionConfigurations InstitutionConfiguration[]
+  institutionSettings     InstitutionSetting[]
+  users           User[]
+  featureFlags    FeatureFlag[]
   auditLogs      AuditLog[]
   userInvitations UserInvitation[]
   passwordPolicies PasswordPolicy[]
@@ -24,6 +26,28 @@ model Tenant {
   onboardingLinks         OnboardingLink[]
   loginAttempts           LoginAttempt[]
   sessions                Session[]
+  userRoleAssignments     UserRoleAssignment[]
+
+  people               Person[]
+  personProfiles       PersonProfile[]
+  personInstitutions   PersonInstitution[]
+  students             Student[]
+  studentEnrollmentDetails StudentEnrollmentDetail[]
+  studentAcademicRecords   StudentAcademicRecord[]
+  studentGraduationDetails StudentGraduationDetail[]
+  studentTransferDetails   StudentTransferDetail[]
+  studentWithdrawalDetails StudentWithdrawalDetail[]
+  staff                Staff[]
+  staffEmploymentDetails  StaffEmploymentDetail[]
+  staffQualifications     StaffQualification[]
+  staffCertifications     StaffCertification[]
+  staffEmploymentHistory  StaffEmploymentHistory[]
+  parents              Parent[]
+  guardians            Guardian[]
+  applicants           Applicant[]
+  emergencyContacts    EmergencyContact[]
+  personRelationships  PersonRelationship[]
+  peopleDocuments      PeopleDocument[]
 
   @@index([slug])
   @@map("tenants")
@@ -53,38 +77,35 @@ model Institution {
   tenant          Tenant          @relation(fields: [tenantId], references: [id])
   departments     Department[]
   academicYears   AcademicYear[]
+  academicSessions AcademicSession[]
+  terms           Term[]
+  subjects        Subject[]
+  subjectGroups   SubjectGroup[]
+  streams         Stream[]
+  gradeLevels     GradeLevel[]
+  classes         Class[]
+  timetables      Timetable[]
+  gradeScales     GradeScale[]
+  academicPolicies AcademicPolicy[]
+  summerSchoolSessions SummerSchoolSession[]
   students        Student[]
   staff           Staff[]
-  classes         Class[]
-  curricula       Curriculum[]
-  subjects        Subject[]
   feeStructures   FeeStructure[]
   transportRoutes TransportRoute[]
   hostels         Hostel[]
+  institutionConfigurations InstitutionConfiguration[]
+  institutionSettings       InstitutionSetting[]
   memberships     InstitutionMembership[]
   onboardingLinks OnboardingLink[]
+  personInstitutions PersonInstitution[]
+  parents            Parent[]
+  guardians          Guardian[]
+  applicants         Applicant[]
+  studentTransferSources     StudentTransferDetail[] @relation("TransferSourceInstitution")
+  studentTransferDestinations StudentTransferDetail[] @relation("TransferDestinationInstitution")
+  personRelationships        PersonRelationship[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
   @@map("institutions")
-}
-
-model Department {
-  id              String   @id @default(uuid()) @db.Uuid
-  tenantId        String   @db.Uuid
-  institutionId   String   @db.Uuid
-  name            String
-  code            String
-  description     String?
-  headStaffId     String?  @db.Uuid
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  deletedAt       DateTime?
-
-  institution     Institution @relation(fields: [institutionId], references: [id])
-  subjects        Subject[]
-
-  @@unique([tenantId, institutionId, code])
-  @@index([tenantId, institutionId])
-  @@map("departments")
 }

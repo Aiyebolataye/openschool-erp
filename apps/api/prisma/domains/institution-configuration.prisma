@@ -1,0 +1,56 @@
+// P4.1 - Institution Management - additive configuration/settings domain.
+// FROZEN basis reused (do not redefine): institution.prisma models
+//   Institution (status: InstitutionStatus), Tenant, Department, and the
+//   identity domain's InstitutionMembership + RoleSystem + MembershipStatus.
+// This file ONLY adds the two institution-scoped configuration tables the
+// roadmap P4.1 block + Institution spec 7.1 require and that are genuinely
+// absent from the schema:
+//   institution_configurations (tenant-scoped, versioned, NO soft delete)
+//   institution_settings    (tenant-scoped, versioned, NO soft delete)
+// Every row is tenant-scoped (tenantId) AND institution-scoped
+// (institutionId). Server derives both from the authenticated session; a
+// client-supplied institutionId can NEVER create/alter another tenant's row.
+// Isolation follows BR-01 (cross-tenant prohibited) and BR-07 (institution
+// configuration isolated to its tenant). Versioning follows BR-10 (all
+// configuration changes are versioned and audited).
+
+model InstitutionConfiguration {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  key           String
+  value         Json
+  version       Int      @default(1)
+  createdBy     String?  @db.Uuid
+  updatedBy     String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([institutionId, key])
+  @@index([tenantId, institutionId])
+  @@map("institution_configurations")
+}
+
+model InstitutionSetting {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @db.Uuid
+  institutionId String   @db.Uuid
+  key           String
+  value         Json
+  kind          String   @default("STRING")
+  version       Int      @default(1)
+  createdBy     String?  @db.Uuid
+  updatedBy     String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([institutionId, key])
+  @@index([tenantId, institutionId])
+  @@map("institution_settings")
+}

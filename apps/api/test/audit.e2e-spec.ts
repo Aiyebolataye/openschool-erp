@@ -172,7 +172,7 @@ describe('Audit log persistence + read-only API (P1.7 / D-B5-2/3/4)', () => {
     // rather than asserting immediately.
     let res: { body: { data: { total: number; items: { tenantId: string; actorEmail: string }[] } } } | null =
       null;
-    for (let i = 0; i < 20 && !res; i++) {
+    for (let i = 0; i < 20; i++) {
       res = (await request(app.getHttpServer())
         .get(`${BASE}/audit-logs`)
         .set('Authorization', `Bearer ${tokens.accessToken}`)

@@ -27,6 +27,27 @@ export class CacheService implements OnModuleDestroy {
     this.redis.disconnect();
   }
 
+  /**
+   * Redis readiness probe (P3.7 / D3). Reuses the connection-owned ioredis
+   * client — no second socket, no new infra. Bounded: a PING that cannot
+   * complete within `timeoutMs` (default 1500ms) is treated as unhealthy so
+   * the readiness gate never hangs behind a stalled Redis.
+   */
+  async ping(timeoutMs = 1500): Promise<boolean> {
+    try {
+      const pong = await Promise.race([
+        this.redis.ping(),
+        new Promise<'TIMEOUT'>((resolve) => {
+          setTimeout(() => resolve('TIMEOUT'), timeoutMs);
+        }),
+      ]);
+      return pong === 'PONG';
+    } catch {
+      this.logger.warn('Redis PING failed');
+      return false;
+    }
+  }
+
   async get<T>(key: string): Promise<T | null> {
     try {
       const data = await this.redis.get(key);

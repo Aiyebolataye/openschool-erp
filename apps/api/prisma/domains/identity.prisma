@@ -20,6 +20,7 @@ model User {
   staff                  Staff?
   student                Student?
   parent                 Guardian?
+  parentRecord           Parent?
   emailVerificationTokens EmailVerificationToken[]
   passwordHistory        PasswordHistory[]
   organizationMemberships OrganizationMembership[]
@@ -50,16 +51,25 @@ model Role {
   @@map("roles")
 }
 
+// M0 (PEOPLE-1): `user_roles` is tenant-scoped (RBAC-3 / P2.3 Option 2).
+// The `tenantId` column, Tenant relation and `@@unique([tenantId, userId, roleId])`
+// are the authoritative Phase-2 source-of-truth definition. Previously this
+// field lived only in the hand-tuned generated schema.prisma + rbac3.sql, so a
+// re-merge would have silently dropped the tenant-scoped assignment. Keeping it
+// here guarantees domains/identity.prisma, merged schema.prisma, migration
+// history and the actual database all agree.
 model UserRoleAssignment {
   id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @db.Uuid
   userId    String   @db.Uuid
   roleId    String   @db.Uuid
   createdAt DateTime @default(now())
 
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
   role      Role     @relation(fields: [roleId], references: [id])
 
-  @@unique([userId, roleId])
+  @@unique([tenantId, userId, roleId])
   @@map("user_roles")
 }
 

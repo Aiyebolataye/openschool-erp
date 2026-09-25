@@ -82,10 +82,18 @@ export interface AuditConfig {
   actorEmailCapture: boolean;
 }
 
+export interface LoggingConfig {
+  /** Pino level ('trace'|'debug'|'info'|'warn'|'error'|'fatal'). */
+  level: string;
+  /** Human-readable pino-pretty transport (development/local only). */
+  pretty: boolean;
+}
+
 export interface AppConfig {
   env: string;
   port: number;
   apiPrefix: string;
+  logging: LoggingConfig;
   database: { url: string };
   redis: RedisConfig;
   jwt: JwtConfig;
@@ -235,6 +243,10 @@ export default (): AppConfig => {
     env: nodeEnv,
     port: parseInt(env.PORT || '3000', 10),
     apiPrefix: env.API_PREFIX || 'api/v1',
+    logging: {
+      level: (env.LOG_LEVEL || 'info').toLowerCase(),
+      pretty: !isProductionEnvironment && String(env.LOG_PRETTY ?? 'true') !== 'false',
+    },
     database: {
       url: env.DATABASE_URL!,
     },

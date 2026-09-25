@@ -2,6 +2,7 @@ import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
 import { Queue, Worker, Job } from 'bullmq';
 import { ConfigService } from '@nestjs/config';
 import { QUEUE_NAMES, JOB_TYPES } from './queue.constants';
+import { buildQueueJobOptions } from './queue-options';
 
 @Injectable()
 export class QueueService implements OnModuleDestroy {
@@ -41,15 +42,15 @@ export class QueueService implements OnModuleDestroy {
     opts: { priority?: number; delay?: number; jobId?: string } = {},
   ) {
     const queue = this.getQueue(queueName);
-    const job = await queue.add(jobType, data, {
-      priority: opts.priority,
-      delay: opts.delay,
-      jobId: opts.jobId,
-      attempts: 3,
-      backoff: { type: 'exponential', delay: 5000 },
-      removeOnComplete: { age: 86400 },
-      removeOnFail: { age: 604800 },
-    });
+    const job = await queue.add(
+      jobType,
+      data,
+      buildQueueJobOptions({
+        priority: opts.priority,
+        delay: opts.delay,
+        jobId: opts.jobId,
+      }),
+    );
 
     this.logger.log(`Job ${jobType} added to ${queueName}: ${job.id}`);
     return job;

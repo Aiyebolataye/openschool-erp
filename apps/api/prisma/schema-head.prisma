@@ -32,13 +32,166 @@ enum Gender {
   MALE
   FEMALE
   OTHER
+  PREFER_NOT_TO_SAY
+}
+
+// PHASE 5 (P5, frozen Academic Management Engineering §8.1) enums. The
+// legacy `EnrollmentStatus` (ACTIVE/COMPLETED/...) is replaced by the frozen
+// enrolment lifecycle; the legacy academic tables were archived (D-1).
+enum AcademicYearStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum SessionStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum TermStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum SubjectStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum DepartmentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum GradeLevelStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ClassStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum TeachingRole {
+  SUBJECT_TEACHER
+  CLASS_TEACHER
+  DEPARTMENT_HEAD
+}
+
+enum TimetableStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }
 
 enum EnrollmentStatus {
+  ENROLLED
   ACTIVE
-  COMPLETED
   TRANSFERRED
   WITHDRAWN
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  ACTIVE
+  DROPPED
+}
+
+enum AttendanceType {
+  STUDENT
+  STAFF
+}
+
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADED
+  RETURNED
+}
+
+enum AssessmentType {
+  CONTINUOUS_ASSESSMENT
+  TEST
+  EXAMINATION
+  PRACTICAL
+  ORAL
+}
+
+enum AssessmentStatus {
+  DRAFT
+  PUBLISHED
+  GRADED
+}
+
+enum GradeScaleStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum ResultStatus {
+  COMPILED
+  APPROVED
+  PUBLISHED
+}
+
+enum ReportCardStatus {
+  GENERATED
+  PUBLISHED
+}
+
+enum ProgressionType {
+  PROMOTED
+  CONDITIONALLY_PROMOTED
+  RETAINED
+  GRADUATED
+  WITHDRAWN
+}
+
+enum PolicyStatus {
+  DRAFT
+  ACTIVE
+  SUPERSEDED
+}
+
+enum SummerSchoolStatus {
+  CONFIGURED
+  OPEN
+  REGISTRATION_CLOSED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum SSRegistrationStatus {
+  REGISTERED
+  ACTIVE
+  COMPLETED
+}
+
+enum CostModel {
+  PER_STUDENT
+  PER_SUBJECT
+  FREE
 }
 
 enum InvoiceStatus {
@@ -146,4 +299,7 @@ enum OnboardingStatus {
 enum InstitutionStatus {
   ACTIVE
   DEACTIVATED
+  PROVISIONING
+  SUSPENDED
+  ARCHIVED
 }

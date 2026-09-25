@@ -12,6 +12,11 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
 
   const unique = (label: string) => `${label}.${Date.now()}@greenfield.edu.ng`;
 
+  let personPublicIdSeq = 10000;
+  function testPublicId(prefix: 'P' | 'STU' = 'P'): string {
+    return `${prefix}-2026-${String(personPublicIdSeq++).padStart(6, '0')}`;
+  }
+
   beforeAll(async () => {
     app = await createTestApp();
     prisma = app.get(PrismaService);
@@ -1033,15 +1038,26 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
         },
       });
 
+      const person = await prisma.person.create({
+        data: {
+          tenantId: tenant.id,
+          publicId: testPublicId(),
+          firstName: 'Login',
+          lastName: 'Student',
+          gender: 'MALE',
+          email,
+        },
+      });
       await prisma.student.create({
         data: {
           tenantId: tenant.id,
           institutionId: institution.id,
           userId: user.id,
+          personId: person.id,
+          publicId: testPublicId('STU'),
           studentNumber: 'STU-E2E-001',
-          firstName: 'Login',
-          lastName: 'Student',
-          gender: 'MALE',
+          internalEmail: email,
+          status: 'ENROLLED',
         },
       });
       await prisma.organizationMembership.create({
@@ -1268,37 +1284,57 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
       await prisma.organizationMembership.create({
         data: { tenantId: greenfieldTenantId, userId: guardianUser.id, status: 'ACTIVE' },
       });
+      const guardianPerson = await prisma.person.create({
+        data: {
+          tenantId: greenfieldTenantId,
+          publicId: testPublicId(),
+          firstName: 'Ngozi',
+          lastName: 'Eze',
+          gender: 'FEMALE',
+          email: guardianUser.email,
+          phone: '+234 800 000 0000',
+        },
+      });
       const guardian = await prisma.guardian.create({
         data: {
           tenantId: greenfieldTenantId,
+          institutionId: mainInstitutionId,
+          personId: guardianPerson.id,
           userId: guardianUser.id,
-          firstName: 'Ngozi',
-          lastName: 'Eze',
-          email: guardianUser.email,
-          phone: '+234 800 000 0000',
-          relationship: 'Mother',
-          isPrimary: true,
+          contactPreference: 'EMAIL',
+          status: 'ACTIVE',
         },
       });
 
       const mkStudent = async (institutionId: string, number: string, name: string) => {
+        const studentPerson = await prisma.person.create({
+          data: {
+            tenantId: greenfieldTenantId,
+            publicId: testPublicId(),
+            firstName: name,
+            lastName: 'Eze',
+            gender: 'MALE',
+            email: `${name.toLowerCase()}.${Date.now()}@test.greenfield.local`,
+          },
+        });
         const student = await prisma.student.create({
           data: {
             tenantId: greenfieldTenantId,
             institutionId,
+            personId: studentPerson.id,
+            publicId: testPublicId('STU'),
             studentNumber: `${number}-${Date.now()}`,
-            firstName: name,
-            lastName: 'Eze',
-            gender: 'MALE',
+            status: 'ENROLLED',
           },
         });
-        await prisma.studentGuardianRelationship.create({
+        await prisma.personRelationship.create({
           data: {
             tenantId: greenfieldTenantId,
-            studentId: student.id,
-            guardianId: guardian.id,
-            relationship: 'Mother',
-            isPrimary: true,
+            institutionId,
+            sourcePersonId: guardianPerson.id,
+            targetPersonId: studentPerson.id,
+            relationshipType: 'PARENT',
+            metadata: { roleContext: 'GUARDIAN', isPrimary: true },
           },
         });
         return student;
@@ -1308,8 +1344,8 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
       const second = await mkStudent(annex.id, 'EXC2', 'Kayode');
       expect(first.id).not.toBe(second.id);
 
-      const links = await prisma.studentGuardianRelationship.count({
-        where: { guardianId: guardian.id },
+      const links = await prisma.personRelationship.count({
+        where: { sourcePersonId: guardianPerson.id },
       });
       expect(links).toBe(2);
 
@@ -1390,15 +1426,26 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
             emailVerifiedAt: new Date(),
           },
         });
+        const studentPerson = await prisma.person.create({
+          data: {
+            tenantId: tenant.id,
+            publicId: testPublicId(),
+            firstName: name,
+            lastName: 'Ambiguous',
+            gender: 'MALE',
+            email,
+          },
+        });
         await prisma.student.create({
           data: {
             tenantId: tenant.id,
             institutionId,
             userId: user.id,
+            personId: studentPerson.id,
+            publicId: testPublicId('STU'),
             studentNumber: 'STU-AMB-001',
-            firstName: name,
-            lastName: 'Ambiguous',
-            gender: 'MALE',
+            internalEmail: email,
+            status: 'ENROLLED',
           },
         });
         await prisma.organizationMembership.create({

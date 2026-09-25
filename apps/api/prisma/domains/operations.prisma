@@ -1,26 +1,3 @@
-model Attendance {
-  id            String           @id @default(uuid()) @db.Uuid
-  tenantId      String           @db.Uuid
-  classId       String           @db.Uuid
-  studentId     String           @db.Uuid
-  termId        String           @db.Uuid
-  date          DateTime         @db.Date
-  status        AttendanceStatus @default(PRESENT)
-  remarks       String?
-  recordedBy    String?          @db.Uuid
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-
-  class         Class    @relation(fields: [classId], references: [id])
-  student       Student  @relation(fields: [studentId], references: [id])
-  term          Term     @relation(fields: [termId], references: [id])
-
-  @@unique([classId, studentId, date])
-  @@index([tenantId, classId, date])
-  @@index([tenantId, studentId])
-  @@map("attendance")
-}
-
 model Hostel {
   id              String      @id @default(uuid()) @db.Uuid
   tenantId        String      @db.Uuid
