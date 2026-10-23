@@ -24,7 +24,7 @@ const kpis = [
 ];
 
 const institutions = [
-  { avatar: "G", avatarColor: "primary" as const, title: "Greenfield Academy", subtitle: "Secondary · 12,450 students · Active", right: <Badge variant="green">Healthy</Badge> },
+  { avatar: "G", avatarColor: "primary" as const, title: "Demo Academy", subtitle: "Secondary · 12,450 students · Active", right: <Badge variant="green">Healthy</Badge> },
   { avatar: "M", avatarColor: "green" as const, title: "Metropolitan Schools", subtitle: "Mixed · 8,230 students · Active", right: <Badge variant="green">Healthy</Badge> },
   { avatar: "C", avatarColor: "orange" as const, title: "Coastal Education Trust", subtitle: "Primary · 3,100 students · Trial", right: <Badge variant="orange">Trial</Badge> },
   { avatar: "P", avatarColor: "red" as const, title: "Pinnacle Learning", subtitle: "Secondary · 1,840 students · Suspended", right: <Badge variant="red">Suspended</Badge> },
@@ -37,14 +37,14 @@ const pendingApprovals = [
 ];
 
 const recentActivity = [
-  { avatar: "A", avatarColor: "green" as const, title: "Admission recorded", subtitle: "Greenfield Academy · 45 new students · 2h ago" },
+  { avatar: "A", avatarColor: "green" as const, title: "Admission recorded", subtitle: "Demo Academy · 45 new students · 2h ago" },
   { avatar: "F", avatarColor: "primary" as const, title: "Payment received", subtitle: "Metropolitan Schools · ₦12,400 · 5h ago" },
   { avatar: "R", avatarColor: "purple" as const, title: "Results published", subtitle: "Coastal Education · SS2 term results · 1d ago" },
 ];
 
 const upcomingEvents = [
   { title: "Board Executive Meeting", subtitle: "Today · 10:00 AM" },
-  { title: "Institution Audit — Greenfield", subtitle: "Aug 5 · Campus visit" },
+  { title: "Institution Audit — Demo", subtitle: "Aug 5 · Campus visit" },
   { title: "Regional Directors Training", subtitle: "Aug 12 · Online" },
 ];
 
@@ -291,7 +291,7 @@ export default function OrgAdminDashboardPage() {
           <Field label="Amount" required>
             <TextInput value={selectedPlan ? `₦${selectedPlan.amount}` : ""} placeholder="Select a plan above" readOnly />
           </Field>
-          <SelectField label="Institution" required placeholder="Select institution" options={["Greenfield Academy", "Metropolitan Schools", "Coastal Education Trust", "Pinnacle Learning"]} value={subInstitution} onChange={(e) => setSubInstitution(e.target.value)} />
+          <SelectField label="Institution" required placeholder="Select institution" options={["Demo Academy", "Metropolitan Schools", "Coastal Education Trust", "Pinnacle Learning"]} value={subInstitution} onChange={(e) => setSubInstitution(e.target.value)} />
         </div>
       </Modal>
 

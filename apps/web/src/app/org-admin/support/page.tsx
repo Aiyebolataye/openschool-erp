@@ -27,13 +27,13 @@ interface Ticket {
 
 const initialChat: ChatMessage[] = [
   { from: "them", text: "Hi! This is the platform support team. How can we help you today?", time: "10:02 AM" },
-  { from: "me", text: "We're having trouble viewing student records in Greenfield Academy.", time: "10:04 AM" },
+  { from: "me", text: "We're having trouble viewing student records in Demo Academy.", time: "10:04 AM" },
 ];
 
 const initialTickets: Ticket[] = [
   {
     subject: "Subscription upgrade rejected",
-    institution: "Greenfield Academy",
+    institution: "Demo Academy",
     priority: { text: "URGENT", variant: "red" },
     status: { text: "Open", variant: "orange" },
     updated: "2h ago",

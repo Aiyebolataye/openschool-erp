@@ -111,7 +111,7 @@ For `AuthController` routes (`me`, `logout`, `email/verification-request`), the 
 |---|-------------|----------------------------------------------|----------|
 | 1 | Correct-object allowed | `#1` (3 tests): revoke own session; read own invitation + audit; issue onboarding link as Platform Admin | DELETE /sessions/:id, GET /invitations/:id, GET /audit-logs/:id, POST /onboarding |
 | 2 | Wrong-institution denied | `#6/#7 wrong institution: principal cannot bind annex` | POST /onboarding |
-| 3 | Wrong-org denied | `#2/#3/#4 tenant scope: same-role admin in another org cannot read Greenfield` | GET /invitations/:id, GET /audit-logs/:id |
+| 3 | Wrong-org denied | `#2/#3/#4 tenant scope: same-role admin in another org cannot read Demo` | GET /invitations/:id, GET /audit-logs/:id |
 | 4 | Same-role-another-tenant denied | `#2/#3/#4` (same test as #3) | GET /invitations/:id, GET /audit-logs/:id |
 | 5 | Client-supplied context ignored | `#5` (2 assertions): forged `x-tenant-id` + query ids on invitations and sessions | GET /invitations/:id, DELETE /sessions/:id |
 | 6 | Missing/invalid membership denied | `#6/#7 institution binding requires ACTIVE membership (missing → denied)` | POST /onboarding |

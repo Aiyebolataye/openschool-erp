@@ -22,7 +22,7 @@ const kpis = [
 ];
 
 const initialData = [
-  { org: "Greenfield Academy", slug: "greenfield-academy", domain: "greenfield.edu", adminName: "Jane Doe", adminEmail: "admin@greenfield.edu", phone: "+1 (555) 100-2000", status: { text: "Active", variant: "green" as const }, institutions: "5", students: "12,450", created: "Jan 15, 2025", address: "123 Oak Street, Springfield, IL 62701" },
+  { org: "Demo Academy", slug: "greenfield-academy", domain: "greenfield.edu", adminName: "Jane Doe", adminEmail: "admin@greenfield.edu", phone: "+1 (555) 100-2000", status: { text: "Active", variant: "green" as const }, institutions: "5", students: "12,450", created: "Jan 15, 2025", address: "123 Oak Street, Springfield, IL 62701" },
   { org: "Metropolitan Schools", slug: "metropolitan-schools", domain: "metropolitan-schools.edu", adminName: "Robert Chen", adminEmail: "admin@metropolitan-schools.edu", phone: "+1 (555) 200-3000", status: { text: "Active", variant: "green" as const }, institutions: "3", students: "8,230", created: "Mar 22, 2025", address: "456 Main Ave, Chicago, IL 60601" },
   { org: "Coastal Education Trust", slug: "coastal-ed-trust", domain: "coastaledtrust.edu", adminName: "Maria Santos", adminEmail: "admin@coastal-ed-trust.edu", phone: "+1 (555) 300-4000", status: { text: "Trial", variant: "orange" as const }, institutions: "2", students: "3,100", created: "Jun 8, 2025", address: "789 Beach Blvd, Miami, FL 33101" },
   { org: "Pinnacle Learning Center", slug: "pinnacle-learning", domain: "pinnaclelearning.edu", adminName: "David Park", adminEmail: "admin@pinnacle-learning.edu", phone: "+1 (555) 400-5000", status: { text: "Suspended", variant: "red" as const }, institutions: "1", students: "1,840", created: "Nov 3, 2024", address: "321 Summit Dr, Denver, CO 80201" },
@@ -235,7 +235,7 @@ export default function OrganizationsPage() {
         ) : (
           <div className="flex flex-col gap-4">
             <Field label="Organization Name" required>
-              <TextInput placeholder="e.g. Greenfield Academy" value={formName} onChange={(e) => { setFormName(e.target.value); if (!formDomain || formDomain === generateDomain(formName)) setFormDomain(generateDomain(e.target.value)); }} />
+              <TextInput placeholder="e.g. Demo Academy" value={formName} onChange={(e) => { setFormName(e.target.value); if (!formDomain || formDomain === generateDomain(formName)) setFormDomain(generateDomain(e.target.value)); }} />
             </Field>
             <Field label="Domain" required>
               <TextInput placeholder="e.g. greenfield.edu" value={formDomain} onChange={(e) => setFormDomain(e.target.value)} />

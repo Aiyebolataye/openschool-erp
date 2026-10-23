@@ -59,7 +59,7 @@ export default function PortfolioOfficerProfilePage() {
           </div>
           <div>
             <p className="text-lg font-display font-bold text-text-dark">{name}</p>
-            <p className="text-sm text-text-muted">Student Management Officer · Greenfield Academy</p>
+            <p className="text-sm text-text-muted">Student Management Officer · Demo Academy</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm">
@@ -88,7 +88,7 @@ export default function PortfolioOfficerProfilePage() {
             <p className="text-xs text-text-muted flex items-center gap-1">
               <Building2 className="w-3 h-3" /> Institution
             </p>
-            <p className="text-sm font-semibold text-text-dark mt-1">Greenfield Academy</p>
+            <p className="text-sm font-semibold text-text-dark mt-1">Demo Academy</p>
           </div>
           <div className="rounded-lg bg-surface p-4">
             <p className="text-xs text-text-muted flex items-center gap-1">

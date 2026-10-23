@@ -32,7 +32,7 @@ const initialThreads: Thread[] = [
   {
     id: "t1",
     name: "Sarah Mitchell",
-    relation: "Institution Admin · Greenfield Academy",
+    relation: "Institution Admin · Demo Academy",
     initials: "SM",
     messages: [
       { from: "them", text: "Hi, we need guidance on bulk SMS pricing for next term.", time: "2h ago" },
@@ -84,7 +84,7 @@ const initialThreads: Thread[] = [
 const institutionAdmins = ["Sarah Mitchell", "James Okafor", "Maria Santos"];
 const organizationStaff = ["Head of Operations", "Finance Officer"];
 const adminRelations: Record<string, string> = {
-  "Sarah Mitchell": "Institution Admin · Greenfield Academy",
+  "Sarah Mitchell": "Institution Admin · Demo Academy",
   "James Okafor": "Institution Admin · Metropolitan Schools",
   "Maria Santos": "Institution Admin · Coastal Education Trust",
   "Head of Operations": "Organization Staff",

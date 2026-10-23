@@ -7,7 +7,7 @@ export default function TransportManagerLayout({ children }: { children: React.R
   return (
     <WorkspaceLayout
       workspace="Transport Manager"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Mr. Musa Idris", role: "Transport Manager", initials: "MI" }}
       navigation={transportManagerNav}
       accent="teal"

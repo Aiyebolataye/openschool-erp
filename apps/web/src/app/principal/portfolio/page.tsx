@@ -96,7 +96,7 @@ export default function PrincipalPortfolioPage() {
         {previewItem && (
           <div className="border-2 border-dashed border-primary/30 rounded-xl p-8 bg-surface/50 text-center">
             <div className="mb-4">
-              <p className="text-[10px] text-text-muted uppercase tracking-widest mb-1">Greenfield Academy</p>
+              <p className="text-[10px] text-text-muted uppercase tracking-widest mb-1">Demo Academy</p>
               <div className="w-12 h-1 bg-primary rounded-full mx-auto mb-4" />
             </div>
             <p className="text-xs text-text-muted uppercase tracking-wider mb-2">Certificate of Achievement</p>

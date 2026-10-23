@@ -53,7 +53,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
     return role.id;
   }
 
-  /** Create an independent organization sharing no objects with Greenfield. */
+  /** Create an independent organization sharing no objects with Demo. */
   async function createIsoTenant(label: string) {
     const suffix = Date.now();
     const slug = `rbac4-${label}-${suffix}`;
@@ -86,7 +86,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
   }
 
   /** Provision a greenfield account that is not yet active/verified. */
-  async function provisionGreenfieldUser(email: string) {
+  async function provisionDemoUser(email: string) {
     const passwordHash = await bcrypt.hash('provisional-not-a-password', 10);
     return prisma.user.create({
       data: {
@@ -102,7 +102,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
   }
 
   /** Create a greenfield INSTITUTION_ADMIN with optional institution membership. */
-  async function createGreenfieldInstitutionAdmin(
+  async function createDemoInstitutionAdmin(
     options: { membership?: 'ACTIVE' | 'INACTIVE' } = {},
   ) {
     const email = unique('gf-admin');
@@ -200,7 +200,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
         .send({ email })
         .expect(404); // unknown account -> opaque 404, no enumeration
 
-      await provisionGreenfieldUser(email);
+      await provisionDemoUser(email);
       await request(app.getHttpServer())
         .post('/api/v1/onboarding')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -210,7 +210,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
       // #8 Platform Admin semantics preserved: admin holds NO institution
       // membership yet can bind an institution-scoped link (platform authority).
       const instEmail = unique('allowed-ob-inst');
-      await provisionGreenfieldUser(instEmail);
+      await provisionDemoUser(instEmail);
       await request(app.getHttpServer())
         .post('/api/v1/onboarding')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -240,7 +240,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
       expect(row?.isActive).toBe(true);
     });
 
-    it('tenant scope: a same-role admin in another organization cannot read Greenfield invitations or audit', async () => {
+    it('tenant scope: a same-role admin in another organization cannot read Demo invitations or audit', async () => {
       const iso = await createIsoTenant('cross');
       const isoLogin = await loginAs(app, iso.user.email, 'Password@123', iso.slug);
 
@@ -334,10 +334,10 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
 
   describe('#6/#7 missing, invalid and deactivated membership/institution denied', () => {
     it('institution binding requires an ACTIVE membership (missing -> denied)', async () => {
-      const gf = await createGreenfieldInstitutionAdmin({}); // org-only, no institution membership
+      const gf = await createDemoInstitutionAdmin({}); // org-only, no institution membership
       const login = await loginAs(app, gf.email);
       const email = unique('inst-missing');
-      await provisionGreenfieldUser(email);
+      await provisionDemoUser(email);
 
       await request(app.getHttpServer())
         .post('/api/v1/onboarding')
@@ -352,7 +352,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
       });
       const principal = await loginAs(app, 'principal@greenfield.edu.ng');
       const email = unique('inst-wrong');
-      await provisionGreenfieldUser(email);
+      await provisionDemoUser(email);
 
       await request(app.getHttpServer())
         .post('/api/v1/onboarding')
@@ -362,7 +362,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
     });
 
     it('deactivated membership denies institution binding', async () => {
-      const gf = await createGreenfieldInstitutionAdmin({ membership: 'ACTIVE' });
+      const gf = await createDemoInstitutionAdmin({ membership: 'ACTIVE' });
       await prisma.institutionMembership.update({
         where: {
           tenantId_institutionId_userId: {
@@ -375,7 +375,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
       });
       const login = await loginAs(app, gf.email);
       const email = unique('inst-inactive');
-      await provisionGreenfieldUser(email);
+      await provisionDemoUser(email);
 
       await request(app.getHttpServer())
         .post('/api/v1/onboarding')
@@ -394,7 +394,7 @@ describe('RBAC-4 — Object-Level Authorization (e2e)', () => {
       });
       const { accessToken } = await loginAs(app, 'admin@greenfield.edu.ng');
       const email = unique('inst-dark');
-      await provisionGreenfieldUser(email);
+      await provisionDemoUser(email);
 
       await request(app.getHttpServer())
         .post('/api/v1/onboarding')

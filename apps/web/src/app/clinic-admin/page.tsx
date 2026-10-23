@@ -295,7 +295,7 @@ export default function ClinicAdminDashboardPage() {
             label="Refer To"
             required
             placeholder="Select destination"
-            options={["Greenfield Clinic", "St. Mary&apos;s Hospital", "University Teaching Hospital", "Local Health Center"]}
+            options={["Demo Clinic", "St. Mary&apos;s Hospital", "University Teaching Hospital", "Local Health Center"]}
             value={refTo}
             onChange={(e) => setRefTo(e.target.value)}
           />

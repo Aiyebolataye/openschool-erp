@@ -26,46 +26,46 @@ const initialRoutes: Route[] = [
   {
     id: "RT-01",
     name: "Gwarinpa Line",
-    stops: ["Gwarinpa Estate Gate", "Life Camp Junction", "Gaduwa", "Durumi", "Aminu Kano Crescent", "Greenfield Academy"],
-    bus: "Greenfield 1",
+    stops: ["Gwarinpa Estate Gate", "Life Camp Junction", "Gaduwa", "Durumi", "Aminu Kano Crescent", "Demo Academy"],
+    bus: "Demo 1",
     driver: "Mr. Chinedu Kalu",
     status: "Active",
   },
   {
     id: "RT-02",
     name: "Kubwa Line",
-    stops: ["Kubwa Phase 3", "Kubwa Phase 2", "Bwari Junction", "Dei-Dei Market", "Greenfield Academy"],
-    bus: "Greenfield 2",
+    stops: ["Kubwa Phase 3", "Kubwa Phase 2", "Bwari Junction", "Dei-Dei Market", "Demo Academy"],
+    bus: "Demo 2",
     driver: "Mallam Usman Abdullahi",
     status: "Delayed",
   },
   {
     id: "RT-03",
     name: "Wuse II / Maitama Line",
-    stops: ["Wuse Market", "Zone 1", "Wuse II Roundabout", "Maitama 2nd Gate", "Greenfield Academy"],
-    bus: "Greenfield 3",
+    stops: ["Wuse Market", "Zone 1", "Wuse II Roundabout", "Maitama 2nd Gate", "Demo Academy"],
+    bus: "Demo 3",
     driver: "Mr. Emeka Obi",
     status: "Active",
   },
   {
     id: "RT-04",
     name: "Nyanya / Karu Line",
-    stops: ["Nyanya Motor Park", "Mararaba", "Karu Bridge", "Apo Junction", "Gudu", "Greenfield Academy"],
-    bus: "Greenfield 4",
+    stops: ["Nyanya Motor Park", "Mararaba", "Karu Bridge", "Apo Junction", "Gudu", "Demo Academy"],
+    bus: "Demo 4",
     driver: "Mr. Suleiman Musa",
     status: "Active",
   },
   {
     id: "RT-05",
     name: "Bwari / Dutse Line",
-    stops: ["Bwari Town", "Dutse Junction", "Kubwa Expressway", "Greenfield Academy"],
-    bus: "Greenfield 5",
+    stops: ["Bwari Town", "Dutse Junction", "Kubwa Expressway", "Demo Academy"],
+    bus: "Demo 5",
     driver: "Mr. Joseph Adeyemi",
     status: "Maintenance",
   },
 ];
 
-const busOptions = ["Greenfield 1", "Greenfield 2", "Greenfield 3", "Greenfield 4", "Greenfield 5"];
+const busOptions = ["Demo 1", "Demo 2", "Demo 3", "Demo 4", "Demo 5"];
 const driverOptions = ["Mr. Chinedu Kalu", "Mallam Usman Abdullahi", "Mr. Emeka Obi", "Mr. Suleiman Musa", "Mr. Joseph Adeyemi"];
 const statusOptions = ["Active", "Delayed", "Maintenance"];
 

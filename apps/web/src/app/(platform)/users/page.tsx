@@ -25,7 +25,7 @@ const initialData = [
   { user: "Robert Kim", email: "r.kim@pinnacle.edu", role: { text: "Institution Admin", variant: "muted" as const }, status: { text: "Inactive", variant: "red" as const }, tenant: "Pinnacle Learning", lastActive: "2 days ago" },
   { user: "Aisha Patel", email: "a.patel@sunrise.edu", role: { text: "Organization Admin", variant: "blue" as const }, status: { text: "Active", variant: "green" as const }, tenant: "Sunrise Education Group", lastActive: "15 min ago" },
   { user: "Maria Garcia", email: "m.garcia@coastal.edu", role: { text: "Institution Admin", variant: "muted" as const }, status: { text: "Active", variant: "green" as const }, tenant: "Coastal Education Trust", lastActive: "3 hrs ago" },
-  { user: "David Osei", email: "d.osei@greenfield.edu", role: { text: "Institution Admin", variant: "muted" as const }, status: { text: "Active", variant: "green" as const }, tenant: "Greenfield Academy", lastActive: "2 min ago" },
+  { user: "David Osei", email: "d.osei@greenfield.edu", role: { text: "Institution Admin", variant: "muted" as const }, status: { text: "Active", variant: "green" as const }, tenant: "Demo Academy", lastActive: "2 min ago" },
 ];
 
 const columns = [

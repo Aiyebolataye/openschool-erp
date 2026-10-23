@@ -153,7 +153,7 @@ Coverage by domain: identity, institution, people, academic, finance, communicat
 | Metric | Count |
 |--------|-------|
 | Tenant | 1 (`greenfield-academy`) |
-| Institution | 1 (Greenfield Academy, code `GA`) |
+| Institution | 1 (Demo Academy, code `GA`) |
 | Users | 11 (all with real bcrypt hashes, password: `Password@123`) |
 | Roles | 13 (11 assigned to users, 2 unused: `INSTITUTION_ADMIN`, `STUDENT`) |
 | Staff | 9 (STF-001 → STF-0009) |
@@ -319,7 +319,7 @@ Coverage by domain: identity, institution, people, academic, finance, communicat
 **Ready and working:**
 - Frozen architecture + engineering specs for all 10 V1 domains
 - Full Prisma schema (52 models, 14 enums) across 10 domain files, merged and applied
-- Rich seed data (Greenfield Academy: 11 users, 9 staff, 5 students, full term structure)
+- Rich seed data (Demo Academy: 11 users, 9 staff, 5 students, full term structure)
 - Docker local dev stack (Postgres, Redis, MinIO) — all healthy
 - Auth module: login, register, refresh, `/auth/me` — functional with JWT + bcrypt
 - BullMQ queue infrastructure + stub payment worker

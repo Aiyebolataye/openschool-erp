@@ -49,7 +49,7 @@ Phase 0 changes are **not committed** (see "Commit discipline" below); they awai
 - `dist/`, `.next/` build output → ignored.
 - `*.tsbuildinfo`, `.turbo/`, `.vercel/` → ignored.
 - `apps/api/.env`, `.env.test` → ignored (templates committed instead).
-- `Greenfield-Academy-Users-Roles-Passwords.docx` → **ignored** (contains 11 passwords; never commit).
+- `Demo-Academy-Users-Roles-Passwords.docx` → **ignored** (contains 11 passwords; never commit).
 - `apps/api` seed + schemas + modules: intentional source (untracked but real).
 
 ### Mock/incomplete implementation layer (baseline for later phases)

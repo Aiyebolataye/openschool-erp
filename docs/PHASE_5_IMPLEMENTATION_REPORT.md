@@ -88,7 +88,7 @@ Executed on the disposable `openschool_dev`:
    `p4_1_institution_management_additive` → `p5_1_archive_legacy_academic` →
    `p5_2_academic_management`. This exercises the archive (12 tables renamed)
    and Phase 2 on the fresh-history path.
-2. Seed **reran successfully**: Tenant Greenfield Academy, 11 users, 5 students,
+2. Seed **reran successfully**: Tenant Demo Academy, 11 users, 5 students,
    9 staff; academic fixtures populated (academic_years 1, academic_sessions 1,
    terms 3, departments 3, subjects 13, subject_groups 1, grade_levels 1,
    streams 2, classes 2, student_class_enrollments 5, teaching_assignments 1,

@@ -24,11 +24,11 @@ interface Vehicle {
 }
 
 const initialVehicles: Vehicle[] = [
-  { id: "VH-01", name: "Greenfield 1", plate: "BWR 118 QA", capacity: 18, status: "Operational", nextService: "12 Oct 2026", odometer: "84,200 km" },
-  { id: "VH-02", name: "Greenfield 2", plate: "BWR 121 QB", capacity: 24, status: "Maintenance", nextService: "09 Sep 2026", odometer: "121,900 km" },
-  { id: "VH-03", name: "Greenfield 3", plate: "BWR 133 QC", capacity: 24, status: "Operational", nextService: "26 Oct 2026", odometer: "96,400 km" },
-  { id: "VH-04", name: "Greenfield 4", plate: "BWR 147 QD", capacity: 15, status: "Operational", nextService: "05 Nov 2026", odometer: "63,100 km" },
-  { id: "VH-05", name: "Greenfield 5", plate: "BWR 150 QE", capacity: 16, status: "Out of service", nextService: "02 Oct 2026", odometer: "142,600 km" },
+  { id: "VH-01", name: "Demo 1", plate: "BWR 118 QA", capacity: 18, status: "Operational", nextService: "12 Oct 2026", odometer: "84,200 km" },
+  { id: "VH-02", name: "Demo 2", plate: "BWR 121 QB", capacity: 24, status: "Maintenance", nextService: "09 Sep 2026", odometer: "121,900 km" },
+  { id: "VH-03", name: "Demo 3", plate: "BWR 133 QC", capacity: 24, status: "Operational", nextService: "26 Oct 2026", odometer: "96,400 km" },
+  { id: "VH-04", name: "Demo 4", plate: "BWR 147 QD", capacity: 15, status: "Operational", nextService: "05 Nov 2026", odometer: "63,100 km" },
+  { id: "VH-05", name: "Demo 5", plate: "BWR 150 QE", capacity: 16, status: "Out of service", nextService: "02 Oct 2026", odometer: "142,600 km" },
 ];
 
 const statusOptions = ["Operational", "Maintenance", "Out of service"];
@@ -203,7 +203,7 @@ export default function TransportManagerVehiclesPage() {
         <div className="flex flex-col gap-4">
           <Field label="Bus Name" required>
             <TextInput
-              placeholder="e.g. Greenfield 6"
+              placeholder="e.g. Demo 6"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
             />

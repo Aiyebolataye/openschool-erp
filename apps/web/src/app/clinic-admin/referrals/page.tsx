@@ -49,7 +49,7 @@ const initialReferrals: Referral[] = [
     student: "Chinedu Eze",
     klass: "SS2 Art",
     reason: "Persistent skin rash for follow-up dermatology review.",
-    destination: "Greenfield Clinic",
+    destination: "Demo Clinic",
     status: "Pending",
     date: "3 days ago",
     notes: "Awaiting dermatologist appointment slot.",
@@ -88,7 +88,7 @@ const studentNames = [
 ];
 
 const destinationOptions = [
-  "Greenfield Clinic",
+  "Demo Clinic",
   "St. Mary&apos;s Hospital",
   "University Teaching Hospital",
   "Local Health Center",

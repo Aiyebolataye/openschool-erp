@@ -145,14 +145,15 @@ Every state-changing operation generates an append-only audit log entry with: en
 | ADR-020 | Template adoption is non-destructive | Institutions can customize after adoption without affecting template |
 | ADR-021 | Tenant-per-Institution architecture | Each Institution is a separate tenant; no shared-tenant multi-institution |
 | ADR-022 | Organization layer is optional | Supports single-institution schools and large school groups equally |
-| ADR-023 | Configuration-first philosophy | All Institution-specific behavior is configuration-driven, never hardcoded |
-| ADR-024 | Institution-owned configuration | Configuration lives with the Institution, not with the Platform |
+| ADR-023 | Configuration-first philosophy | All Institution-specific behavior is configuration-driven, never hardcoded. **Scope: excludes financial configuration, which Finance owns per ADR-031** |
+| ADR-024 | Institution-owned configuration | Configuration lives with the Institution, not with the Platform. **Scope: excludes financial configuration, which Finance owns per ADR-031** |
 | ADR-025 | Feature availability controlled by licensing | Module visibility and API access determined by license status |
 | ADR-026 | Subscription controls operational state | Subscription status determines Institution feature access and module availability |
 | ADR-027 | Campus as a future extension | Campus is an optional child aggregate; never breaks tenant isolation |
 | ADR-028 | Provisioning is event-driven | Each provisioning step publishes events; async processing for non-critical steps |
 | ADR-029 | Module licensing enforced before authorization | License check occurs before permission check to prevent unauthorized module access |
 | ADR-030 | Disabled modules are invisible | Disabled modules not exposed in API, navigation, events, or scheduled jobs |
+| ADR-031 | Finance is the authoritative owner of financial configuration and financial policy | Removes the `financial.*` category from Institution Management (spec 11.1); a single owner per concept prevents divergence between two configuration sources. **Takes precedence over ADR-023 and ADR-024 for financial concepts.** Does not decide `Institution.currency` (separate decision, D-3) |
 
 ---
 
@@ -188,7 +189,7 @@ Every platform operation — academic, financial, administrative — occurs with
 | Institution Management | Create, configure, suspend, archive, and restore Institutions |
 | Campus Management | Future: Manage multi-campus operations within an Institution |
 | Tenant Management | Enforce tenant isolation; every Institution is an isolated tenant |
-| Institution Configuration | Academic structure, organizational structure, financial structure, academic policies |
+| Institution Configuration | Academic structure, organizational structure, academic policies. Financial structure is **not** owned here — see ADR-031 |
 | Academic Calendar Configuration | Sessions, Terms, Semesters, Holidays, Academic Events |
 | Branding | White-label customization: logo, colors, typography, login page, website, certificates |
 | Subscription Management | Plan assignment, billing, renewals, upgrades, downgrades, trials |
@@ -989,12 +990,36 @@ Configuration is organized into logical categories. Each category has clear owne
 | Academic | `academic.*` | Institution Admin | Sessions, terms, semesters, classes, streams, departments, subjects, grading systems, promotion rules, attendance rules, assessment structure, report card templates |
 | Organizational | `organizational.*` | Institution Admin | Staff roles, leadership hierarchy, reporting structure, approval levels, committees |
 | Branding | `branding.*` | Institution Admin | Logo, colors, typography, login page, public website, certificates, ID cards |
-| Financial | `financial.*` | Institution Admin | Fee categories, fee structures, discounts, scholarships, payment plans, payment gateways, tax settings |
 | Communication | `communication.*` | Institution Admin | Email templates, SMS templates, WhatsApp templates, push notification rules, announcement rules |
 | Security | `security.*` | Institution Admin | Password policies, MFA requirements, session limits, login attempt limits |
 | Regional | `regional.*` | Institution Admin | Time zone, locale, language, date format, currency format |
 | Module | `module.*` | Institution Admin | Enabled modules, module-specific settings, feature toggles |
 | Automation | `automation.*` | Institution Admin | Workflow rules, approval chains, notification triggers, scheduled tasks |
+
+> **Financial is not an Institution configuration category (ADR-031).** The former
+> `financial.*` category (fee categories, fee structures, discounts, scholarships, payment
+> plans, payment gateways, tax settings) has been **removed from this domain**. Financial
+> configuration and financial policy — including settlement currency, tax rules, invoice
+> numbering, penalty rules, gateway enablement, and gateway credentials — are owned
+> exclusively by the **Finance** domain. Institution Management must not implement, expose,
+> or write an independent financial configuration source of truth. ADR-031 takes precedence
+> over ADR-023 and ADR-024 for financial concepts.
+>
+> `institution_configurations` and `institution_settings` **reject** the `financial.*`
+> namespace at the write path, so a gateway secret or financial policy value cannot be
+> introduced into Institution Configuration. Note that `regional.*` currency **format**
+> (display) is unaffected and remains Institution-owned; it is not settlement currency.
+> Settlement currency is **Finance-owned** (see the locked D-3 terminology below). Where it
+> is **stored**, and what becomes of the `institution.currency` column, are **not** decided
+> here — those remain open D-3 implementation decisions.
+>
+> **D-3 terminology (locked).** "Institution default currency" means the institution's
+> **Finance-owned settlement currency** (`Finance ADR-036`). The existence of an
+> `institution.currency` column in the Prisma Institution model does **not** make Institution
+> Management the owner of settlement currency. Currency formatting/display remains the
+> `regional.*` concern listed above and is a **separate concept** from settlement currency.
+> The storage, ownership-in-practice, and disposition of `Institution.currency` are **not**
+> decided by this decision.
 
 ### 11.2 Configuration Rules
 

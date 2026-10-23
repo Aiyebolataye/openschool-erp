@@ -22,7 +22,7 @@ const kpis = [
 ];
 
 const initialData = [
-  { institution: "Greenfield Primary", slug: "greenfield-primary", organization: "Greenfield Academy", type: "Primary", status: { text: "Active", variant: "green" as const }, students: "2,450", staff: "186", plan: { text: "Pro", variant: "blue" as const }, created: "Jan 15, 2025", address: "123 Green St, Lagos", phone: "+234 801 234 5678", email: "admin@greenfield-primary.edu" },
+  { institution: "Demo Primary", slug: "greenfield-primary", organization: "Demo Academy", type: "Primary", status: { text: "Active", variant: "green" as const }, students: "2,450", staff: "186", plan: { text: "Pro", variant: "blue" as const }, created: "Jan 15, 2025", address: "123 Green St, Lagos", phone: "+234 801 234 5678", email: "admin@greenfield-primary.edu" },
   { institution: "Metropolitan High", slug: "metro-high", organization: "Metropolitan Schools", type: "Secondary", status: { text: "Active", variant: "green" as const }, students: "3,120", staff: "245", plan: { text: "Enterprise", variant: "blue" as const }, created: "Mar 22, 2025", address: "45 Metro Ave, Abuja", phone: "+234 802 345 6789", email: "admin@metro-high.edu" },
   { institution: "Coastal Elementary", slug: "coastal-elem", organization: "Standalone", type: "Primary", status: { text: "Trial", variant: "orange" as const }, students: "890", staff: "72", plan: { text: "Starter", variant: "muted" as const }, created: "Jun 8, 2025", address: "78 Ocean Rd, Port Harcourt", phone: "+234 803 456 7890", email: "admin@coastal-elem.edu" },
   { institution: "Pinnacle Academy", slug: "pinnacle-academy", organization: "Pinnacle Learning Center", type: "Mixed", status: { text: "Suspended", variant: "red" as const }, students: "1,840", staff: "134", plan: { text: "Basic", variant: "muted" as const }, created: "Nov 3, 2024", address: "90 Hill Crest, Ibadan", phone: "+234 804 567 8901", email: "admin@pinnacle-academy.edu" },
@@ -162,7 +162,7 @@ export default function InstitutionsPage() {
       <Card className="p-4 mb-6">
         <div className="flex items-center gap-3">
           <Select
-            options={[{ label: "All Organizations", value: "all" }, { label: "Standalone", value: "Standalone" }, { label: "Greenfield Academy", value: "Greenfield Academy" }, { label: "Metropolitan Schools", value: "Metropolitan Schools" }, { label: "Pinnacle Learning Center", value: "Pinnacle Learning Center" }]}
+            options={[{ label: "All Organizations", value: "all" }, { label: "Standalone", value: "Standalone" }, { label: "Demo Academy", value: "Demo Academy" }, { label: "Metropolitan Schools", value: "Metropolitan Schools" }, { label: "Pinnacle Learning Center", value: "Pinnacle Learning Center" }]}
             placeholder="All Organizations"
             value={orgFilter}
             onChange={(val) => setOrgFilter(val)}
@@ -193,9 +193,9 @@ export default function InstitutionsPage() {
       >
         <div className="flex flex-col gap-4">
           <Field label="Institution Name" required>
-            <TextInput placeholder="e.g. Greenfield Primary" value={formName} onChange={(e) => setFormName(e.target.value)} />
+            <TextInput placeholder="e.g. Demo Primary" value={formName} onChange={(e) => setFormName(e.target.value)} />
           </Field>
-          <SelectField label="Organization" required options={["NONE / Standalone", "Greenfield Academy", "Metropolitan Schools", "Coastal Education", "Pinnacle Learning", "Sunrise International"]} placeholder="Select organization" value={formOrg} onChange={(e) => setFormOrg(e.target.value)} />
+          <SelectField label="Organization" required options={["NONE / Standalone", "Demo Academy", "Metropolitan Schools", "Coastal Education", "Pinnacle Learning", "Sunrise International"]} placeholder="Select organization" value={formOrg} onChange={(e) => setFormOrg(e.target.value)} />
           <SelectField label="Type" required options={["Nursery", "Primary", "Secondary", "Mixed"]} placeholder="Select type" value={formType} onChange={(e) => setFormType(e.target.value)} />
           <Field label="Address">
             <TextInput placeholder="e.g. 123 Main St, City, State" value={formAddress} onChange={(e) => setFormAddress(e.target.value)} />

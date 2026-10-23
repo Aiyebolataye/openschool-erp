@@ -532,7 +532,7 @@ describe('PEOPLE-2 — People & Student Management (e2e)', () => {
         .expect(403);
     });
 
-    it('cross-tenant isolation: foreign tenant person is forbidden to every Greenfield principal', async () => {
+    it('cross-tenant isolation: foreign tenant person is forbidden to every Demo principal', async () => {
       const iso = await createIsolatedTenant('b');
 
       const isoToken = await login(`iso.b.${suffix}@people2-b-${suffix}.edu.ng`, iso.slug);

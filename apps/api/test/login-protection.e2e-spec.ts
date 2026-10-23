@@ -260,7 +260,7 @@ describe('Login Protection B3 — D-09 / D-03 / P-16 / V-A-03 (e2e)', () => {
       const ts = Date.now();
       const variants = [
         `CaseMix.${ts}@GREENFIELD.edu.ng`,
-        `casemix.${ts}@Greenfield.edu.ng`,
+        `casemix.${ts}@Demo.edu.ng`,
         `CASEMIX.${ts}@greenfield.edu.ng`,
         `cAsEmIx.${ts}@GREENFIELD.edu.ng`,
       ];

@@ -22,10 +22,10 @@ interface Thread {
 }
 
 const initialThreads: Thread[] = [
-  { id: "t1", name: "Mr. Kalu", relation: "Driver · Gwarinpa Line · Greenfield 1", initials: "CK", unread: true },
-  { id: "t2", name: "Mrs. Ngozi Obi", relation: "Bus Matron · Greenfield 2", initials: "NO", unread: false },
+  { id: "t1", name: "Mr. Kalu", relation: "Driver · Gwarinpa Line · Demo 1", initials: "CK", unread: true },
+  { id: "t2", name: "Mrs. Ngozi Obi", relation: "Bus Matron · Demo 2", initials: "NO", unread: false },
   { id: "t3", name: "School Admin", relation: "Administration · Main Office", initials: "SA", unread: true },
-  { id: "t4", name: "Mallam Usman Abdullahi", relation: "Driver · Kubwa Line · Greenfield 2", initials: "UA", unread: false },
+  { id: "t4", name: "Mallam Usman Abdullahi", relation: "Driver · Kubwa Line · Demo 2", initials: "UA", unread: false },
 ];
 
 const initialMessages: Record<string, Message[]> = {
@@ -34,7 +34,7 @@ const initialMessages: Record<string, Message[]> = {
     { from: "me", text: "Good. Keep an eye on the Life Camp junction traffic this morning.", time: "6:42 AM" },
   ],
   t2: [
-    { from: "them", text: "All 24 students checked in on Greenfield 2 for the Kubwa Line.", time: "6:50 AM" },
+    { from: "them", text: "All 24 students checked in on Demo 2 for the Kubwa Line.", time: "6:50 AM" },
     { from: "me", text: "Thanks, Mrs. Obi. Note that the bus is going for service after drop-off.", time: "6:52 AM" },
   ],
   t3: [

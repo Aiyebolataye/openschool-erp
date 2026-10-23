@@ -6,18 +6,18 @@ import { PageHeader } from "@/components/ui/page-header";
 
 const events: Record<number, { title: string; time: string; type: string }[]> = {
   3: [{ title: "Regional Directors Call", time: "11:00 AM", type: "Call" }],
-  5: [{ title: "Institution Audit — Greenfield", time: "9:00 AM", type: "Audit" }],
+  5: [{ title: "Institution Audit — Demo", time: "9:00 AM", type: "Audit" }],
   12: [{ title: "Directors Training", time: "Online", type: "Training" }],
   18: [{ title: "Quarterly Budget Review", time: "3:00 PM", type: "Finance" }],
   26: [{ title: "Staff Town Hall", time: "1:00 PM", type: "Meeting" }],
   28: [{ title: "Board Executive Meeting", time: "10:00 AM", type: "Meeting" }],
-  29: [{ title: "Greenfield Audit Review", time: "2:00 PM", type: "Review" }],
+  29: [{ title: "Demo Audit Review", time: "2:00 PM", type: "Review" }],
 };
 
 const upcomingEvents = [
   { day: "Mon", month: "JUL", date: "28", title: "Board Executive Meeting", time: "10:00 AM", type: { text: "Meeting", variant: "blue" as const } },
-  { day: "Wed", month: "JUL", date: "29", title: "Greenfield Audit Review", time: "2:00 PM", type: { text: "Review", variant: "orange" as const } },
-  { day: "Wed", month: "AUG", date: "5", title: "Institution Audit — Greenfield", time: "9:00 AM", type: { text: "Audit", variant: "red" as const } },
+  { day: "Wed", month: "JUL", date: "29", title: "Demo Audit Review", time: "2:00 PM", type: { text: "Review", variant: "orange" as const } },
+  { day: "Wed", month: "AUG", date: "5", title: "Institution Audit — Demo", time: "9:00 AM", type: { text: "Audit", variant: "red" as const } },
   { day: "Wed", month: "AUG", date: "12", title: "Directors Training", time: "Online", type: { text: "Training", variant: "blue" as const } },
 ];
 

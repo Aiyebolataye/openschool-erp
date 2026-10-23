@@ -50,7 +50,7 @@ async function main() {
 
   const tenant = await prisma.tenant.create({
     data: {
-      name: 'Greenfield Academy',
+      name: 'Demo Academy',
       slug: 'greenfield-academy',
       subdomain: 'greenfield',
       primaryColor: '#16A34A',
@@ -63,7 +63,7 @@ async function main() {
   const institution = await prisma.institution.create({
     data: {
       tenantId: tenant.id,
-      name: 'Greenfield Academy',
+      name: 'Demo Academy',
       code: 'GA',
       address: '123 Academy Drive',
       city: 'Lagos',
@@ -239,7 +239,7 @@ async function main() {
   // RBAC-3 (P2.3, Option 2): `user_roles` is tenant-scoped —
   // `UserRoleAssignment` carries `tenantId NOT NULL` with
   // `@@unique([tenantId, userId, roleId])`. Every seeded assignment therefore
-  // binds the role within the Greenfield tenant context.
+  // binds the role within the Demo tenant context.
   await prisma.userRoleAssignment.createMany({
     data: [
       { tenantId: tenant.id, userId: users[0].id, roleId: roles[0].id },
@@ -526,6 +526,89 @@ async function main() {
     ],
   });
 
+  // P6.1 / P6.2 (Finance): register the fee-structure, billing, accounting,
+  // policy and discount permission catalogue exactly as named by the frozen
+  // endpoint catalogue (engineering/Finance Engineering.md §10.3).
+  //
+  // A permission is registered only once the endpoint that consumes it exists, so
+  // the catalogue never advertises a route the API does not serve. That is why
+  // the P6.2 groups are narrower than §10.3:
+  //   - finance:period has no `manage`: POST /accounting/periods/:id/close is
+  //     not implemented, because period-close authority is an open D-7 question.
+  //   - finance:discount has no `apply`: applying a discount targets an invoice,
+  //     and the spec-conformant `invoices` table is gated behind the Finance
+  //     legacy-archival decision.
+  //
+  // `finance:payment` and the settlement-side groups (refund, write_off,
+  // installment, gateway, reconciliation, scholarship, adjustment, report,
+  // billing, invoice) are NOT registered here; they arrive with the slice that
+  // implements their endpoints. `finance:invoice` stays registered because
+  // ADR-037 grants it to BURSAR, so removing it would contradict a ratified ADR.
+  await prisma.permission.createMany({
+    data: [
+      // finance:fee_category
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'finance:fee_category',
+        action,
+        description: `${action} fee categories`,
+      })),
+      // finance:fee_item
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'finance:fee_item',
+        action,
+        description: `${action} fee items`,
+      })),
+      // finance:fee_schedule
+      ...['read', 'create', 'update', 'manage'].map((action) => ({
+        resource: 'finance:fee_schedule',
+        action,
+        description: `${action} fee schedules`,
+      })),
+      // finance:bill
+      ...['read', 'create', 'convert', 'cancel'].map((action) => ({
+        resource: 'finance:bill',
+        action,
+        description: `${action} bills`,
+      })),
+      // finance:invoice
+      ...['read', 'create', 'manage', 'cancel', 'update', 'adjust'].map((action) => ({
+        resource: 'finance:invoice',
+        action,
+        description: `${action} invoices`,
+      })),
+      // finance:ledger — P6.2 accounting
+      ...['read', 'create'].map((action) => ({
+        resource: 'finance:ledger',
+        action,
+        description: `${action} ledger accounts and balances`,
+      })),
+      // finance:journal — P6.2 accounting
+      ...['read', 'create'].map((action) => ({
+        resource: 'finance:journal',
+        action,
+        description: `${action} journal entries`,
+      })),
+      // finance:period — P6.2 accounting. No `manage`: period close is D-7.
+      ...['read', 'create'].map((action) => ({
+        resource: 'finance:period',
+        action,
+        description: `${action} financial periods`,
+      })),
+      // finance:policy — P6.2
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'finance:policy',
+        action,
+        description: `${action} financial policies`,
+      })),
+      // finance:discount — P6.2. No `apply`: discount application is invoice-scoped.
+      ...['read', 'create', 'update'].map((action) => ({
+        resource: 'finance:discount',
+        action,
+        description: `${action} discounts`,
+      })),
+    ],
+  });
+
   const invitationPermissionRows = await prisma.permission.findMany({
     where: { resource: 'identity:invitation' },
   });
@@ -561,6 +644,9 @@ async function main() {
   });
   const academicPermissionRows = await prisma.permission.findMany({
     where: { resource: { startsWith: 'academics:' } },
+  });
+  const financePermissionRows = await prisma.permission.findMany({
+    where: { resource: { startsWith: 'finance:' } },
   });
 
   const adminRoleIds = roles
@@ -622,6 +708,14 @@ async function main() {
       // PHASE 5 (D-2): `academics:*` — the five admin roles receive the full
       // frozen catalogue. Non-admin grants follow the operational matrix below.
       ...academicPermissionRows.flatMap((p) =>
+        adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
+      ),
+      // P6.1 (Finance): the five admin roles receive the full registered
+      // `finance:*` catalogue. BURSAR's Finance billing permissions are
+      // explicitly governed by ADR-037 (Phase 6 D-7): fee_schedule / bill /
+      // invoice, and no `finance:payment`. Non-admin grants follow the
+      // operational matrix below; other authority questions stay open.
+      ...financePermissionRows.flatMap((p) =>
         adminRoleIds.map((roleId) => ({ roleId, permissionId: p.id })),
       ),
     ],
@@ -804,6 +898,63 @@ async function main() {
 
   if (academicMatrixGrantRows.length > 0) {
     await prisma.rolePermission.createMany({ data: academicMatrixGrantRows });
+  }
+
+  // P6.1 (Finance): operational-role grants for the Finance billing surface.
+  //
+  // The frozen Finance specification names the endpoint -> permission strings
+  // (§10.3) but defines no role -> permission matrix, and the three earlier
+  // precedents do not imply a default (Academics had a ratified matrix,
+  // People had a spec-frozen matrix, Institution was decided admin-only). The
+  // owner decision for the billing slice is therefore recorded here explicitly:
+  //
+  //   BURSAR receives the billing groups — fee_schedule, bill, invoice.
+  //   finance:payment is deliberately NOT granted; settlement stays with the
+  //   admin roles until the payment slice is built and reviewed.
+  //
+  // P6.2 adds the ledger / journal / period / policy / discount groups. They are
+  // granted to the five admin roles only. ADR-037 enumerates BURSAR's Finance
+  // grants exhaustively and does not include them, and the frozen spec defines no
+  // role -> permission matrix, so extending BURSAR here would invent authority.
+  // Whether a BURSAR or accountant role may post journal entries or read
+  // balances is an open operational-matrix decision.
+  //
+  // Object scope (tenant / institution / active membership) remains enforced by
+  // the guards at runtime, exactly as for the academic and people matrices.
+  const financeOperationalMatrix: {
+    roleName: string;
+    grants: { resource: string; actions: string[] }[];
+  }[] = [
+    {
+      roleName: 'BURSAR',
+      grants: [
+        { resource: 'finance:fee_schedule', actions: ['read', 'create', 'update', 'manage'] },
+        { resource: 'finance:bill', actions: ['read', 'create', 'convert', 'cancel'] },
+        { resource: 'finance:invoice', actions: ['read', 'create', 'manage', 'cancel', 'update', 'adjust'] },
+      ],
+    },
+  ];
+
+  const financeMatrixGrantRows = financeOperationalMatrix.flatMap(({ roleName, grants }) => {
+    const role = roles.find((r) => r.name === roleName);
+    if (!role) {
+      throw new Error(`Seeded role ${roleName} not found`);
+    }
+    return grants.flatMap(({ resource, actions }) => {
+      const perms = financePermissionRows.filter(
+        (p) => p.resource === resource && actions.includes(p.action),
+      );
+      if (perms.length !== actions.length) {
+        throw new Error(
+          `finance permissions missing for ${roleName}:${resource} (expected ${actions.join(',')})`,
+        );
+      }
+      return perms.map((p) => ({ roleId: role.id, permissionId: p.id }));
+    });
+  });
+
+  if (financeMatrixGrantRows.length > 0) {
+    await prisma.rolePermission.createMany({ data: financeMatrixGrantRows });
   }
 
   // B1: seed one pending invitation (TEACHER) for demo/e2e acceptance

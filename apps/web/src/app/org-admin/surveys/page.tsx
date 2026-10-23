@@ -26,7 +26,7 @@ type Survey = {
 
 const initialData: Survey[] = [
   { title: "Staff Satisfaction Survey", audience: "All organization staff", status: { text: "Active", variant: "green" }, responses: "342", description: "Quarterly pulse check on staff engagement, workload, and well-being across all institutions." },
-  { title: "Parent Satisfaction (Greenfield)", audience: "Greenfield parents", status: { text: "Active", variant: "green" }, responses: "610", description: "Annual satisfaction survey for parents of Greenfield Academy students." },
+  { title: "Parent Satisfaction (Demo)", audience: "Demo parents", status: { text: "Active", variant: "green" }, responses: "610", description: "Annual satisfaction survey for parents of Demo Academy students." },
   { title: "Institution Performance Review", audience: "Institution Admins", status: { text: "Closed", variant: "muted" }, responses: "18", description: "Feedback from institution admins on platform performance and support." },
   { title: "Internal Audit Self-Assessment", audience: "Compliance team", status: { text: "Draft", variant: "muted" }, responses: "—", description: "Self-assessment checklist for the compliance team ahead of the annual audit." },
 ];

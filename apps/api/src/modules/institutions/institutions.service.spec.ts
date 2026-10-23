@@ -35,7 +35,7 @@ function row(over: Record<string, unknown> = {}) {
   return {
     id: UUID,
     tenantId: 't1',
-    name: 'Greenfield Academy',
+    name: 'Demo Academy',
     code: 'GA',
     status: InstitutionStatus.PROVISIONING,
     logoUrl: null,
@@ -63,7 +63,7 @@ describe('InstitutionsService', () => {
     mocks.institution.create.mockResolvedValue(row());
 
     const out = await service.create(
-      { name: 'Greenfield Academy', code: 'GA' },
+      { name: 'Demo Academy', code: 'GA' },
       't1',
       'actor-1',
     );

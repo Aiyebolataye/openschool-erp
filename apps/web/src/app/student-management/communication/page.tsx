@@ -24,7 +24,7 @@ interface Thread {
 const initialThreads: Thread[] = [
   { id: "t1", name: "Mrs. Okonkwo", relation: "Parent · Mother of Ngozi Okonkwo (SS3 Art)", initials: "MO", unread: true },
   { id: "t2", name: "Mrs. Funke Adeyemi", relation: "Class Teacher · SS3 Art", initials: "FA", unread: false },
-  { id: "t3", name: "School Admin", relation: "Administration · Greenfield Academy", initials: "SA", unread: true },
+  { id: "t3", name: "School Admin", relation: "Administration · Demo Academy", initials: "SA", unread: true },
   { id: "t4", name: "Mr. Balogun", relation: "Parent · Father of Femi Balogun (SS3 Science)", initials: "MB", unread: false },
 ];
 

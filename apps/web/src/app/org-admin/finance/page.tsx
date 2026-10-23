@@ -40,7 +40,7 @@ const kpis = [
 
 const institutions: InstitutionFinance[] = [
   {
-    name: "Greenfield Academy",
+    name: "Demo Academy",
     plan: "Premium",
     annual: "₦8,500,000",
     collected: "₦7,140,000",
@@ -111,13 +111,13 @@ const institutions: InstitutionFinance[] = [
 ];
 
 const invoices: Invoice[] = [
-  { no: "INV-2026-0141", institution: "Greenfield Academy", amount: "₦850,000", period: "Q1 2026", status: { text: "Paid", variant: "green" } },
+  { no: "INV-2026-0141", institution: "Demo Academy", amount: "₦850,000", period: "Q1 2026", status: { text: "Paid", variant: "green" } },
   { no: "INV-2026-0142", institution: "Metropolitan Schools", amount: "₦1,200,000", period: "Q1 2026", status: { text: "Paid", variant: "green" } },
   { no: "INV-2026-0143", institution: "Coastal Education Trust", amount: "₦650,000", period: "Q1 2026", status: { text: "Unpaid", variant: "orange" } },
   { no: "INV-2026-0144", institution: "Pinnacle Learning", amount: "₦420,000", period: "Q1 2026", status: { text: "Overdue", variant: "red" } },
   { no: "INV-2026-0145", institution: "Sunrise International", amount: "₦1,050,000", period: "Q1 2026", status: { text: "Paid", variant: "green" } },
   { no: "INV-2026-0146", institution: "Metropolitan Schools", amount: "₦600,000", period: "Q2 2026", status: { text: "Pending", variant: "muted" } },
-  { no: "INV-2026-0147", institution: "Greenfield Academy", amount: "₦425,000", period: "Q2 2026", status: { text: "Unpaid", variant: "orange" } },
+  { no: "INV-2026-0147", institution: "Demo Academy", amount: "₦425,000", period: "Q2 2026", status: { text: "Unpaid", variant: "orange" } },
   { no: "INV-2026-0148", institution: "Coastal Education Trust", amount: "₦325,000", period: "Q2 2026", status: { text: "Overdue", variant: "red" } },
 ];
 

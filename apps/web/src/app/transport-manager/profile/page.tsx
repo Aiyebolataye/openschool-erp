@@ -47,7 +47,7 @@ export default function TransportManagerProfilePage() {
           </div>
           <div>
             <p className="text-lg font-display font-bold text-text-dark">{name}</p>
-            <p className="text-sm text-text-muted">Transport Manager · Greenfield Academy</p>
+            <p className="text-sm text-text-muted">Transport Manager · Demo Academy</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm">

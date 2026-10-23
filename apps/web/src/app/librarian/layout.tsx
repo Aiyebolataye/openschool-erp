@@ -7,7 +7,7 @@ export default function LibrarianLayout({ children }: { children: React.ReactNod
   return (
     <WorkspaceLayout
       workspace="Librarian"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Funke Adebayo", role: "Librarian", initials: "FA" }}
       navigation={librarianNav}
       accent="teal"

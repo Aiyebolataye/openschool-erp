@@ -135,7 +135,7 @@ export default function PortfolioOfficerStudentsPage() {
     <div className="max-w-[1200px] mx-auto">
       <PageHeader
         title="Students"
-        subtitle="Portfolios of all students at Greenfield Academy"
+        subtitle="Portfolios of all students at Demo Academy"
       />
 
       <Card className="p-4 mb-6 flex items-end gap-4">

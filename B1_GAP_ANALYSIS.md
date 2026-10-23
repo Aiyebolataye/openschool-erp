@@ -88,7 +88,7 @@ Platform
 - Backfill: derive one `OrganizationMembership` + one `InstitutionMembership` for every existing user from `staff`/`student`/`guardian` rows (one-per-institution); retain all source rows.
 - Role handling: seed `ORG_ADMIN`, `PRIMARY_INSTITUTION_ADMIN` built-ins (and decide `TENANT_ADMIN` alias — D-G6); scope role names per organization going forward.
 - Config/env: `INVITATION_EXPIRY_DAYS` → onboarding default **182 days**; login-identifier config; keep defaults (empty allowlist, invitation-driven).
-- Seed: produce the §38 fixture (ABC group: Greenfield+Bluefield; Jane×2 schools; Sarah parent of Child A/B; independent XYZ/Jane twice) to prove multi-institution + isolation in tests.
+- Seed: produce the §38 fixture (ABC group: Demo+Bluefield; Jane×2 schools; Sarah parent of Child A/B; independent XYZ/Jane twice) to prove multi-institution + isolation in tests.
 - Security: `JwtStrategy`/guards resolve context from memberships + roles, not from JWT claims alone (authorization check ordering per §34).
 
 ### 4.3 Impact on existing B1 code/tests

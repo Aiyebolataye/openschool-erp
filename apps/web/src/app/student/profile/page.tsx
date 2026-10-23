@@ -42,7 +42,7 @@ export default function StudentProfilePage() {
     <div className="max-w-[1000px] mx-auto">
       <PageHeader
         title="My Profile"
-        subtitle="Personal and academic information · Greenfield Academy"
+        subtitle="Personal and academic information · Demo Academy"
         actions={
           <Button onClick={() => setEditOpen(true)}>
             <Pencil className="w-4 h-4" /> Edit Profile

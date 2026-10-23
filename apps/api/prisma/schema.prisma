@@ -1520,6 +1520,448 @@ model BookLoan {
 
 // --- Domain: finance ---
 
+// ---------------------------------------------------------------------------
+// P6.1 — Fee structure (frozen Finance spec §5.5, §6.6 V-FC/V-FI, §7.2,
+// BR-01, BR-030, §5.8). Additive: the legacy `fee_structures` scaffold below is
+// untouched and remains pending the Phase 6 archival decision.
+enum FeeItemStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model FeeCategory {
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @db.Uuid
+  institutionId String    @db.Uuid
+  name          String    @db.VarChar(100)
+  description   String?   @db.VarChar(500)
+  version       Int       @default(1)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  createdBy     String?   @map("created_by") @db.Uuid
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  updatedBy     String?   @map("updated_by") @db.Uuid
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?   @map("deleted_by") @db.Uuid
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+  feeItems    FeeItem[]
+
+  @@unique([tenantId, institutionId, name], name: "fee_category_tenant_institution_name_key")
+  @@index([tenantId, institutionId], name: "idx_fee_category_tenant_institution")
+  @@map("fee_categories")
+}
+
+model FeeItem {
+  id            String        @id @default(uuid()) @db.Uuid
+  tenantId      String        @db.Uuid
+  institutionId String        @db.Uuid
+  feeCategoryId String        @map("fee_category_id") @db.Uuid
+  name          String        @db.VarChar(200)
+  amount        Decimal       @db.Decimal(14, 2)
+  description   String?       @db.VarChar(500)
+  status        FeeItemStatus @default(ACTIVE)
+  version       Int           @default(1)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  createdBy     String?       @map("created_by") @db.Uuid
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  updatedBy     String?       @map("updated_by") @db.Uuid
+  deletedAt     DateTime?     @map("deleted_at")
+  deletedBy     String?       @map("deleted_by") @db.Uuid
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+  feeCategory FeeCategory @relation(fields: [feeCategoryId], references: [id])
+  scheduleItems FeeScheduleItem[]
+
+  @@index([tenantId, institutionId], name: "idx_fee_item_tenant_institution")
+  @@index([tenantId, feeCategoryId], name: "idx_fee_item_tenant_category")
+  @@map("fee_items")
+}
+
+// ---------------------------------------------------------------------------
+// P6.2 — Fee templates, fee schedules, fee schedule items and bills (frozen
+// Finance §7.1/§7.2/§7.3/§7.4, §5.6, §5.7 BR-01/BR-029/BR-030, §6.4 I-11/I-22/I-23,
+// §6.6 V-FS-01..03, §8, §13). Additive; the legacy scaffold below is untouched.
+//
+// Cross-domain references (AcademicSession, Term, student person) are plain uuid
+// columns with application-level existence checks, per §8.2: cross-domain
+// references use a uuid FK without a database-level constraint to the other
+// domain's tables. Every scope predicate is built from the trusted JWT.
+// ---------------------------------------------------------------------------
+enum FeeTemplateStatus {
+  DRAFT
+  ACTIVE
+}
+
+enum FeeScheduleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum BillStatus {
+  GENERATED
+  SENT
+  CONVERTED
+  CANCELLED
+}
+
+model FeeTemplate {
+  id            String            @id @default(uuid()) @db.Uuid
+  tenantId      String            @db.Uuid
+  institutionId String            @db.Uuid
+  name          String            @db.VarChar(100)
+  description   String?           @db.VarChar(500)
+  /// §7.2 fee_templates — template items are a JSON array referencing
+  /// fee_item_ids and amounts.
+  items         Json?
+  status        FeeTemplateStatus @default(DRAFT)
+  version       Int               @default(1)
+  createdAt     DateTime          @default(now()) @map("created_at")
+  createdBy     String?           @map("created_by") @db.Uuid
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  updatedBy     String?           @map("updated_by") @db.Uuid
+  deletedAt     DateTime?         @map("deleted_at")
+  deletedBy     String?           @map("deleted_by") @db.Uuid
+
+  institution   Institution       @relation(fields: [institutionId], references: [id])
+  feeSchedules  FeeSchedule[]
+
+  @@unique([tenantId, institutionId, name], name: "fee_template_tenant_institution_name_key")
+  @@index([tenantId, institutionId], name: "idx_fee_template_tenant_institution")
+  @@map("fee_templates")
+}
+
+model FeeSchedule {
+  id                String            @id @default(uuid()) @db.Uuid
+  tenantId          String            @db.Uuid
+  institutionId     String            @db.Uuid
+  name              String            @db.VarChar(100)
+  /// BR-029 — fee schedules are session-scoped.
+  academicSessionId String            @map("academic_session_id") @db.Uuid
+  feeTemplateId     String?           @map("fee_template_id") @db.Uuid
+  status            FeeScheduleStatus @default(DRAFT)
+  version           Int               @default(1)
+  createdAt         DateTime          @default(now()) @map("created_at")
+  createdBy         String?           @map("created_by") @db.Uuid
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  updatedBy         String?           @map("updated_by") @db.Uuid
+  deletedAt         DateTime?         @map("deleted_at")
+  deletedBy         String?           @map("deleted_by") @db.Uuid
+
+  institution Institution      @relation(fields: [institutionId], references: [id])
+  feeTemplate FeeTemplate?     @relation(fields: [feeTemplateId], references: [id])
+  items       FeeScheduleItem[]
+  bills       Bill[]
+
+  @@unique([tenantId, institutionId, academicSessionId, name], name: "fee_schedule_tenant_institution_session_name_key")
+  @@index([tenantId, institutionId], name: "idx_fee_schedule_tenant_institution")
+  @@index([tenantId, institutionId, status], name: "idx_fee_schedule_tenant_institution_status")
+  @@map("fee_schedules")
+}
+
+model FeeScheduleItem {
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @db.Uuid
+  institutionId String    @db.Uuid
+  feeScheduleId String    @map("fee_schedule_id") @db.Uuid
+  feeItemId     String    @map("fee_item_id") @db.Uuid
+  /// §7.2 — per-schedule override of the fee item amount.
+  amount        Decimal   @db.Decimal(14, 2)
+  /// false = optional fee.
+  mandatory     Boolean   @default(true)
+  version       Int       @default(1)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  createdBy     String?   @map("created_by") @db.Uuid
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  updatedBy     String?   @map("updated_by") @db.Uuid
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?   @map("deleted_by") @db.Uuid
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+  feeSchedule FeeSchedule @relation(fields: [feeScheduleId], references: [id])
+  feeItem     FeeItem     @relation(fields: [feeItemId], references: [id])
+
+  @@unique([tenantId, feeScheduleId, feeItemId], name: "fee_schedule_item_tenant_schedule_item_key")
+  @@index([tenantId, institutionId], name: "idx_fee_schedule_item_tenant_institution")
+  @@map("fee_schedule_items")
+}
+
+model Bill {
+  id                String     @id @default(uuid()) @db.Uuid
+  tenantId          String     @db.Uuid
+  institutionId     String     @db.Uuid
+  studentPersonId   String     @map("student_person_id") @db.Uuid
+  feeScheduleId     String     @map("fee_schedule_id") @db.Uuid
+  academicSessionId String     @map("academic_session_id") @db.Uuid
+  termId            String?    @map("term_id") @db.Uuid
+  totalAmount       Decimal    @db.Decimal(14, 2)
+  status            BillStatus @default(GENERATED)
+  notes             String?    @db.VarChar(500)
+  version           Int        @default(1)
+  createdAt         DateTime   @default(now()) @map("created_at")
+  createdBy         String?    @map("created_by") @db.Uuid
+  updatedAt         DateTime   @updatedAt @map("updated_at")
+  updatedBy         String?    @map("updated_by") @db.Uuid
+  deletedAt         DateTime?  @map("deleted_at")
+  deletedBy         String?    @map("deleted_by") @db.Uuid
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+  feeSchedule FeeSchedule @relation(fields: [feeScheduleId], references: [id])
+
+  @@index([tenantId, institutionId], name: "idx_bill_tenant_institution")
+  @@index([tenantId, institutionId, studentPersonId], name: "idx_bill_tenant_institution_student")
+  @@index([tenantId, institutionId, feeScheduleId], name: "idx_bill_tenant_institution_schedule")
+  @@index([tenantId, institutionId, status], name: "idx_bill_tenant_institution_status")
+  @@map("bills")
+}
+
+// ---------------------------------------------------------------------------
+// P6.2 — Discount definitions (frozen Finance §7.1/§7.2, §6.6 V-DC-01..05).
+// `discount_applications` is deliberately NOT created here: §7.2 makes it
+// invoice-scoped (discount_id + invoice_id), and the spec-conformant `invoices`
+// table cannot be created while the pre-P6.1 legacy `invoices` table occupies the
+// frozen table name. That table's archival is a separate, gated decision.
+// ---------------------------------------------------------------------------
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+enum DiscountCondition {
+  EARLY_PAYMENT
+  SIBLING
+  EMPLOYEE
+  CUSTOM
+  NONE
+}
+
+enum DiscountStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+model Discount {
+  id                    String            @id @default(uuid()) @db.Uuid
+  tenantId              String            @db.Uuid
+  institutionId         String            @db.Uuid
+  name                  String            @db.VarChar(100)
+  discountType          DiscountType      @map("discount_type")
+  /// Percentage (0-100) or fixed amount; V-DC-03.
+  value                 Decimal           @db.Decimal(14, 2)
+  condition             DiscountCondition @default(NONE)
+  /// null = unlimited.
+  maxApplications       Int?              @map("max_applications")
+  validFrom             DateTime?         @map("valid_from") @db.Date
+  validTo               DateTime?         @map("valid_to") @db.Date
+  /// Array of session IDs; null = all sessions.
+  applicableSessionIds  Json?             @map("applicable_session_ids")
+  status                DiscountStatus    @default(DRAFT)
+  version               Int               @default(1)
+  createdAt             DateTime          @default(now()) @map("created_at")
+  createdBy             String?           @map("created_by") @db.Uuid
+  updatedAt             DateTime          @updatedAt @map("updated_at")
+  updatedBy             String?           @map("updated_by") @db.Uuid
+  deletedAt             DateTime?         @map("deleted_at")
+  deletedBy             String?           @map("deleted_by") @db.Uuid
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@index([tenantId, institutionId], name: "idx_discount_tenant_institution")
+  @@index([tenantId, institutionId, status], name: "idx_discount_tenant_institution_status")
+  @@map("discounts")
+}
+
+// ---------------------------------------------------------------------------
+// P6.2 — Double-entry accounting foundation (frozen Finance §7.1/§7.2/§7.3/§7.4,
+// §6.4 I-04/I-07/I-17/I-29/I-30, §6.6 V-LA-01..03 / V-JE-01..06, §8.2, §13).
+//
+// journal_entries, journal_entry_lines and account_balances are immutable
+// financial records: §7.1 marks them "Soft Delete: No" and I-07 makes posted
+// entries immutable, so they carry creation provenance only — no soft-delete or
+// in-place update columns.
+// ---------------------------------------------------------------------------
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+enum FinancialPeriodStatus {
+  OPEN
+  CLOSING
+  CLOSED
+}
+
+model LedgerAccount {
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @db.Uuid
+  institutionId String      @db.Uuid
+  code          String      @db.VarChar(20)
+  name          String      @db.VarChar(100)
+  accountType   AccountType @map("account_type")
+  description   String?     @db.VarChar(500)
+  isActive      Boolean     @default(true) @map("is_active")
+  version       Int         @default(1)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  createdBy     String?     @map("created_by") @db.Uuid
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  updatedBy     String?     @map("updated_by") @db.Uuid
+  deletedAt     DateTime?   @map("deleted_at")
+  deletedBy     String?     @map("deleted_by") @db.Uuid
+
+  institution    Institution         @relation(fields: [institutionId], references: [id])
+  journalLines   JournalEntryLine[]
+  accountBalance AccountBalance[]
+
+  @@unique([tenantId, institutionId, code], name: "ledger_account_tenant_institution_code_key")
+  @@unique([tenantId, institutionId, name], name: "ledger_account_tenant_institution_name_key")
+  @@index([tenantId, institutionId, accountType], name: "idx_la_type")
+  @@map("ledger_accounts")
+}
+
+model FinancialPeriod {
+  id                String                @id @default(uuid()) @db.Uuid
+  tenantId          String                @db.Uuid
+  institutionId     String                @db.Uuid
+  name              String                @db.VarChar(50)
+  academicSessionId String                @map("academic_session_id") @db.Uuid
+  startDate         DateTime              @map("start_date") @db.Date
+  endDate           DateTime              @map("end_date") @db.Date
+  status            FinancialPeriodStatus @default(OPEN)
+  version           Int                   @default(1)
+  createdAt         DateTime              @default(now()) @map("created_at")
+  createdBy         String?               @map("created_by") @db.Uuid
+  updatedAt         DateTime              @updatedAt @map("updated_at")
+  updatedBy         String?               @map("updated_by") @db.Uuid
+  deletedAt         DateTime?             @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
+
+  institution   Institution       @relation(fields: [institutionId], references: [id])
+  journalEntries JournalEntry[]
+  accountBalances AccountBalance[]
+
+  @@unique([tenantId, institutionId, name], name: "financial_period_tenant_institution_name_key")
+  @@index([tenantId, institutionId], name: "idx_financial_period_tenant_institution")
+  @@map("financial_periods")
+}
+
+model JournalEntry {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @db.Uuid
+  institutionId     String    @db.Uuid
+  entryNumber       String    @map("entry_number") @db.VarChar(50)
+  description       String    @db.VarChar(500)
+  referenceType     String    @map("reference_type") @db.VarChar(50)
+  referenceId       String    @map("reference_id") @db.Uuid
+  financialPeriodId String    @map("financial_period_id") @db.Uuid
+  totalDebit        Decimal   @map("total_debit") @db.Decimal(14, 2)
+  totalCredit       Decimal   @map("total_credit") @db.Decimal(14, 2)
+  postedAt          DateTime  @default(now()) @map("posted_at")
+  reversed          Boolean   @default(false)
+  reversedBy        String?   @map("reversed_by") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at")
+  createdBy         String?   @map("created_by") @db.Uuid
+
+  institution     Institution       @relation(fields: [institutionId], references: [id])
+  financialPeriod FinancialPeriod   @relation(fields: [financialPeriodId], references: [id])
+  lines           JournalEntryLine[]
+
+  @@unique([tenantId, institutionId, entryNumber], name: "journal_entry_tenant_institution_number_key")
+  @@index([financialPeriodId], name: "idx_je_period")
+  @@index([referenceType, referenceId], name: "idx_je_reference")
+  @@map("journal_entries")
+}
+
+model JournalEntryLine {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenantId        String    @db.Uuid
+  institutionId   String    @db.Uuid
+  journalEntryId  String    @map("journal_entry_id") @db.Uuid
+  ledgerAccountId String    @map("ledger_account_id") @db.Uuid
+  lineNumber      Int       @map("line_number")
+  debit           Decimal   @default(0) @db.Decimal(14, 2)
+  credit          Decimal   @default(0) @db.Decimal(14, 2)
+  description     String?   @db.VarChar(500)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  createdBy       String?   @map("created_by") @db.Uuid
+
+  institution   Institution     @relation(fields: [institutionId], references: [id])
+  journalEntry  JournalEntry    @relation(fields: [journalEntryId], references: [id])
+  ledgerAccount LedgerAccount   @relation(fields: [ledgerAccountId], references: [id])
+
+  @@unique([tenantId, journalEntryId, ledgerAccountId, lineNumber], name: "journal_entry_line_tenant_entry_account_line_key")
+  @@index([ledgerAccountId], name: "idx_jel_account")
+  @@index([journalEntryId], name: "idx_jel_entry")
+  @@map("journal_entry_lines")
+}
+
+model AccountBalance {
+  id                String          @id @default(uuid()) @db.Uuid
+  tenantId          String          @db.Uuid
+  institutionId     String          @db.Uuid
+  ledgerAccountId   String          @map("ledger_account_id") @db.Uuid
+  financialPeriodId String          @map("financial_period_id") @db.Uuid
+  openingBalance    Decimal         @default(0) @map("opening_balance") @db.Decimal(14, 2)
+  totalDebit        Decimal         @default(0) @map("total_debit") @db.Decimal(14, 2)
+  totalCredit       Decimal         @default(0) @map("total_credit") @db.Decimal(14, 2)
+  closingBalance    Decimal         @default(0) @map("closing_balance") @db.Decimal(14, 2)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  createdBy         String?         @map("created_by") @db.Uuid
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  updatedBy         String?         @map("updated_by") @db.Uuid
+
+  institution    Institution     @relation(fields: [institutionId], references: [id])
+  ledgerAccount   LedgerAccount   @relation(fields: [ledgerAccountId], references: [id])
+  financialPeriod FinancialPeriod @relation(fields: [financialPeriodId], references: [id])
+
+  @@unique([tenantId, ledgerAccountId, financialPeriodId], name: "account_balance_tenant_account_period_key")
+  @@index([financialPeriodId], name: "idx_ab_period")
+  @@map("account_balances")
+}
+
+// ---------------------------------------------------------------------------
+// P6.2 — Financial policies (frozen Finance §7.1/§7.2/§7.3, §6.6 V-FP-01..04,
+// §8). `version` here is the POLICY version (V-FP-04: auto-incremented per
+// policy_type + policy_key, and part of the frozen UNIQUE constraint), not an
+// optimistic-lock token: updating a policy appends a new version and supersedes
+// the prior one rather than mutating a row in place.
+// ---------------------------------------------------------------------------
+// §8's `PolicyStatus` (DRAFT, ACTIVE, SUPERSEDED) is declared once in
+// `schema-head.prisma` and is already shared with the Academic policy model, so
+// Finance reuses that declaration rather than redefining a duplicate enum.
+model FinancialPolicy {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  institutionId String       @db.Uuid
+  policyType    String       @map("policy_type") @db.VarChar(50)
+  policyKey     String       @map("policy_key") @db.VarChar(100)
+  value         Json
+  description   String?      @db.VarChar(500)
+  version       Int          @default(1)
+  effectiveFrom DateTime     @map("effective_from") @db.Date
+  effectiveTo   DateTime?    @map("effective_to") @db.Date
+  status        PolicyStatus @default(DRAFT)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  createdBy     String?      @map("created_by") @db.Uuid
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  updatedBy     String?      @map("updated_by") @db.Uuid
+  deletedAt     DateTime?    @map("deleted_at")
+  deletedBy     String?     @map("deleted_by") @db.Uuid
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([tenantId, institutionId, policyType, policyKey, version], name: "financial_policy_tenant_institution_type_key_version_key")
+  @@index([tenantId, institutionId], name: "idx_financial_policy_tenant_institution")
+  @@index([tenantId, institutionId, policyType, policyKey], name: "idx_financial_policy_tenant_institution_type_key")
+  @@map("financial_policies")
+}
+
+// ---------------------------------------------------------------------------
+// Legacy fee scaffold (pre-P6.1). Retained as-is; not part of the frozen §7.2
+// catalogue. Archival is a separate, gated decision.
+// ---------------------------------------------------------------------------
 model FeeStructure {
   id              String   @id @default(uuid()) @db.Uuid
   tenantId        String   @db.Uuid
@@ -2090,6 +2532,19 @@ model Institution {
   students        Student[]
   staff           Staff[]
   feeStructures   FeeStructure[]
+  feeCategories   FeeCategory[]
+  feeItems        FeeItem[]
+  feeTemplates    FeeTemplate[]
+  feeSchedules    FeeSchedule[]
+  feeScheduleItems FeeScheduleItem[]
+  bills           Bill[]
+  discounts       Discount[]
+  ledgerAccounts  LedgerAccount[]
+  financialPeriods FinancialPeriod[]
+  journalEntries  JournalEntry[]
+  journalEntryLines JournalEntryLine[]
+  accountBalances AccountBalance[]
+  financialPolicies FinancialPolicy[]
   transportRoutes TransportRoute[]
   hostels         Hostel[]
   institutionConfigurations InstitutionConfiguration[]

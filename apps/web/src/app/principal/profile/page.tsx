@@ -26,7 +26,7 @@ export default function PrincipalProfilePage() {
           </div>
           <div>
             <p className="text-lg font-display font-bold text-text-dark">Dr. Okon</p>
-            <p className="text-sm text-text-muted">Principal · Greenfield Academy</p>
+            <p className="text-sm text-text-muted">Principal · Demo Academy</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm">

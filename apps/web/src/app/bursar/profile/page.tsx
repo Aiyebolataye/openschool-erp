@@ -47,7 +47,7 @@ export default function BursarProfilePage() {
           </div>
           <div>
             <p className="text-lg font-display font-bold text-text-dark">{name}</p>
-            <p className="text-sm text-text-muted">Bursar · Greenfield Academy</p>
+            <p className="text-sm text-text-muted">Bursar · Demo Academy</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm">
@@ -88,13 +88,13 @@ export default function BursarProfilePage() {
             <p className="text-xs text-text-muted flex items-center gap-1">
               <Wallet className="w-3 h-3" /> Operating Account
             </p>
-            <p className="text-sm font-semibold text-text-dark mt-1">Greenfield Academy · GTBank</p>
+            <p className="text-sm font-semibold text-text-dark mt-1">Demo Academy · GTBank</p>
           </div>
           <div className="rounded-lg bg-surface p-4">
             <p className="text-xs text-text-muted flex items-center gap-1">
               <School className="w-3 h-3" /> Institution
             </p>
-            <p className="text-sm font-semibold text-text-dark mt-1">Greenfield Academy</p>
+            <p className="text-sm font-semibold text-text-dark mt-1">Demo Academy</p>
           </div>
         </div>
       </Card>

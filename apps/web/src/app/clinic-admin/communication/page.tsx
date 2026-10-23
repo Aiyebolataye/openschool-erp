@@ -25,7 +25,7 @@ const initialThreads: Thread[] = [
   { id: "t1", name: "Mrs. Lim", relation: "Guardian · Parent of Adaeze Nwosu (JSS2 A)", initials: "ML", unread: true },
   { id: "t2", name: "Mrs. Ajayi", relation: "Teacher · SS1 Science Class Teacher", initials: "MA", unread: false },
   { id: "t3", name: "Mr. Okoye", relation: "Hostel Warden · Red House", initials: "MO", unread: true },
-  { id: "t4", name: "School Admin", relation: "Administration · Greenfield Academy", initials: "SA", unread: false },
+  { id: "t4", name: "School Admin", relation: "Administration · Demo Academy", initials: "SA", unread: false },
 ];
 
 const initialMessages: Record<string, Message[]> = {

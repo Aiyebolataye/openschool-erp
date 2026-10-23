@@ -23,17 +23,17 @@ interface Trip {
 }
 
 const initialTrips: Trip[] = [
-  { id: "TP-301", route: "Gwarinpa Line", bus: "Greenfield 1", driver: "Mr. Chinedu Kalu", departure: "6:45 AM", status: "On time" },
-  { id: "TP-302", route: "Kubwa Line", bus: "Greenfield 2", driver: "Mallam Usman Abdullahi", departure: "6:55 AM", status: "Delayed" },
-  { id: "TP-303", route: "Wuse II / Maitama Line", bus: "Greenfield 3", driver: "Mr. Emeka Obi", departure: "7:05 AM", status: "On time" },
-  { id: "TP-304", route: "Nyanya / Karu Line", bus: "Greenfield 4", driver: "Mr. Suleiman Musa", departure: "7:15 AM", status: "On time" },
-  { id: "TP-305", route: "Bwari / Dutse Line", bus: "Greenfield 5", driver: "Mr. Joseph Adeyemi", departure: "7:20 AM", status: "Completed" },
-  { id: "TP-306", route: "Gwarinpa Line", bus: "Greenfield 1", driver: "Mr. Chinedu Kalu", departure: "2:30 PM", status: "On time" },
-  { id: "TP-307", route: "Kubwa Line", bus: "Greenfield 2", driver: "Mallam Usman Abdullahi", departure: "3:00 PM", status: "Completed" },
+  { id: "TP-301", route: "Gwarinpa Line", bus: "Demo 1", driver: "Mr. Chinedu Kalu", departure: "6:45 AM", status: "On time" },
+  { id: "TP-302", route: "Kubwa Line", bus: "Demo 2", driver: "Mallam Usman Abdullahi", departure: "6:55 AM", status: "Delayed" },
+  { id: "TP-303", route: "Wuse II / Maitama Line", bus: "Demo 3", driver: "Mr. Emeka Obi", departure: "7:05 AM", status: "On time" },
+  { id: "TP-304", route: "Nyanya / Karu Line", bus: "Demo 4", driver: "Mr. Suleiman Musa", departure: "7:15 AM", status: "On time" },
+  { id: "TP-305", route: "Bwari / Dutse Line", bus: "Demo 5", driver: "Mr. Joseph Adeyemi", departure: "7:20 AM", status: "Completed" },
+  { id: "TP-306", route: "Gwarinpa Line", bus: "Demo 1", driver: "Mr. Chinedu Kalu", departure: "2:30 PM", status: "On time" },
+  { id: "TP-307", route: "Kubwa Line", bus: "Demo 2", driver: "Mallam Usman Abdullahi", departure: "3:00 PM", status: "Completed" },
 ];
 
 const routeOptions = ["Gwarinpa Line", "Kubwa Line", "Wuse II / Maitama Line", "Nyanya / Karu Line", "Bwari / Dutse Line"];
-const busOptions = ["Greenfield 1", "Greenfield 2", "Greenfield 3", "Greenfield 4", "Greenfield 5"];
+const busOptions = ["Demo 1", "Demo 2", "Demo 3", "Demo 4", "Demo 5"];
 const driverOptions = ["Mr. Chinedu Kalu", "Mallam Usman Abdullahi", "Mr. Emeka Obi", "Mr. Suleiman Musa", "Mr. Joseph Adeyemi"];
 const departureTimes = ["6:30 AM", "6:45 AM", "7:00 AM", "7:15 AM", "7:30 AM", "2:30 PM", "3:00 PM"];
 

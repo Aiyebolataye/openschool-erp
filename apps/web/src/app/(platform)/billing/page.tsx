@@ -31,7 +31,7 @@ const kpis = [
 ];
 
 const initialRows: InvoiceRow[] = [
-  { invoice: "INV-2026-0742", tenant: "Greenfield Academy", amount: "₦900,000", status: { text: "Pending", variant: "orange" }, periodStart: "Jan 1, 2026", periodEnd: "Jan 1, 2027" },
+  { invoice: "INV-2026-0742", tenant: "Demo Academy", amount: "₦900,000", status: { text: "Pending", variant: "orange" }, periodStart: "Jan 1, 2026", periodEnd: "Jan 1, 2027" },
   { invoice: "INV-2026-0741", tenant: "Metropolitan Schools", amount: "₦450,000", status: { text: "Pending", variant: "orange" }, periodStart: "Jan 1, 2026", periodEnd: "Jan 1, 2027" },
   { invoice: "INV-2026-0740", tenant: "Coastal Education", amount: "₦250,000", status: { text: "Overdue", variant: "red" }, periodStart: "Jun 15, 2025", periodEnd: "Jun 15, 2026" },
   { invoice: "INV-2026-0739", tenant: "Pinnacle Learning", amount: "₦250,000", status: { text: "Paid", variant: "green" }, periodStart: "Jan 1, 2026", periodEnd: "Jan 1, 2027" },

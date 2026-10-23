@@ -125,7 +125,7 @@ export default function InstitutionDashboardPage() {
   return (
     <div className="max-w-[1200px] mx-auto">
       <PageHeader
-        title="Greenfield Academy Dashboard"
+        title="Demo Academy Dashboard"
         subtitle="Operational overview · Academic Year 2026 · Term 3"
         actions={
           <div className="flex items-center gap-3">

@@ -7,7 +7,7 @@ export default function HrOfficerLayout({ children }: { children: React.ReactNod
   return (
     <WorkspaceLayout
       workspace="HR & Payroll"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Mrs. Ngozi Bello", role: "Payroll Officer", initials: "NB" }}
       navigation={hrOfficerNav}
     >

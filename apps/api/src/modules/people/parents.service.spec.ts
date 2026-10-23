@@ -37,7 +37,7 @@ function row(over: Record<string, unknown> = {}) {
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     person: { id: 'p1', firstName: 'Jane', lastName: 'Doe', email: 'jane@x.com', publicId: 'P-2026-001' },
-    institution: { id: 'i1', name: 'Greenfield', code: 'GF' },
+    institution: { id: 'i1', name: 'Demo', code: 'GF' },
     ...over,
   };
 }

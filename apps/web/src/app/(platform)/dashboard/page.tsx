@@ -33,7 +33,7 @@ const secondaryMetrics = [
 ];
 
 const pendingApprovals = [
-  { name: "Greenfield Academy", time: "2 hours ago" },
+  { name: "Demo Academy", time: "2 hours ago" },
   { name: "Riverside School", time: "5 hours ago" },
   { name: "Summit High School", time: "Yesterday" },
 ];
@@ -51,7 +51,7 @@ const nextRenewals = [
 ];
 
 const recentTickets = [
-  { priority: "URGENT", title: "Integration not syncing", org: "Greenfield Academy", category: "High Priority", time: "1H AGO", description: "The LMS integration has not synced attendance data for the past 24 hours. The org admin reports the webhook is receiving 503 responses from our endpoint." },
+  { priority: "URGENT", title: "Integration not syncing", org: "Demo Academy", category: "High Priority", time: "1H AGO", description: "The LMS integration has not synced attendance data for the past 24 hours. The org admin reports the webhook is receiving 503 responses from our endpoint." },
   { priority: "NORMAL", title: "Billing question", org: "Pacific Academy", category: "Financial", time: "3H AGO", description: "The org admin is asking about the prorated charge applied when upgrading from the Pro plan to Enterprise mid-cycle." },
 ];
 
@@ -62,7 +62,7 @@ const releaseNotes = [
 ];
 
 const auditLog = [
-  { category: "TENANT", event: "Greenfield Academy newly activated on platform", actor: "admin@platform.com", time: "2 hours ago" },
+  { category: "TENANT", event: "Demo Academy newly activated on platform", actor: "admin@platform.com", time: "2 hours ago" },
   { category: "SUB", event: "Pacific Academy plan upgraded to Enterprise tier", actor: "admin@platform.com", time: "5 hours ago" },
   { category: "SECURITY", event: "IP blocklist updated with 3 new high-risk entries", actor: "security@platform.com", time: "8 hours ago" },
 ];
@@ -297,7 +297,7 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between py-2 border-b border-border-light">
                 <div>
-                  <p className="text-sm font-medium text-text-dark">Greenfield</p>
+                  <p className="text-sm font-medium text-text-dark">Demo</p>
                   <p className="text-xs text-red">DECLINED · 3D</p>
                 </div>
                 <span className="text-sm font-semibold text-text-dark">₦2.4k</span>

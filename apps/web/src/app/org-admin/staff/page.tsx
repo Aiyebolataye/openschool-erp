@@ -31,7 +31,7 @@ type StaffRow = {
 
 const initialData: StaffRow[] = [
   { name: "Alex Morgan", email: "a.morgan@metrogroup.edu", role: { text: "Executive Director", variant: "blue" }, status: { text: "Active", variant: "green" }, lastActive: "10 min ago", institution: "Metro Education Group" },
-  { name: "Priya Sharma", email: "p.sharma@metrogroup.edu", role: { text: "Regional Director", variant: "muted" }, status: { text: "Active", variant: "green" }, lastActive: "1 hr ago", institution: "Greenfield Academy" },
+  { name: "Priya Sharma", email: "p.sharma@metrogroup.edu", role: { text: "Regional Director", variant: "muted" }, status: { text: "Active", variant: "green" }, lastActive: "1 hr ago", institution: "Demo Academy" },
   { name: "James Chen", email: "j.chen@metrogroup.edu", role: { text: "Finance Director", variant: "muted" }, status: { text: "Active", variant: "green" }, lastActive: "3 hrs ago", institution: "Metropolitan Schools" },
   { name: "Sofia Reyes", email: "s.reyes@metrogroup.edu", role: { text: "Academic Director", variant: "muted" }, status: { text: "Active", variant: "green" }, lastActive: "2 hrs ago", institution: "Coastal Education Trust" },
   { name: "David Okafor", email: "d.okafor@metrogroup.edu", role: { text: "Compliance Officer", variant: "muted" }, status: { text: "Inactive", variant: "red" }, lastActive: "2 days ago", institution: "Pinnacle Learning" },

@@ -93,7 +93,7 @@ export default function LibrarianDashboardPage() {
     <div className="max-w-[1200px] mx-auto">
       <PageHeader
         title="Library Overview"
-        subtitle="Librarian dashboard · Funke Adebayo · Greenfield Academy Library"
+        subtitle="Librarian dashboard · Funke Adebayo · Demo Academy Library"
       />
 
       <div className="grid grid-cols-3 gap-4 mb-6">

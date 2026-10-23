@@ -35,7 +35,7 @@ Before committing them:
 
 - Real `.env*` files are ignored; only `.env.example` and `.env.test.example` templates are committed.
 - Build outputs, logs, coverage, and editor files are ignored.
-- The development-only credential dump (`Greenfield-Academy-Users-Roles-Passwords.docx`) is ignored and must never be committed.
+- The development-only credential dump (`Demo-Academy-Users-Roles-Passwords.docx`) is ignored and must never be committed.
 
 ## Verification before commit
 

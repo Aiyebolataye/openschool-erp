@@ -59,7 +59,7 @@ export default function ClinicProfilePage() {
           </div>
           <div>
             <p className="text-lg font-display font-bold text-text-dark">{name}</p>
-            <p className="text-sm text-text-muted">School Nurse · Greenfield Academy</p>
+            <p className="text-sm text-text-muted">School Nurse · Demo Academy</p>
             <Badge variant="green" className="mt-1.5">Registered Nurse</Badge>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function ClinicProfilePage() {
             <p className="text-xs text-text-muted flex items-center gap-1">
               <Building2 className="w-3 h-3" /> Clinic
             </p>
-            <p className="text-sm font-semibold text-text-dark mt-1">Greenfield Sick Bay</p>
+            <p className="text-sm font-semibold text-text-dark mt-1">Demo Sick Bay</p>
           </div>
           <div className="rounded-lg bg-surface p-4">
             <p className="text-xs text-text-muted flex items-center gap-1">

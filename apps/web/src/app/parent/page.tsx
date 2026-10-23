@@ -51,7 +51,7 @@ export default function ParentDashboardPage() {
 
   return (
     <div className="max-w-[1200px] mx-auto">
-      <PageHeader title="Welcome back, Mr. Eze" subtitle="Here is what is happening with your children at Greenfield Academy" />
+      <PageHeader title="Welcome back, Mr. Eze" subtitle="Here is what is happening with your children at Demo Academy" />
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
         {stats.map((s) => (

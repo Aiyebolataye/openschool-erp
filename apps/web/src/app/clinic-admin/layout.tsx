@@ -7,7 +7,7 @@ export default function ClinicAdminLayout({ children }: { children: React.ReactN
   return (
     <WorkspaceLayout
       workspace="School Nurse"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Nurse Adaeze Okafor", role: "School Nurse", initials: "AO" }}
       navigation={clinicAdminNav}
       accent="green"

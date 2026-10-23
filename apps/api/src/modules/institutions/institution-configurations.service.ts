@@ -5,6 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { InstitutionEvents } from './institution.events';
 import { InstitutionConfigurationUpsertDto } from './dto/institution-config.dto';
+import { assertNotReservedConfigKey } from './reserved-config-namespaces';
 
 function listEnvelope(items: unknown[], total: number, page: number, limit: number) {
   return { success: true as const, data: { items, total, page, limit } };
@@ -18,12 +19,18 @@ function singleEnvelope(data: unknown) {
  * P4.1 — institution-scoped configuration (InstitutionConfiguration).
  *
  * Every row is tenant-scoped AND institution-scoped; both identifiers are
- * server-derived (JWT tenantId + guarded `:id` path). A client-supplied
- * institutionId can never read/write another tenant's configuration.
- * Versions auto-increment on update (BR-10); an optional `version` in the
- * request enables optimistic concurrency (409 on mismatch). Every write is
- * events + audit.
- */
+   * server-derived (JWT tenantId + guarded `:id` path). A client-supplied
+   * institutionId can never read/write another tenant's configuration.
+   * Versions auto-increment on update (BR-10); an optional `version` in the
+   * request enables optimistic concurrency (409 on mismatch). Every write is
+   * events + audit.
+   *
+   * D-2 (Option 1): the `financial.*` namespace is reserved to Finance and is
+   * rejected on every write path, so Institution Configuration can never become
+   * an independent financial source of truth. `remove` keeps its NotFound
+   * contract for absent keys (the reservation is asserted after the existence
+   * probe) and blocks deletion of any existing reserved-namespace row.
+   */
 @Injectable()
 export class InstitutionConfigurationsService {
   constructor(
@@ -66,6 +73,8 @@ export class InstitutionConfigurationsService {
     dto: InstitutionConfigurationUpsertDto,
     actorId: string,
   ) {
+    assertNotReservedConfigKey(key, 'configuration');
+
     const existing = await this.prisma.institutionConfiguration.findFirst({
       where: { ...this.scope(tenantId, institutionId), key },
     });
@@ -136,6 +145,8 @@ export class InstitutionConfigurationsService {
         `configuration key ${key} not found for institution ${institutionId}`,
       );
     }
+
+    assertNotReservedConfigKey(key, 'configuration');
 
     await this.prisma.institutionConfiguration.delete({
       where: { id: existing.id },

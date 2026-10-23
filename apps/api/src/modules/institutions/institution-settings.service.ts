@@ -14,6 +14,7 @@ import {
   InstitutionSettingKind,
   InstitutionSettingUpsertDto,
 } from './dto/institution-setting.dto';
+import { assertNotReservedConfigKey } from './reserved-config-namespaces';
 
 function listEnvelope(items: unknown[], total: number, page: number, limit: number) {
   return { success: true as const, data: { items, total, page, limit } };
@@ -37,6 +38,13 @@ const KIND_MEMBERS: Record<InstitutionSettingKind, string[]> = {
  * InstitutionConfiguration, plus a kind-typed value contract: `kind` selects
  * the allowed JSON shape of `value` (STRING/NUMBER/BOOLEAN/JSON) and defaults
  * to STRING. Every write is events + audit.
+ *
+ * D-2 (Option 1): `institution_settings` is a second institution-scoped
+ * key/value surface, so it carries the same reserved `financial.*` namespace
+ * rejection as `institution_configurations`. Without this, the reservation
+ * would be bypassable by writing financial values through the settings table.
+ * `remove` keeps its NotFound contract for absent keys; the reservation is
+ * asserted after the existence probe.
  */
 @Injectable()
 export class InstitutionSettingsService {
@@ -105,6 +113,8 @@ export class InstitutionSettingsService {
     dto: InstitutionSettingUpsertDto,
     actorId: string,
   ) {
+    assertNotReservedConfigKey(key, 'settings');
+
     const existing = await this.prisma.institutionSetting.findFirst({
       where: { ...this.scope(tenantId, institutionId), key },
     });
@@ -180,6 +190,8 @@ export class InstitutionSettingsService {
         `setting key ${key} not found for institution ${institutionId}`,
       );
     }
+
+    assertNotReservedConfigKey(key, 'settings');
 
     await this.prisma.institutionSetting.delete({
       where: { id: existing.id },

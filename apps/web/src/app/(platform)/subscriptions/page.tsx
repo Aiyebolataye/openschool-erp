@@ -21,7 +21,7 @@ const kpis = [
 ];
 
 const initialData = [
-  { tenant: "Greenfield Academy", slug: "greenfield-academy", plan: { text: "Enterprise", variant: "blue" as const }, status: { text: "Active", variant: "green" as const }, startDate: "Jan 15, 2025", endDate: "Jan 14, 2026", mrr: "₦2,400" },
+  { tenant: "Demo Academy", slug: "greenfield-academy", plan: { text: "Enterprise", variant: "blue" as const }, status: { text: "Active", variant: "green" as const }, startDate: "Jan 15, 2025", endDate: "Jan 14, 2026", mrr: "₦2,400" },
   { tenant: "Metropolitan Schools", slug: "metropolitan-schools", plan: { text: "Pro", variant: "blue" as const }, status: { text: "Active", variant: "green" as const }, startDate: "Mar 22, 2025", endDate: "Mar 21, 2026", mrr: "₦1,200" },
   { tenant: "Coastal Education Trust", slug: "coastal-ed-trust", plan: { text: "Starter", variant: "muted" as const }, status: { text: "Trial", variant: "orange" as const }, startDate: "Jun 8, 2025", endDate: "Jul 8, 2025", mrr: "₦0" },
   { tenant: "Pinnacle Learning Center", slug: "pinnacle-learning", plan: { text: "Basic", variant: "muted" as const }, status: { text: "Grace Period", variant: "orange" as const }, startDate: "Nov 3, 2024", endDate: "Nov 2, 2025", mrr: "₦400" },

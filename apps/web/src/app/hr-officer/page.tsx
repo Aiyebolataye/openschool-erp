@@ -106,7 +106,7 @@ export default function HrOfficerDashboardPage() {
     <div className="max-w-[1200px] mx-auto">
       <PageHeader
         title="HR & Payroll Overview"
-        subtitle="Staff, payroll and leave dashboard · Greenfield Academy"
+        subtitle="Staff, payroll and leave dashboard · Demo Academy"
       />
 
       <div className="grid grid-cols-3 gap-4 mb-6">

@@ -24,7 +24,7 @@ interface Thread {
 const initialThreads: Thread[] = [
   { id: "t1", name: "Mrs. Oyelaran", relation: "Teacher · English Literature", initials: "MO", unread: true },
   { id: "t2", name: "Amara Okafor", relation: "Student · SS2 Science", initials: "AO", unread: true },
-  { id: "t3", name: "School Admin", relation: "Administration · Greenfield Academy", initials: "SA", unread: false },
+  { id: "t3", name: "School Admin", relation: "Administration · Demo Academy", initials: "SA", unread: false },
 ];
 
 const initialMessages: Record<string, Message[]> = {

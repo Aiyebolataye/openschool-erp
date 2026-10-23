@@ -7,7 +7,7 @@ export default function StudentManagementLayout({ children }: { children: React.
   return (
     <WorkspaceLayout
       workspace="Student Management"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Mrs. Adaeze Chukwu", role: "Student Management Officer", initials: "AC" }}
       navigation={studentManagementNav}
     >

@@ -21,7 +21,7 @@ function applicantRow(over: Record<string, unknown> = {}) {
     createdAt: new Date('2026-09-01'),
     updatedAt: new Date('2026-09-01'),
     person: { id: 'p1', firstName: 'Ann', lastName: 'A', email: 'a@x.com', publicId: 'P-2026-001' },
-    institution: { id: 'i1', name: 'Greenfield Academy', code: 'GA' },
+    institution: { id: 'i1', name: 'Demo Academy', code: 'GA' },
     ...over,
   };
 }

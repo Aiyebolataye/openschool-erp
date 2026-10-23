@@ -7,7 +7,7 @@ export default function BursarLayout({ children }: { children: React.ReactNode }
   return (
     <WorkspaceLayout
       workspace="Bursar"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Mrs. Chiamaka Okafor", role: "Bursar", initials: "CO" }}
       navigation={bursarNav}
     >

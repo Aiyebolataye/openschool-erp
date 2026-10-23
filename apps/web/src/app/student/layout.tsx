@@ -7,7 +7,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
   return (
     <WorkspaceLayout
       workspace="Student Portal"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Chidi Eze", role: "SS1 Science", initials: "CE" }}
       navigation={studentNav}
       accent="green"

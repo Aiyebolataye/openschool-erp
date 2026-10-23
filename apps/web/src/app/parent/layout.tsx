@@ -7,7 +7,7 @@ export default function ParentLayout({ children }: { children: React.ReactNode }
   return (
     <WorkspaceLayout
       workspace="Parent Portal"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Mr. Eze", role: "Parent / Guardian", initials: "ME" }}
       navigation={parentNav}
     >

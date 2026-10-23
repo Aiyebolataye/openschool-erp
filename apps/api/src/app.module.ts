@@ -19,6 +19,7 @@ import { PeopleModule } from './modules/people/people.module';
 import { InstitutionsModule } from './modules/institutions/institutions.module';
 import { EventsModule } from './modules/events/events.module';
 import { AcademicsModule } from './modules/academics/academics.module';
+import { FinanceModule } from './modules/finance/finance.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { CorrelationIdInterceptor } from './common/interceptors/correlation-id.interceptor';
 
@@ -46,6 +47,7 @@ import { CorrelationIdInterceptor } from './common/interceptors/correlation-id.i
     InstitutionsModule,
     EventsModule,
     AcademicsModule,
+    FinanceModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },

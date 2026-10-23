@@ -7,7 +7,7 @@ export default function InstitutionLayout({ children }: { children: React.ReactN
   return (
     <WorkspaceLayout
       workspace="Institution Administrator"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Sarah Mitchell", role: "Institution Admin", initials: "SM" }}
       navigation={institutionAdminNav}
     >

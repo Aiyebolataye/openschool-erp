@@ -7,9 +7,9 @@
 | Field | Value |
 |-------|-------|
 | **Document** | Documentation Constitution — Governing Standard |
-| **Version** | 1.1 |
+| **Version** | 1.2 |
 | **Status** | Approved |
-| **Date** | July 2026 |
+| **Date** | September 2026 |
 | **Classification** | Internal |
 | **Author** | Architecture Team |
 | **Owner** | Solution Architect |
@@ -183,7 +183,7 @@ When required information is unavailable, it must identify the gap rather than m
 | Architecture contradicts Engineering specification | Architecture document prevails; specification must be updated |
 | Implementation contradicts Architecture | Implementation must be updated to align |
 | UI/UX design contradicts Architecture | UI/UX design must be updated to align |
-| Code contradicts documentation | Code or documentation must be updated to align |
+| Code or Prisma schema contradicts documentation | The code and Prisma schema are the authoritative record of what currently exists. The approved specification defines the intended target behaviour and design. Record the delta, then treat the specification as the implementation target unless a later explicit architecture or product decision supersedes it. The delta is recorded in the decision or implementation artefact for the work that observed it, following the pattern in `engineering/Finance Engineering.md` §4.1; a project-wide delta register remains an open decision under Outstanding Design Decisions (§19.3) |
 
 ---
 
@@ -209,7 +209,8 @@ When two approved documents contain conflicting guidance, the following mandator
 | **No independent resolution** | AI assistants are never permitted to choose between conflicting authoritative sources |
 | **Flag, don't decide** | AI must flag conflicts and wait for human resolution |
 | **Document the conflict** | All conflicts must be recorded with both source documents cited |
-| **Continue only after resolution** | Implementation must not proceed until the conflict is resolved |
+| **Continue only after resolution** | Implementation must not proceed while an unresolved conflict materially changes what is built, how the system behaves, or how the implementation is verified. A contradiction that does not meet that test is documentation debt and does not block implementation |
+| **Documentation debt** | A contradiction that does not materially change implementation scope, behaviour, or verification is recorded with both sources cited (§5.3) and scheduled for correction; it does not stop unrelated implementation work |
 
 ### 5.3 Conflict Documentation
 
@@ -1010,11 +1011,12 @@ Release is complete only when:
 |---------|------|--------|---------|
 | 1.0 | July 2026 | Architecture Team | Initial constitution |
 | 1.1 | July 2026 | Architecture Team | Added Source Conflict Resolution, Human Approval Boundary, Design Governance, Implementation Governance, AI Success Principles, Prompt Execution Workflow, Context Loading Requirements |
+| 1.2 | September 2026 | Architecture Team | Scoped the implementation-blocking rule in §5.2 to conflicts that materially change what is built, how the system behaves, or how it is verified, and classified all other contradictions as documentation debt; resolved the code-versus-documentation direction in §4.3 by making the code and Prisma schema the record of what exists and the approved specification the implementation target |
 
 ---
 
-*Document Version: 1.1*  
-*Last Updated: July 2026*  
+*Document Version: 1.2*  
+*Last Updated: September 2026*  
 *Status: Approved*  
 *Classification: Internal*
 

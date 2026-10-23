@@ -7,7 +7,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
   return (
     <WorkspaceLayout
       workspace="Teacher"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Mrs. Ajayi", role: "Biology Teacher", initials: "AA" }}
       navigation={teacherNav}
     >

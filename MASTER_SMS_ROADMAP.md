@@ -53,7 +53,7 @@ The database foundation is substantially ahead of the application layer:
 - 14 enums
 - 10 domain schema sources
 - applied initial migration
-- seed data for Greenfield Academy
+- seed data for Demo Academy
 
 Local infrastructure currently includes:
 

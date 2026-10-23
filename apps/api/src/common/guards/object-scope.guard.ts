@@ -280,6 +280,29 @@ export class ObjectScopeGuard implements CanActivate {
       summerSchoolSession: { id: true, tenantId: true, institutionId: true, termId: true },
       summerSchoolRegistration: { id: true, tenantId: true, institutionId: true, summerSchoolSessionId: true },
       summerSchoolResult: { id: true, tenantId: true, institutionId: true, summerSchoolRegistrationId: true },
+      // P6.1 — Finance ObjectScope registry (frozen §7/§12, additive).
+      // Fee catalogue objects resolve their tenant + institution ownership from
+      // trusted server-side state; cross-tenant / cross-institution access fails
+      // closed, same as the academic and institution registries.
+      feeCategory: { id: true, tenantId: true, institutionId: true },
+      feeItem: { id: true, tenantId: true, institutionId: true, feeCategoryId: true },
+      // P6.2 — Finance accounting / billing / policy registry (frozen §7/§12,
+      // additive). Same fail-closed contract as the P6.1 fee catalogue: the
+      // object's tenant + institution ownership is resolved from trusted
+      // server-side state before the boundary check runs.
+      feeSchedule: { id: true, tenantId: true, institutionId: true, academicSessionId: true },
+      bill: {
+        id: true,
+        tenantId: true,
+        institutionId: true,
+        studentPersonId: true,
+        feeScheduleId: true,
+      },
+      discount: { id: true, tenantId: true, institutionId: true },
+      ledgerAccount: { id: true, tenantId: true, institutionId: true },
+      financialPeriod: { id: true, tenantId: true, institutionId: true },
+      journalEntry: { id: true, tenantId: true, institutionId: true, financialPeriodId: true },
+      financialPolicy: { id: true, tenantId: true, institutionId: true },
     };
 
     const select = selectMap[model];

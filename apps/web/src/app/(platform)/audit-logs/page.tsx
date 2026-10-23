@@ -9,7 +9,7 @@ import { ChevronRight } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 
 const auditEntries = [
-  { category: "TENANT", event: "Greenfield Academy newly activated on platform", actor: "admin@platform.com", time: "2 hours ago" },
+  { category: "TENANT", event: "Demo Academy newly activated on platform", actor: "admin@platform.com", time: "2 hours ago" },
   { category: "SUB", event: "Pacific Academy plan upgraded to Enterprise tier", actor: "admin@platform.com", time: "5 hours ago" },
   { category: "SECURITY", event: "IP blocklist updated with 3 new high-risk entries", actor: "security@platform.com", time: "8 hours ago" },
 ];

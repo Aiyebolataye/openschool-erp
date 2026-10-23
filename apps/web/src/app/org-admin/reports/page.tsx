@@ -47,7 +47,7 @@ const reportGroups = [
 
 const ranking = [
   { rank: 1, institution: "Sunrise International", performance: "87.2%", attendance: "93.5%" },
-  { rank: 2, institution: "Greenfield Academy", performance: "85.4%", attendance: "91.2%" },
+  { rank: 2, institution: "Demo Academy", performance: "85.4%", attendance: "91.2%" },
   { rank: 3, institution: "Metropolitan Schools", performance: "83.1%", attendance: "89.8%" },
   { rank: 4, institution: "Coastal Education Trust", performance: "76.8%", attendance: "84.2%" },
   { rank: 5, institution: "Pinnacle Learning", performance: "71.3%", attendance: "78.1%" },

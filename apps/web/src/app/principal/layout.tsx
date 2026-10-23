@@ -7,7 +7,7 @@ export default function PrincipalLayout({ children }: { children: React.ReactNod
   return (
     <WorkspaceLayout
       workspace="Principal / Head Teacher"
-      brand="Greenfield Academy"
+      brand="Demo Academy"
       user={{ name: "Dr. Okon", role: "Principal", initials: "DO" }}
       navigation={principalNav}
       accent="primary"

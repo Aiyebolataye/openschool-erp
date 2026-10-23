@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Bell, Search, ChevronDown, Menu } from "lucide-react";
 
 const notifications = [
-  { title: "Org activation pending", detail: "Greenfield Academy requested activation", time: "12 min ago", tone: "orange" },
+  { title: "Org activation pending", detail: "Demo Academy requested activation", time: "12 min ago", tone: "orange" },
   { title: "Subscription near expiry", detail: "Pacific Academy renews in 3 days", time: "1 hr ago", tone: "red" },
   { title: "Support ticket escalated", detail: "URGENT · Integration not syncing", time: "2 hrs ago", tone: "red" },
   { title: "Survey reached 1,000 responses", detail: "Platform Satisfaction Q3", time: "5 hrs ago", tone: "green" },

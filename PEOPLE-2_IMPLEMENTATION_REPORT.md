@@ -174,7 +174,7 @@ no orphan `node`/`cmd` processes left running after runs.
 
 ## 9. Regression & security review (checklist)
 
-1. **Tenant isolation** — foreign-tenant person forbidden to every Greenfield principal (E2E PASS).
+1. **Tenant isolation** — foreign-tenant person forbidden to every Demo principal (E2E PASS).
 2. **Institution isolation** — nested-route mismatch 404; student ownership enforced (queries scoped by tenantId+institutionId).
 3. **PARENT self/object access** — self-scoped read works via user->guardian bridge; object read authorized (E2E PASS).
 4. **STUDENT self/object access** — self-service branch in `people-scope.guard` (personRelationship / userId bridge), unit-covered.

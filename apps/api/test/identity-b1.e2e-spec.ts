@@ -1,4 +1,4 @@
-﻿import { INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
@@ -1147,7 +1147,7 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
         .send({ email: 'jane@xyz.edu.ng', password: 'Password@123', tenantSlug: 'xyz-academy' })
         .expect(200);
 
-      // Jane (no invitation permission) cannot manage Greenfield invitations
+      // Jane (no invitation permission) cannot manage Demo invitations
       await request(app.getHttpServer())
         .post('/api/v1/invitations')
         .set('Authorization', `Bearer ${xyzLogin.body.data.accessToken}`)
@@ -1210,7 +1210,7 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
       const annex = await prisma.institution.create({
         data: {
           tenantId: greenfieldTenantId,
-          name: 'Greenfield Annex',
+          name: 'Demo Annex',
           code: 'GF-ANNEX',
         },
       });
@@ -1275,7 +1275,7 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
       const annex = await prisma.institution.create({
         data: {
           tenantId: greenfieldTenantId,
-          name: 'Greenfield South',
+          name: 'Demo South',
           code: 'GF-SOUTH',
         },
       });
@@ -1410,7 +1410,7 @@ describe('Identity B1 â€” Invitations, Registration, Email Verification (e2
       const main = await prisma.institution.findFirst({ where: { tenantId: tenant.id } });
       if (!main) throw new Error('Seeded institution missing');
       const annex = await prisma.institution.create({
-        data: { tenantId: tenant.id, name: 'Greenfield North', code: 'GF-NORTH' },
+        data: { tenantId: tenant.id, name: 'Demo North', code: 'GF-NORTH' },
       });
 
       const mk = async (email: string, institutionId: string, name: string) => {

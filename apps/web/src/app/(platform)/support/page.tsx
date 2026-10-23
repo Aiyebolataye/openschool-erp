@@ -23,7 +23,7 @@ const kpis = [
 ];
 
 const initialTickets = [
-  { ticket: "TKT-1042", subject: "Integration not syncing", org: "Greenfield Academy", priority: { text: "URGENT", variant: "red" as const }, status: { text: "Open", variant: "orange" as const }, assignee: "Maria Garcia", created: "1 hr ago" },
+  { ticket: "TKT-1042", subject: "Integration not syncing", org: "Demo Academy", priority: { text: "URGENT", variant: "red" as const }, status: { text: "Open", variant: "orange" as const }, assignee: "Maria Garcia", created: "1 hr ago" },
   { ticket: "TKT-1041", subject: "Billing question", org: "Pacific Academy", priority: { text: "NORMAL", variant: "muted" as const }, status: { text: "In Progress", variant: "blue" as const }, assignee: "James Wilson", created: "3 hrs ago" },
   { ticket: "TKT-1040", subject: "SSO configuration help", org: "Metropolitan Schools", priority: { text: "NORMAL", variant: "muted" as const }, status: { text: "Open", variant: "orange" as const }, assignee: "Unassigned", created: "5 hrs ago" },
   { ticket: "TKT-1039", subject: "Data export request", org: "Sunrise International", priority: { text: "LOW", variant: "muted" as const }, status: { text: "Resolved", variant: "green" as const }, assignee: "Dr. Sarah Chen", created: "1 day ago" },
@@ -62,8 +62,8 @@ const columns = [
 
 const initialThreads: Thread[] = [
   {
-    id: "Greenfield Academy",
-    name: "Greenfield Academy Admin",
+    id: "Demo Academy",
+    name: "Demo Academy Admin",
     role: "Organization",
     messages: [
       { from: "them", text: "We can't sync attendance.", time: "9:41 AM" },
@@ -130,8 +130,8 @@ export default function SupportPage() {
     setTimeout(() => setToast(null), 3000);
   }
 
-  const institutions = ["Greenfield Primary", "Metropolitan High", "Coastal Elementary", "Pinnacle Academy", "Sunrise International School"];
-  const organizations = ["Greenfield Academy", "Metropolitan Schools", "Coastal Education Trust", "Pinnacle Learning Center", "Sunrise International"];
+  const institutions = ["Demo Primary", "Metropolitan High", "Coastal Elementary", "Pinnacle Academy", "Sunrise International School"];
+  const organizations = ["Demo Academy", "Metropolitan Schools", "Coastal Education Trust", "Pinnacle Learning Center", "Sunrise International"];
 
   function openDetail(row: TicketRow) {
     setSelectedTicket(row);

@@ -35,7 +35,7 @@ type InstRow = {
 };
 
 const initialData: InstRow[] = [
-  { name: "Greenfield Academy", slug: "greenfield-academy", type: { text: "Secondary", variant: "muted" }, status: { text: "Active", variant: "green" }, students: "12,450", staff: "620", subscription: { text: "Enterprise", variant: "blue" }, health: { text: "Healthy", variant: "green" }, adminName: "Jane Doe", adminEmail: "jane@greenfield.edu", phone: "+234 801 234 5678" },
+  { name: "Demo Academy", slug: "greenfield-academy", type: { text: "Secondary", variant: "muted" }, status: { text: "Active", variant: "green" }, students: "12,450", staff: "620", subscription: { text: "Enterprise", variant: "blue" }, health: { text: "Healthy", variant: "green" }, adminName: "Jane Doe", adminEmail: "jane@greenfield.edu", phone: "+234 801 234 5678" },
   { name: "Metropolitan Schools", slug: "metropolitan-schools", type: { text: "Mixed", variant: "muted" }, status: { text: "Active", variant: "green" }, students: "8,230", staff: "410", subscription: { text: "Pro", variant: "blue" }, health: { text: "Healthy", variant: "green" }, adminName: "John Smith", adminEmail: "john@metropolitan.edu", phone: "+234 802 345 6789" },
   { name: "Coastal Education Trust", slug: "coastal-ed-trust", type: { text: "Primary", variant: "muted" }, status: { text: "Trial", variant: "orange" }, students: "3,100", staff: "155", subscription: { text: "Starter", variant: "muted" }, health: { text: "Monitoring", variant: "orange" }, adminName: "Mary Johnson", adminEmail: "mary@coastaled.edu", phone: "+234 803 456 7890" },
   { name: "Pinnacle Learning", slug: "pinnacle-learning", type: { text: "Secondary", variant: "muted" }, status: { text: "Suspended", variant: "red" }, students: "1,840", staff: "95", subscription: { text: "Basic", variant: "muted" }, health: { text: "Critical", variant: "red" }, adminName: "Peter Obi", adminEmail: "peter@pinnacle.edu", phone: "+234 804 567 8901" },
@@ -184,7 +184,7 @@ export default function OrgAdminInstitutionsPage() {
       >
         <div className="space-y-4">
           <Field label="Institution Name" required>
-            <TextInput placeholder="e.g. Greenfield Academy" value={formName} onChange={(e) => setFormName(e.target.value)} />
+            <TextInput placeholder="e.g. Demo Academy" value={formName} onChange={(e) => setFormName(e.target.value)} />
           </Field>
           <SelectField label="Type" required placeholder="Select type" options={["Primary", "Secondary", "Mixed"]} value={formType} onChange={(e) => setFormType(e.target.value)} />
           <Field label="Address">
